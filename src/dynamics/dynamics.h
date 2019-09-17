@@ -7,6 +7,8 @@
 
 //! available dynamic models
 #include "src/dynamics/state.h"
+#include "src/dynamics/integration/euler.h"
+#include "src/dynamics/integration/rk4.h"
 #include "src/dynamics/models/single_track.h"
 
 namespace dynamics {

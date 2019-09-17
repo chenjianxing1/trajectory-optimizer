@@ -8,10 +8,12 @@
 #include "src/geometry/geometry.h"
 #include "src/dynamics/state.h"
 #include "src/dynamics/dynamics.h"
+#include "src/commons/parameters.h"
 
 namespace dynamics {
 
 using geometry::Matrix_t;
+using parameters::Parameters;
 
 enum StateSingleTrackModel {
   X = 0,
@@ -25,26 +27,15 @@ enum InputSingleTrackModel {
   ACCELERATION = 1,
 };
 
-struct SingleTrackState : public DynamicState {
-  explicit SingleTrackState(Matrix_t<double>* s) : DynamicState(s) {}
-  ~SingleTrackState() {}
-  double x() const { return (*state)(StateSingleTrackModel::X); }
-  double y() const { return (*state)(StateSingleTrackModel::Y); }
-  double z() const { return 0.0; }
-  double v() const { return (*state)(StateSingleTrackModel::VELOCITY); }
-  double yaw() const { return (*state)(StateSingleTrackModel::THETA); }
-  double pitch() const { return 0.0; }
-  double roll() const { return 0.0; }
-};
 
 template<typename T>
 Matrix_t<T> fDotSingleTrack(const Matrix_t<T>& state,
                             const Matrix_t<T>& u,
-                            T wheel_base = T(2.5)) {
+                            const Parameters& params) {
   Matrix_t<T> A(4, 1);
   A << state(VELOCITY) * cos(state(THETA)),
        state(VELOCITY) * sin(state(THETA)),
-       state(VELOCITY) * tan(u(STEERING_ANGLE)) / wheel_base,
+       state(VELOCITY) * tan(u(STEERING_ANGLE)) / params.get<T>("wheel_base", T(2.7)),
        u(ACCELERATION);
   return A;
 }
@@ -54,16 +45,15 @@ template<typename T,
          Matrix_t<T> (*Fn)(const Matrix_t<T>&,
                            std::function<Matrix_t<T>(const Matrix_t<T>&)>,
                            T)>
-Matrix_t<T> singleTrackModel(const DynamicState* state,
+Matrix_t<T> singleTrackModel(const Matrix_t<T>& state,
                              const Matrix_t<T>& u,
-                             T dt,
-                             T wheel_base = T(2.5)) {
+                             const Parameters& params) {
   std::function<Matrix_t<T> (const Matrix_t<T>&)> fDot =
     std::bind(fDotSingleTrack<T>,
               std::placeholders::_1,
               u,
-              wheel_base);
-  return Fn(*state->state, fDot, dt);
+              params);
+  return Fn(state, fDot, params.get<T>("dt", T(0.1)));
 }
 
 }  // namespace dynamics
