@@ -30,6 +30,7 @@ class Optimizer {
     for (vector<double>& vec : optimization_vectors_) {
       functor.AddParameterBlock(vec.size());
     }
+    // cost_function->SetNumResiduals(1);
     problem_.AddResidualBlock(functor, loss, parameter_block_);
   }
 
@@ -51,6 +52,5 @@ class Optimizer {
   vector<vector<double>> optimization_vectors_;
 };
 
-}  // optimizer
-
+}  // namespace optimizer
 

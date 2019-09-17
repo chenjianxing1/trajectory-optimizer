@@ -63,8 +63,7 @@ TEST(dynamics, trajectory_generation) {
 
 
   Matrix_t<double> trajectory =
-    GenerateTrajectory<double,
-                       SingleTrackModel<double, integrationRK4>>(
+    GenerateTrajectory<double, SingleTrackModel<double, integrationRK4>>(
       dynamic_state,
       inp,
       params);
