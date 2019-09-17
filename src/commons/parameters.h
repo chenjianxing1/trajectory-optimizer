@@ -1,15 +1,17 @@
 #pragma once
 #include <variant>
 #include <string>
+#include <vector>
 #include <map>
 
 namespace parameters {
 using std::string;
 using std::variant;
 using std::map;
+using std::vector;
 
 // allowed variants
-typedef variant<int, double, string> Variants;
+typedef variant<int, double, string, vector<double>> Variants;
 
 class Parameters {
  public:

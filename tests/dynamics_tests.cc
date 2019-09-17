@@ -9,7 +9,7 @@
 
 
 TEST(dynamics, single_track_model) {
-  using dynamics::singleTrackModel;
+  using dynamics::SingleTrackModel;
   using dynamics::integrationRK4;
   using geometry::Matrix_t;
   using parameters::Parameters;
@@ -19,29 +19,59 @@ TEST(dynamics, single_track_model) {
   params.set<double>("dt", 0.1);
 
   //! add objects to world
-  Matrix_t<double> dynamic_state(4, 1);
+  Matrix_t<double> dynamic_state(1, 4);
   dynamic_state << 0.0, 0.0, 0.0, 5.0;  // x, y, theta, v
 
-  Matrix_t<double> inp(2, 1);
+  Matrix_t<double> inp(1, 2);
   inp << 0.0, 0.0;  // acceleration and steering angle
 
-  dynamic_state = singleTrackModel<double,
+  dynamic_state = SingleTrackModel<double,
                                    integrationRK4>(dynamic_state,
                                                    inp,
                                                    params);
-  Matrix_t<double> dynamic_state_after(4, 1);
+  Matrix_t<double> dynamic_state_after(1, 4);
   dynamic_state_after << 0.5, 0.0, 0.0, 5.0;  // x, y, theta, v
   ASSERT_EQ(dynamic_state, dynamic_state_after);
 
-  dynamic_state = singleTrackModel<double,
+  dynamic_state = SingleTrackModel<double,
                                   integrationRK4>(dynamic_state,
                                                   inp,
                                                   params);
-  Matrix_t<double> dynamic_state_after_again(4, 1);
+  Matrix_t<double> dynamic_state_after_again(1, 4);
   dynamic_state_after_again << 1.0, 0.0, 0.0, 5.0;  // x, y, theta, v
   ASSERT_EQ(dynamic_state, dynamic_state_after_again);
 }
 
+TEST(dynamics, trajectory_generation) {
+  using dynamics::SingleTrackModel;
+  using dynamics::integrationRK4;
+  using dynamics::GenerateTrajectory;
+  using geometry::Matrix_t;
+  using parameters::Parameters;
+
+  Parameters params;
+  params.set<double>("wheel_base", 2.7);
+  params.set<double>("dt", 0.1);
+
+  //! add objects to world
+  Matrix_t<double> dynamic_state(1, 4);
+  dynamic_state << 0.0, 0.0, 0.0, 5.0;  // x, y, theta, v
+
+  Matrix_t<double> inp(2, 2);
+  inp << 0.0, 0.0,
+         0.1, 0.0;  // acceleration and steering angle x2
+
+  Matrix_t<double> trajectory =
+    GenerateTrajectory<double,
+                       SingleTrackModel<double, integrationRK4>>(
+      dynamic_state,
+      inp,
+      params);
+  Matrix_t<double> trajectory_after(2, 4);
+  trajectory_after << 0.0, 0.0, 0.0, 5.0,
+                               0.5, 0.0, 0.0, 5.0;  // x, y, theta, v
+  ASSERT_EQ(trajectory, trajectory_after);
+}
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

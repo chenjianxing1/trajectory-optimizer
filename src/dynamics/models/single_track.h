@@ -8,7 +8,6 @@
 #include "src/geometry/geometry.h"
 #include "src/dynamics/state.h"
 #include "src/dynamics/dynamics.h"
-#include "src/commons/parameters.h"
 
 namespace dynamics {
 
@@ -32,7 +31,7 @@ template<typename T>
 Matrix_t<T> fDotSingleTrack(const Matrix_t<T>& state,
                             const Matrix_t<T>& u,
                             const Parameters& params) {
-  Matrix_t<T> A(4, 1);
+  Matrix_t<T> A(1, 4);
   A << state(VELOCITY) * cos(state(THETA)),
        state(VELOCITY) * sin(state(THETA)),
        state(VELOCITY) * tan(u(STEERING_ANGLE)) / params.get<T>("wheel_base", T(2.7)),
@@ -45,7 +44,7 @@ template<typename T,
          Matrix_t<T> (*Fn)(const Matrix_t<T>&,
                            std::function<Matrix_t<T>(const Matrix_t<T>&)>,
                            T)>
-Matrix_t<T> singleTrackModel(const Matrix_t<T>& state,
+Matrix_t<T> SingleTrackModel(const Matrix_t<T>& state,
                              const Matrix_t<T>& u,
                              const Parameters& params) {
   std::function<Matrix_t<T> (const Matrix_t<T>&)> fDot =
