@@ -10,12 +10,13 @@
 
 TEST(optimizer, basic_test) {
   using parameters::Parameters;
+  using optimizer::Optimizer;
   using std::string;
 
   Parameters params;
   params.set<double>("wheel_base", 1.7);
 
-  Optimizer opt(params);
+  Optimizer opt(&params);
 
 }
 

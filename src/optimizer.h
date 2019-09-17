@@ -17,7 +17,7 @@ using std::vector;
 
 class Optimizer {
  public:
-  explicit Optimizer(Parameters& params) :
+  explicit Optimizer(Parameters* params) :
     params_(params),
     optimization_vectors_(),
     parameter_block_() {}
@@ -37,13 +37,13 @@ class Optimizer {
   void AddInputs(Matrix_t<double> inputs) {
     for (vector<double>& opt_vec : optimization_vectors_) {
       vector<double> empty_vec(inputs.rows(), 0.0);
-      opt_vec.push_back(empty_vec);
+      optimization_vectors_.push_back(empty_vec);
       parameter_block_.push_back(&opt_vec[0]);
     }
   }
 
  private:
-  Parameters& params_;
+  Parameters* params_;
   ceres::Problem problem_;
 
   // auto handling
@@ -52,4 +52,5 @@ class Optimizer {
 };
 
 }  // optimizer
+
 
