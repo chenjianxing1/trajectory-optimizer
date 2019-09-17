@@ -20,3 +20,16 @@ cc_test(
   ],
 	visibility = ["//visibility:public"]
 )
+
+cc_test(
+  name = "optimizer_tests",
+  srcs = ["optimizer_tests.cc"],
+  copts = ["-Iexternal/gtest/include"],
+  deps = [
+    "//src/commons:parameters",
+    "//src/dynamics:dynamics",
+    "//src:optimizer",
+    "@gtest//:main"
+  ],
+	visibility = ["//visibility:public"]
+)
