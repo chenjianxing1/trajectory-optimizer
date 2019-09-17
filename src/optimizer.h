@@ -17,7 +17,16 @@ using std::vector;
 class Optimizer {
  public:
   explicit Optimizer(Parameters& params) : params_(params) {}
-  void AddFunctor() {}
+
+  template<typename T>
+  void AddResidualBlock(
+    const ceres::DynamicAutoDiffCostFunction<T, 4>& functor,
+    const ceres::LossFunction* loss = new ceres::TrivialLoss()) {
+    for (auto vec : optimization_vectors_) {
+      functor.AddParameterBlock(vec.length());
+    }
+    problem_.AddResidualBlock(functor, loss, parameter_block_);
+  }
 
   // each column of an Eigen Matrix will become an optimization vector
   void AddInputs(Matrix_t<double> inputs) {
