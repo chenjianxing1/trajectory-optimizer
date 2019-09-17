@@ -1,0 +1,48 @@
+// Copyright (c) 2019 Patrick Hart
+//
+// This work is licensed under the terms of the MIT license.
+// For a copy, see <https://opensource.org/licenses/MIT>.
+#pragma once
+#include <Eigen/Dense>
+#include <string>
+#include <boost/geometry.hpp>
+#include <boost/geometry/geometries/point.hpp>
+#include <boost/geometry/geometries/box.hpp>
+#include <boost/geometry/index/rtree.hpp>
+#include "src/geometry/base.h"
+#include "src/geometry/commons.h"
+
+namespace geometry {
+
+template <typename T, int N>
+class Polygon : public BaseGeometry<Polygon_t<T, N>> {
+ public:
+  explicit Polygon(string color) : BaseGeometry<Polygon_t<T, N>>(color) {}
+  Polygon() : BaseGeometry<Polygon_t<T, N>>() {}
+
+  ~Polygon() {}
+
+  void Append(Point<T, N> p) {
+    bg::append(this->obj_, p.obj_);
+  }
+
+  explicit Polygon(const Matrix_t<T>& m) {
+    for (int i = 0; i < m.rows(); i++)
+      bg::append(this->obj_,
+                 Point<T, N>(m.row(i)).obj_);
+  }
+
+  Matrix_t<T> toMatrix() const {
+    Matrix_t<T> ret(bg::num_points(this->obj_), N);
+    int i = 0;
+    for (auto it = boost::begin(exterior_ring(this->obj_));
+         it != boost::end(exterior_ring(this->obj_)); ++it) {
+      ret.row(i) << getMatrix<T, N>(*it);
+      i++;
+    }
+    return ret;
+  }
+};
+
+
+}  // namespace geometry
