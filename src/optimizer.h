@@ -5,7 +5,7 @@
 // For a copy, see <https://opensource.org/licenses/MIT>.
 #pragma once
 #include <vector>
-#include <ceres/ceres.h>
+#include <algorithm>
 #include "src/commons/parameters.h"
 #include "src/geometry/geometry.h"
 
@@ -18,6 +18,7 @@ class Optimizer {
  public:
   explicit Optimizer(Parameters& params) : params_(params) {}
 
+  // TODO(@hart): every functor should have access to the params!
   template<typename T>
   void AddResidualBlock(
     const ceres::DynamicAutoDiffCostFunction<T, 4>& functor,
@@ -44,6 +45,7 @@ class Optimizer {
   // auto handling
   vector<double*> parameter_block_;
   vector<vector<double>> optimization_vectors_;
-}
+};
 
 }  // optimizer
+

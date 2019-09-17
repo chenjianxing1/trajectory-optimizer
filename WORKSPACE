@@ -1,5 +1,6 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file")
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "new_git_repository")
 
 http_archive(
   name = "gtest",
@@ -74,11 +75,10 @@ http_archive(
   ]
 )
 
-http_archive(
-  name = "com_google_ceres_solver", 
-  strip_prefix = "ceres-solver-1.14.0", 
-  sha256 = "1296330fcf1e09e6c2f926301916f64d4a4c5c0ff12d460a9bc5d4c48411518f",
-  urls = ["https://github.com/ceres-solver/ceres-solver/archive/1.14.0.tar.gz"],
+new_git_repository(
+  name = "com_google_ceres_solver",
+  branch = "master",
+  remote = "https://github.com/ceres-solver/ceres-solver",
   build_file_content =
 """
 load("//:bazel/ceres.bzl", "ceres_library")
@@ -86,4 +86,6 @@ ceres_library(
     name = "ceres",
     restrict_schur_specializations = True,
 )
-""")
+"""
+)
+
