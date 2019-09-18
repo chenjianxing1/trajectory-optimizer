@@ -31,12 +31,12 @@ class Optimizer {
     params_(params),
     optimization_vector_len_(0) {
       options_.max_num_consecutive_invalid_steps =
-        params->get<int>("max_num_consecutive_invalid_steps", 1000);
+        params->get<int>("max_num_consecutive_invalid_steps", 200);
       options_.max_num_iterations =
         params->get<int>("max_num_iterations", 4000);
       options_.minimizer_type = ceres::MinimizerType::LINE_SEARCH;
       options_.function_tolerance =
-        params->get<double>("function_tolerance", 10e-9);
+        params->get<double>("function_tolerance", 1e-12);
       options_.line_search_direction_type =
         ceres::LineSearchDirectionType::LBFGS;
       options_.minimizer_progress_to_stdout =

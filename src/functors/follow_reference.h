@@ -18,6 +18,7 @@ namespace optimizer {
 using geometry::Matrix_t;
 using commons::Parameters;
 using commons::CalculateJerk;
+using commons::Distance;
 using commons::CalculateDiff;
 using optimizer::BaseFunctor;
 using dynamics::InputToTrajectory;
@@ -40,25 +41,21 @@ class FollowReference : public BaseFunctor {
   virtual ~FollowReference() {}
 
   template<typename T>
-  bool operator()(T const* const* parameters, T* residuals) {
-    T cost = T(0.0);
+  bool operator()(T const* const* parameters, T* residuals, T cost = T(0.0)) {
     //! convert parameters to Eigen Matrix
     Matrix_t<T> trajectory = this->ParamsToEigen<T>(parameters);
     Matrix_t<T> initial_state_t = initial_state_.cast<T>();
 
     //! debug
-    T dist = T(0.0);
-    for ( int i = 1; i < trajectory.rows(); i++ ) {
-      dist += ceres::sqrt((trajectory(i, 1) - T(2.0))*(trajectory(i, 1) - T(2.0)));
-    }
-    cost += T(this->GetParams()->get<double>("weight_distance", 0.1)) * dist * dist;
+    // T dist = Distance(reference_line_, trajectory);
+    // cost += T(params_->get<double>("weight_distance", 0.1)) * dist * dist;
 
     //! calculate jerk
     T jerk = CalculateJerk<T>(
       trajectory,
-      T(this->GetParams()->get<double>("dt", 0.1)));
+      T(params_->get<double>("dt", 0.2)));
 
-    cost += T(this->GetParams()->get<double>("weight_jerk", 0.1)) * jerk * jerk;
+    cost += T(params_->get<double>("weight_jerk", 0.1)) * jerk * jerk;
     residuals[0] = cost;
     std::cout << trajectory << std::endl;
     return true;

@@ -25,30 +25,37 @@ TEST(optimizer, basic_test) {
   // initialization
   Parameters params;
   params.set<double>("wheel_base", 2.7);
-  params.set<double>("dt", 0.2);
+  params.set<double>("dt", 0.1);
+
+  // weights
+  params.set<double>("weight_jerk", 1e3);
+  params.set<double>("weight_distance", 0.1);
 
 
   Matrix_t<double> initial_state(1, 4);
   initial_state << 0.0, 0.0 , 0.0, 5.0;  // x, y, theta, v
-  Matrix_t<double> opt_vec(6, 2);
+  Matrix_t<double> opt_vec(9, 2);
   opt_vec << 0.0, 0.0,
              0.0, 0.0,
              0.0, 0.0,
              0.0, 0.0,
              0.1, 0.0,
+             0.1, 0.0,  // steering and acceleration
+             0.1, 0.0,  // steering and acceleration
+             0.1, 0.0,  // steering and acceleration
              0.1, 0.0;  // steering and acceleration
 
   // optimization
   Optimizer opt(&params);
   opt.SetOptimizationVector(opt_vec);
-  
+
   // add functor
   DynamicModelFollowReference* reference_functor =
     new DynamicModelFollowReference(initial_state,
                                     &params);
   opt.AddResidualBlock<DynamicModelFollowReference>(reference_functor);
 
-  opt.FixOptimizationVector(0, 3);
+  opt.FixOptimizationVector(0, 2);
 
   // solving
   opt.Solve();

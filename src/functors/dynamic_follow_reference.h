@@ -9,13 +9,16 @@
 #include <functional>
 #include "src/geometry/geometry.h"
 #include "src/functors/base_functor.h"
+#include "src/commons/commons.h"
 #include "src/commons/parameters.h"
 #include "src/dynamics/dynamics.h"
 
 namespace optimizer {
 
 using geometry::Matrix_t;
+using geometry::Line;
 using commons::Parameters;
+using commons::DistanceTrajetory;
 using optimizer::BaseFunctor;
 using dynamics::GenerateDynamicTrajectory;
 using dynamics::SingleTrackModel;
@@ -33,34 +36,33 @@ class DynamicModelFollowReference : public BaseFunctor {
   virtual ~DynamicModelFollowReference() {}
 
   template<typename T>
-  bool operator()(T const* const* parameters, T* residuals) {
-    T cost = T(0.0);
-    //! convert parameters to Eigen Matrix
+  bool operator()(T const* const* parameters, T* residuals, T cost = T(0.0)) {
+    // Convert to Eigen
     Matrix_t<T> opt_vec = this->ParamsToEigen<T>(parameters);
     Matrix_t<T> initial_state_t = initial_state_.cast<T>();
 
-    // either (x, y) or (x, y, theta, v)
+    // Generate dynamic trajectory
     Matrix_t<T> trajectory =
       GenerateDynamicTrajectory<T, SingleTrackModel<T, integrationRK4>>(
-        initial_state_t, opt_vec, *this->GetParams());
+        initial_state_t, opt_vec, *params_);
 
-    //! debug
-    T dist = T(0.0);
-    for ( int i = 0; i < trajectory.rows(); i++ ) {
-      dist += ceres::sqrt((trajectory(i, 1) - T(1.0))*(trajectory(i, 1) - T(1.0)));
-    }
-    cost += T(this->GetParams()->get<double>("weight_distance", 0.1)) * dist * dist;
+    // Distance
+    Matrix_t<T> ref_line = reference_line_.cast<T>();
+    Line<T, 2> boost_line(ref_line);
 
-    //! calculate jerk
+    T dist = DistanceTrajetory<T>(ref_line, trajectory);
+    cost += T(params_->get<double>("weight_distance", 0.1)) * dist * dist;
+
+    // Calculate jerk
     T jerk = CalculateJerk<T>(
       trajectory,
-      T(this->GetParams()->get<double>("dt", 0.1)));
+      T(params_->get<double>("dt", 0.2)));
+    cost += T(params_->get<double>("weight_jerk", 2500.0)) * jerk * jerk;
 
-    cost += T(this->GetParams()->get<double>("weight_jerk", 1000.0)) * jerk * jerk;
-    std::cout << opt_vec << std::endl;
+    // Normalize
     residuals[0] = cost / (
-      T(this->GetParams()->get<double>("weight_distance", 0.1)) +
-      T(this->GetParams()->get<double>("weight_jerk", 1000.0)));
+      T(params_->get<double>("weight_distance", 0.1)) +
+      T(params_->get<double>("weight_jerk", 2500.0)));
     return true;
   }
 
@@ -71,7 +73,6 @@ class DynamicModelFollowReference : public BaseFunctor {
  private:
   Matrix_t<double> reference_line_;
   Matrix_t<double> initial_state_;
-  
 };
 
 }  // namespace optimizer
