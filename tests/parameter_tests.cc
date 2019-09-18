@@ -8,7 +8,7 @@
 
 
 TEST(parameters, set_and_get_parameters) {
-  using parameters::Parameters;
+  using commons::Parameters;
   using std::string;
   
   Parameters params;

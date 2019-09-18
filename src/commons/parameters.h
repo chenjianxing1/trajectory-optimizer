@@ -4,7 +4,7 @@
 #include <vector>
 #include <map>
 
-namespace parameters {
+namespace commons {
 using std::string;
 using std::variant;
 using std::map;

@@ -11,7 +11,7 @@
 namespace optimizer {
 
 using geometry::Matrix_t;
-using parameters::Parameters;
+using commons::Parameters;
 
 class BaseFunctor {
  public:

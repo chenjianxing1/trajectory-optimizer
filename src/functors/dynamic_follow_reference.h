@@ -10,29 +10,27 @@
 #include "src/geometry/geometry.h"
 #include "src/functors/base_functor.h"
 #include "src/commons/parameters.h"
-#include "src/commons/commons.h"
 #include "src/dynamics/dynamics.h"
 
 namespace optimizer {
 
 using geometry::Matrix_t;
 using commons::Parameters;
-using commons::CalculateJerk;
 using optimizer::BaseFunctor;
-using dynamics::InputToTrajectory;
+using dynamics::GenerateTrajectory;
 using dynamics::SingleTrackModel;
 using dynamics::integrationRK4;
 using dynamics::integrationEuler;
 
 
-class FollowReference : public BaseFunctor {
+class DynamicModelFollowReference : public BaseFunctor {
  public:
-  FollowReference() : BaseFunctor(nullptr) {}
-  explicit FollowReference(Matrix_t<double> initial_state,
+  DynamicModelFollowReference() : BaseFunctor(nullptr) {}
+  explicit DynamicModelFollowReference(Matrix_t<double> initial_state,
                            Parameters* params) :
     initial_state_(initial_state),
     BaseFunctor(params) {}
-  virtual ~FollowReference() {}
+  virtual ~DynamicModelFollowReference() {}
 
   template<typename T>
   bool operator()(T const* const* parameters, T* residuals) {
@@ -41,18 +39,15 @@ class FollowReference : public BaseFunctor {
     Matrix_t<T> opt_vec = this->ParamsToEigen<T>(parameters);
     Matrix_t<T> initial_state_t = initial_state_.cast<T>();
 
-    //! generate traj
+    // either (x, y) or (x, y, theta, v)
+    // TODO(@hart): needs to be passed
     Matrix_t<T> trajectory =
-      InputToTrajectory<T, SingleTrackModel<T, integrationRK4>>(
+      GenerateTrajectory<T, SingleTrackModel<T, integrationRK4>>(
         initial_state_t, opt_vec, *this->GetParams());
 
-    //! calculate jerk
-    T jerk = CalculateJerk<T>(
-      trajectory,
-      T(this->GetParams()->get<double>("dt", 0.1)));
+    // TODO(@hart): calculate the costs based on the trajectory
 
-    cost += T(this->GetParams()->get<double>("weight_jerk", 0.1)) * jerk;
-    
+
     residuals[0] = cost;
     return true;
   }

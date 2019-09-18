@@ -3,6 +3,7 @@ cc_library(
   hdrs = glob(["*.h"]),
   deps = [
     "//src/commons:parameters",
+    "//src/commons:commons",
     "//src/dynamics:dynamics",
     "//src/geometry:geometry"
   ],

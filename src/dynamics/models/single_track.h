@@ -12,7 +12,7 @@
 namespace dynamics {
 
 using geometry::Matrix_t;
-using parameters::Parameters;
+using commons::Parameters;
 
 enum StateSingleTrackModel {
   X = 0,

@@ -12,7 +12,7 @@ TEST(dynamics, single_track_model) {
   using dynamics::SingleTrackModel;
   using dynamics::integrationRK4;
   using geometry::Matrix_t;
-  using parameters::Parameters;
+  using commons::Parameters;
 
   Parameters params;
   params.set<double>("wheel_base", 2.7);
@@ -47,7 +47,7 @@ TEST(dynamics, trajectory_generation_single_track) {
   using dynamics::integrationRK4;
   using dynamics::GenerateDynamicTrajectory;
   using geometry::Matrix_t;
-  using parameters::Parameters;
+  using commons::Parameters;
 
   Parameters params;
   params.set<double>("wheel_base", 2.7);
@@ -78,7 +78,7 @@ TEST(dynamics, input_to_trajectory) {
   using dynamics::GenerateDynamicTrajectory;
   using dynamics::InputToTrajectory;
   using geometry::Matrix_t;
-  using parameters::Parameters;
+  using commons::Parameters;
 
   Parameters params;
   params.set<double>("wheel_base", 2.7);

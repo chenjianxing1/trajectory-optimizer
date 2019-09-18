@@ -13,7 +13,7 @@
 
 namespace optimizer {
 
-using parameters::Parameters;
+using commons::Parameters;
 using geometry::Matrix_t;
 using optimizer::BaseFunctor;
 using std::vector;

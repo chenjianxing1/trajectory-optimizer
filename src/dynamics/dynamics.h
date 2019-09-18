@@ -13,7 +13,7 @@
 #include "src/commons/parameters.h"
 
 namespace dynamics {
-  using parameters::Parameters;
+  using commons::Parameters;
   using geometry::Matrix_t;
 
 
