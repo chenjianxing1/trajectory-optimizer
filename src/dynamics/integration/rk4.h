@@ -13,9 +13,9 @@ namespace dynamics {
                  std::function<Matrix_t<T>(const Matrix_t<T>&)> fDot,
                  T dt) {
     Matrix_t<T> k0 = dt*fDot(state);
-    Matrix_t<T> k1 = dt*fDot(state + k0/2);
-    Matrix_t<T> k2 = dt*fDot(state + k1/2);
+    Matrix_t<T> k1 = dt*fDot(state + k0/T(2.0));
+    Matrix_t<T> k2 = dt*fDot(state + k1/T(2.0));
     Matrix_t<T> k3 = dt*fDot(state + k2);
-    return state + 1.0/6.0*(k0 + 2*k1 + 2*k2 + k3);
+    return state + T(1.0/6.0)*(k0 + T(2.0)*k1 + T(2.0)*k2 + k3);
   }
 }  // namespace dynamics

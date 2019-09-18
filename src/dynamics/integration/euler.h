@@ -11,8 +11,8 @@ namespace dynamics {
   template<typename T>
   Matrix_t<T>
   integrationEuler(const Matrix_t<T>& state,
-                    std::function<Matrix_t<T>(const Matrix_t<T>&)> fDot,
-                    T dt) {
+                   std::function<Matrix_t<T>(const Matrix_t<T>&)> fDot,
+                   T dt) {
     return state + dt * fDot(state);
   }
 }  // namespace dynamics

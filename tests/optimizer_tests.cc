@@ -16,17 +16,23 @@ TEST(optimizer, basic_test) {
   using optimizer::FollowReference;
   using geometry::Matrix_t;
 
+  // initialization
   Parameters params;
   params.set<double>("wheel_base", 1.7);
-
-  Optimizer opt(&params);
+  Matrix_t<double> initial_state(1, 4);
+  initial_state << 0.0, 0.0, 0.0, 5.0;  // x, y
   Matrix_t<double> opt_vec(3, 2);
   opt_vec << 0.0, 0.0,
              0.1, 0.0,
              0.2, 0.0;
 
+  // optimization
+  Optimizer opt(&params);
   opt.SetOptimizationVector(opt_vec);
-  FollowReference* reference_functor = new FollowReference(&params);
+
+  // TODO(@hart): functor needs to know the trajectory generation methods
+  FollowReference* reference_functor = new FollowReference(initial_state,
+                                                           &params);
   opt.AddResidualBlock<FollowReference>(reference_functor);
 }
 

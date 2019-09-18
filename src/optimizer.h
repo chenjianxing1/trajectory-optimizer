@@ -37,6 +37,8 @@ class Optimizer {
       new DynamicAutoDiffCostFunction<T, N>(dynamic_cast<T*>(functor));
     for (vector<double>& vec : optimization_vectors_) {
       ceres_functor->AddParameterBlock(vec.size());
+      functor->SetOptVecLen(vec.size());
+      functor->SetParamCount(parameter_block_.size());
     }
     ceres_functor->SetNumResiduals(num_residuals);
     problem_.AddResidualBlock(ceres_functor, loss, parameter_block_);

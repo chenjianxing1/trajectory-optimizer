@@ -25,9 +25,9 @@ namespace dynamics {
            Matrix_t<T> (*Fn)(const Matrix_t<T>&,
                              const Matrix_t<T>&,
                              const Parameters&)>
-  Matrix_t<T> GenerateTrajectory(const Matrix_t<T>& initial_state,
-                                 const Matrix_t<T>& input_vector,
-                                 const Parameters& params) {
+  Matrix_t<T> GenerateDynamicTrajectory(const Matrix_t<T>& initial_state,
+                                        const Matrix_t<T>& input_vector,
+                                        const Parameters& params) {
     Matrix_t<T> trajectory(input_vector.rows(),
                            initial_state.cols());
     trajectory.row(0) = initial_state;
@@ -37,5 +37,15 @@ namespace dynamics {
                              params);
     }
     return trajectory;
+  }
+
+  template<typename T,
+           Matrix_t<T> (*Fn)(const Matrix_t<T>&,
+                             const Matrix_t<T>&,
+                             const Parameters&)>
+  Matrix_t<T> InputToTrajectory(const Matrix_t<T>& initial_state,
+                                const Matrix_t<T>& input_vector,
+                                const Parameters& params) {
+    return input_vector;
   }
 }  // namespace dynamics
