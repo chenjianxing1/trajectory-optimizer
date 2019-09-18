@@ -71,15 +71,17 @@ class Optimizer {
     optimization_vector_len_ = inputs.rows();
   }
 
-  /*
+
   void FixOptimizationVector(int start, int end) {
-    for ( int i = start; i < end; i++ ) {
-      problem_.SetParameterBlockConstant(parameter_block_[0]+0);
-      problem_.SetParameterBlockConstant(parameter_block_[0]+1);
-      problem_.SetParameterBlockConstant(parameter_block_[0]+2);
-    }
+    vector<int> vec;
+    for (int i = start; i < end; i++)
+      vec.push_back(i);
+    for ( auto& pblock : parameter_block_)
+      problem_.SetParameterization(
+        pblock,
+        new ceres::SubsetParameterization(optimization_vector_len_, vec));
   }
-  */
+
 
   void Solve() {
     ceres::Solve(options_, &problem_, &summary_);

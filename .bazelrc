@@ -3,4 +3,5 @@ test --test_output=errors --action_env="GTEST_COLOR=1"
 common --color=yes
 
 // set compiler stuff
-build --action_env CC=/usr/bin/gcc-7 --cxxopt='-std=c++17'
+// --action_env CC=/usr/bin/gcc-7
+build --cxxopt='-std=c++17'

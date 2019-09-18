@@ -43,13 +43,8 @@ class FollowReference : public BaseFunctor {
   bool operator()(T const* const* parameters, T* residuals) {
     T cost = T(0.0);
     //! convert parameters to Eigen Matrix
-    Matrix_t<T> opt_vec = this->ParamsToEigen<T>(parameters);
+    Matrix_t<T> trajectory = this->ParamsToEigen<T>(parameters);
     Matrix_t<T> initial_state_t = initial_state_.cast<T>();
-
-    //! generate traj
-    Matrix_t<T> trajectory =
-      InputToTrajectory<T, nullptr>(
-        initial_state_t, opt_vec, *this->GetParams());
 
     //! debug
     T dist = T(0.0);
@@ -65,7 +60,7 @@ class FollowReference : public BaseFunctor {
 
     cost += T(this->GetParams()->get<double>("weight_jerk", 0.1)) * jerk * jerk;
     residuals[0] = cost;
-    std::cout << opt_vec << std::endl;
+    std::cout << trajectory << std::endl;
     return true;
   }
 

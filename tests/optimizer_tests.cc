@@ -41,12 +41,14 @@ TEST(optimizer, basic_test) {
   // optimization
   Optimizer opt(&params);
   opt.SetOptimizationVector(opt_vec);
-
+  
   // add functor
   DynamicModelFollowReference* reference_functor =
     new DynamicModelFollowReference(initial_state,
                                     &params);
   opt.AddResidualBlock<DynamicModelFollowReference>(reference_functor);
+
+  opt.FixOptimizationVector(0, 3);
 
   // solving
   opt.Solve();
