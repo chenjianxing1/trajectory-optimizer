@@ -17,7 +17,7 @@ namespace optimizer {
 using geometry::Matrix_t;
 using commons::Parameters;
 using optimizer::BaseFunctor;
-using dynamics::GenerateTrajectory;
+using dynamics::GenerateDynamicTrajectory;
 using dynamics::SingleTrackModel;
 using dynamics::integrationRK4;
 using dynamics::integrationEuler;
@@ -40,15 +40,27 @@ class DynamicModelFollowReference : public BaseFunctor {
     Matrix_t<T> initial_state_t = initial_state_.cast<T>();
 
     // either (x, y) or (x, y, theta, v)
-    // TODO(@hart): needs to be passed
     Matrix_t<T> trajectory =
-      GenerateTrajectory<T, SingleTrackModel<T, integrationRK4>>(
+      GenerateDynamicTrajectory<T, SingleTrackModel<T, integrationRK4>>(
         initial_state_t, opt_vec, *this->GetParams());
 
-    // TODO(@hart): calculate the costs based on the trajectory
+    //! debug
+    T dist = T(0.0);
+    for ( int i = 1; i < trajectory.rows(); i++ ) {
+      dist += ceres::sqrt((trajectory(i, 1) - T(2.0))*(trajectory(i, 1) - T(2.0)));
+    }
+    cost += T(this->GetParams()->get<double>("weight_distance", 0.1)) * dist * dist;
 
+    //! calculate jerk
+    T jerk = CalculateJerk<T>(
+      trajectory,
+      T(this->GetParams()->get<double>("dt", 0.1)));
 
-    residuals[0] = cost;
+    cost += T(this->GetParams()->get<double>("weight_jerk", 100.0)) * jerk * jerk;
+    std::cout << opt_vec << std::endl;
+    residuals[0] = cost / (
+      T(this->GetParams()->get<double>("weight_distance", 0.1)) +
+      T(this->GetParams()->get<double>("weight_jerk", 100.0)));
     return true;
   }
 

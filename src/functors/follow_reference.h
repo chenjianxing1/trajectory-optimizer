@@ -18,6 +18,7 @@ namespace optimizer {
 using geometry::Matrix_t;
 using commons::Parameters;
 using commons::CalculateJerk;
+using commons::CalculateDiff;
 using optimizer::BaseFunctor;
 using dynamics::InputToTrajectory;
 using dynamics::SingleTrackModel;
@@ -27,11 +28,15 @@ using dynamics::integrationEuler;
 
 class FollowReference : public BaseFunctor {
  public:
-  FollowReference() : BaseFunctor(nullptr) {}
+  FollowReference() :
+    BaseFunctor(nullptr),
+    reference_line_(),
+    initial_state_() {}
   explicit FollowReference(Matrix_t<double> initial_state,
                            Parameters* params) :
-    initial_state_(initial_state),
-    BaseFunctor(params) {}
+    BaseFunctor(params),
+    reference_line_(),
+    initial_state_(initial_state) {}
   virtual ~FollowReference() {}
 
   template<typename T>
@@ -43,17 +48,24 @@ class FollowReference : public BaseFunctor {
 
     //! generate traj
     Matrix_t<T> trajectory =
-      InputToTrajectory<T, SingleTrackModel<T, integrationRK4>>(
+      InputToTrajectory<T, nullptr>(
         initial_state_t, opt_vec, *this->GetParams());
+
+    //! debug
+    T dist = T(0.0);
+    for ( int i = 1; i < trajectory.rows(); i++ ) {
+      dist += ceres::sqrt((trajectory(i, 1) - T(2.0))*(trajectory(i, 1) - T(2.0)));
+    }
+    cost += T(this->GetParams()->get<double>("weight_distance", 0.1)) * dist * dist;
 
     //! calculate jerk
     T jerk = CalculateJerk<T>(
       trajectory,
       T(this->GetParams()->get<double>("dt", 0.1)));
 
-    cost += T(this->GetParams()->get<double>("weight_jerk", 0.1)) * jerk;
-    
+    cost += T(this->GetParams()->get<double>("weight_jerk", 0.1)) * jerk * jerk;
     residuals[0] = cost;
+    std::cout << opt_vec << std::endl;
     return true;
   }
 

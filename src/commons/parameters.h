@@ -11,7 +11,7 @@ using std::map;
 using std::vector;
 
 // allowed variants
-typedef variant<int, double, string, vector<double>> Variants;
+typedef variant<int, double, string, vector<double>, bool> Variants;
 
 class Parameters {
  public:
