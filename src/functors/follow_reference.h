@@ -16,7 +16,6 @@ using parameters::Parameters;
 class FollowReference {
  public:
   explicit FollowReference(Parameters* params) :
-    num_residuals_(1),
     params_(params) {}
 
   template<typename T>
@@ -35,7 +34,6 @@ class FollowReference {
  private:
   Parameters params_;
   Matrix_t<double> reference_line_;
-  int num_residuals_;
 };
 
 }  // namespace optimizer

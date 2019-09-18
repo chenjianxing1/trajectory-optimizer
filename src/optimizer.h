@@ -36,7 +36,7 @@ class Optimizer {
   }
 
   // each column of an Eigen Matrix will become an optimization vector
-  void AddInputs(Matrix_t<double> inputs) {
+  void SetOptimizationVector(Matrix_t<double> inputs) {
     for (vector<double>& opt_vec : optimization_vectors_) {
       vector<double> empty_vec(inputs.rows(), 0.0);
       optimization_vectors_.push_back(empty_vec);
@@ -48,7 +48,7 @@ class Optimizer {
   Parameters* params_;
   ceres::Problem problem_;
 
-  // auto handling
+  // handles automatically
   vector<double*> parameter_block_;
   vector<vector<double>> optimization_vectors_;
 };
