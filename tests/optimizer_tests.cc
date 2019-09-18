@@ -15,11 +15,9 @@ TEST(optimizer, basic_test) {
 
   Parameters params;
   params.set<double>("wheel_base", 1.7);
-
   Optimizer opt(&params);
 
 }
-
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

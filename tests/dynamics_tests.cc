@@ -61,7 +61,6 @@ TEST(dynamics, trajectory_generation) {
   inp << 0.0, 0.0,
          0.1, 0.0;  // acceleration and steering angle x2
 
-
   Matrix_t<double> trajectory =
     GenerateTrajectory<double, SingleTrackModel<double, integrationRK4>>(
       dynamic_state,

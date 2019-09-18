@@ -5,6 +5,7 @@ cc_library(
   deps = [
     "//src/commons:parameters",
     "//src/geometry:geometry",
+    "//src/functors:functors",
     "@com_google_ceres_solver//:ceres"
   ],
 	visibility = ["//visibility:public"]
