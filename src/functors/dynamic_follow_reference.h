@@ -46,8 +46,8 @@ class DynamicModelFollowReference : public BaseFunctor {
 
     //! debug
     T dist = T(0.0);
-    for ( int i = 1; i < trajectory.rows(); i++ ) {
-      dist += ceres::sqrt((trajectory(i, 1) - T(2.0))*(trajectory(i, 1) - T(2.0)));
+    for ( int i = 0; i < trajectory.rows(); i++ ) {
+      dist += ceres::sqrt((trajectory(i, 1) - T(1.0))*(trajectory(i, 1) - T(1.0)));
     }
     cost += T(this->GetParams()->get<double>("weight_distance", 0.1)) * dist * dist;
 
@@ -56,11 +56,11 @@ class DynamicModelFollowReference : public BaseFunctor {
       trajectory,
       T(this->GetParams()->get<double>("dt", 0.1)));
 
-    cost += T(this->GetParams()->get<double>("weight_jerk", 100.0)) * jerk * jerk;
+    cost += T(this->GetParams()->get<double>("weight_jerk", 1000.0)) * jerk * jerk;
     std::cout << opt_vec << std::endl;
     residuals[0] = cost / (
       T(this->GetParams()->get<double>("weight_distance", 0.1)) +
-      T(this->GetParams()->get<double>("weight_jerk", 100.0)));
+      T(this->GetParams()->get<double>("weight_jerk", 1000.0)));
     return true;
   }
 

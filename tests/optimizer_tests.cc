@@ -19,6 +19,8 @@ TEST(optimizer, basic_test) {
   using optimizer::DynamicModelFollowReference;
   using geometry::Matrix_t;
   using dynamics::SingleTrackModel;
+  using dynamics::integrationRK4;
+  using dynamics::GenerateDynamicTrajectory;
 
   // initialization
   Parameters params;
@@ -30,11 +32,11 @@ TEST(optimizer, basic_test) {
   initial_state << 0.0, 0.0 , 0.0, 5.0;  // x, y, theta, v
   Matrix_t<double> opt_vec(6, 2);
   opt_vec << 0.0, 0.0,
+             0.0, 0.0,
+             0.0, 0.0,
+             0.0, 0.0,
              0.1, 0.0,
-             0.2, 0.0,
-             0.2, 0.0,
-             0.2, 0.0,
-             0.2, 0.0;
+             0.1, 0.0;  // steering and acceleration
 
   // optimization
   Optimizer opt(&params);
@@ -50,6 +52,14 @@ TEST(optimizer, basic_test) {
   opt.Solve();
   opt.Report();
   std::cout << opt.GetOptimizationVector() << std::endl;
+
+  // trajectory
+  Matrix_t<double> trajectory =
+    GenerateDynamicTrajectory<double, SingleTrackModel<double, integrationRK4>>(
+      initial_state,
+      opt.GetOptimizationVector(),
+      params);
+  std::cout << trajectory << std::endl;
 }
 
 int main(int argc, char **argv) {
