@@ -26,12 +26,13 @@ class Optimizer {
   // TODO(@hart): every functor should have access to the params!
   template<typename T>
   void AddResidualBlock(
-    const ceres::DynamicAutoDiffCostFunction<T, 4>& functor,
-    const ceres::LossFunction* loss = new ceres::TrivialLoss()) {
+    ceres::DynamicAutoDiffCostFunction<T, 4>* functor,
+    ceres::LossFunction* loss = new ceres::TrivialLoss(),
+    int num_residuals = 1) {
     for (vector<double>& vec : optimization_vectors_) {
-      functor.AddParameterBlock(vec.size());
+      functor->AddParameterBlock(vec.size());
     }
-    // cost_function->SetNumResiduals(1);
+    functor->SetNumResiduals(num_residuals);
     problem_.AddResidualBlock(functor, loss, parameter_block_);
   }
 
@@ -48,7 +49,7 @@ class Optimizer {
   Parameters* params_;
   ceres::Problem problem_;
 
-  // handles automatically
+  // handle automatically
   vector<double*> parameter_block_;
   vector<vector<double>> optimization_vectors_;
 };

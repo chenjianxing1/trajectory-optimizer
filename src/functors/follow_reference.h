@@ -10,7 +10,7 @@
 
 namespace optimizer {
 
-using geometry::Matrix_t<T>;
+using geometry::Matrix_t;
 using parameters::Parameters;
 
 class FollowReference {
@@ -21,9 +21,12 @@ class FollowReference {
   template<typename T>
   bool operator()(T const* const* parameters, T* residuals) {
     T cost = T(0.0);
-    // Matrix_t<T> traj = kinematics(parameters,, _trajectory);
 
-    residuals[0] = cost / weights.sum();
+    // returns Eigen matrix
+    // either (x, y) or (x, y, theta, v)
+    // Matrix_t<T> traj = kinematics(parameters, _trajectory);
+
+    residuals[0] = cost;
     return true;
   }
 
@@ -32,7 +35,7 @@ class FollowReference {
   }
 
  private:
-  Parameters params_;
+  Parameters* params_;
   Matrix_t<double> reference_line_;
 };
 
