@@ -7,33 +7,39 @@
 #pragma once
 #include <vector>
 #include <ceres/ceres.h>
-#include <algorithm>
 #include "src/commons/parameters.h"
 #include "src/geometry/geometry.h"
+#include "src/functors/base_functor.h"
 
 namespace optimizer {
+
 using parameters::Parameters;
 using geometry::Matrix_t;
+using optimizer::BaseFunctor;
 using std::vector;
+using ceres::DynamicAutoDiffCostFunction;
+using ceres::LossFunction;
+using ceres::TrivialLoss;
 
 class Optimizer {
  public:
   explicit Optimizer(Parameters* params) :
-    params_(params),
     optimization_vectors_(),
-    parameter_block_() {}
+    parameter_block_(),
+    params_(params) {}
 
-  // TODO(@hart): every functor should have access to the params!
-  template<typename T>
+  template<typename T, int N = 4>
   void AddResidualBlock(
-    ceres::DynamicAutoDiffCostFunction<T, 4>* functor,
-    ceres::LossFunction* loss = new ceres::TrivialLoss(),
+    BaseFunctor* functor,
+    LossFunction* loss = new TrivialLoss(),
     int num_residuals = 1) {
+    DynamicAutoDiffCostFunction<T, N>* ceres_functor =
+      new DynamicAutoDiffCostFunction<T, N>(dynamic_cast<T*>(functor));
     for (vector<double>& vec : optimization_vectors_) {
-      functor->AddParameterBlock(vec.size());
+      ceres_functor->AddParameterBlock(vec.size());
     }
-    functor->SetNumResiduals(num_residuals);
-    problem_.AddResidualBlock(functor, loss, parameter_block_);
+    ceres_functor->SetNumResiduals(num_residuals);
+    problem_.AddResidualBlock(ceres_functor, loss, parameter_block_);
   }
 
   // each column of an Eigen Matrix will become an optimization vector
@@ -49,7 +55,7 @@ class Optimizer {
   Parameters* params_;
   ceres::Problem problem_;
 
-  // handle automatically
+  // handeled automatically
   vector<double*> parameter_block_;
   vector<vector<double>> optimization_vectors_;
 };

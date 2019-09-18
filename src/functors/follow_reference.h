@@ -6,17 +6,21 @@
 
 #pragma once
 #include "src/geometry/geometry.h"
+#include "src/functors/base_functor.h"
 #include "src/commons/parameters.h"
 
 namespace optimizer {
 
 using geometry::Matrix_t;
 using parameters::Parameters;
+using optimizer::BaseFunctor;
 
-class FollowReference {
+class FollowReference : public BaseFunctor {
  public:
+  FollowReference() : BaseFunctor(nullptr) {}
   explicit FollowReference(Parameters* params) :
-    params_(params) {}
+    BaseFunctor(params) {}
+  virtual ~FollowReference() {}
 
   template<typename T>
   bool operator()(T const* const* parameters, T* residuals) {
@@ -35,7 +39,6 @@ class FollowReference {
   }
 
  private:
-  Parameters* params_;
   Matrix_t<double> reference_line_;
 };
 
