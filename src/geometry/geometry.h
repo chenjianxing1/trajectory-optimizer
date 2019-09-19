@@ -18,18 +18,18 @@ namespace bg = boost::geometry;
 using boost::begin;
 using boost::end;
 
-template <class A, class B>
-double Distance(const A& a, const B& b) {
+template <typename T, class A, class B>
+T Distance(const A& a, const B& b) {
   return bg::distance(a.obj_, b.obj_);
 }
 
 template <class A, class B>
-double Collides(const A& a, const B& b) {
+bool Collides(const A& a, const B& b) {
   return bg::intersects(a.obj_, b.obj_);
 }
 
 template <class A, class B>
-double Disjoint(const A& a, const B& b) {
+bool Disjoint(const A& a, const B& b) {
   return bg::disjoint(a.obj_, b.obj_);
 }
 

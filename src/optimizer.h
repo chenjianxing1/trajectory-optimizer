@@ -52,8 +52,6 @@ class Optimizer {
       new DynamicAutoDiffCostFunction<T, N>(dynamic_cast<T*>(functor));
     for (vector<double>& vec : optimization_vectors_) {
       ceres_functor->AddParameterBlock(optimization_vector_len_);
-      // std::cout << "Parameterblock size: " <<  parameter_block_.size() << std::endl;
-      // std::cout << "Opt size: " <<  vec.size() << std::endl;
     }
     functor->SetOptVecLen(optimization_vector_len_);
     functor->SetParamCount(parameter_block_.size());
@@ -108,7 +106,6 @@ class Optimizer {
   ceres::Problem problem_;
   ceres::Solver::Options options_;
   ceres::Solver::Summary summary_;
-
 
   // handeled automatically
   vector<double*> parameter_block_;

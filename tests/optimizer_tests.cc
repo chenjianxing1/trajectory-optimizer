@@ -30,13 +30,15 @@ TEST(optimizer, basic_test) {
 
   Matrix_t<double> initial_state(1, 4);
   initial_state << 0.0, 0.0 , 0.0, 5.0;  // x, y, theta, v
+
   Matrix_t<double> opt_vec(6, 2);
-  opt_vec << 0.0, 0.0,
-             0.0, 0.0,
-             0.0, 0.0,
-             0.0, 0.0,
-             0.1, 0.0,
-             0.1, 0.0;  // steering and acceleration
+  opt_vec.setZero();
+  
+  Matrix_t<double> ref_line(3, 2);
+  ref_line << 0., 0.,
+              2., 1.,
+              10., 0.;
+
 
   // optimization
   Optimizer opt(&params);
@@ -46,9 +48,11 @@ TEST(optimizer, basic_test) {
   DynamicModelFollowReference* reference_functor =
     new DynamicModelFollowReference(initial_state,
                                     &params);
+
   opt.AddResidualBlock<DynamicModelFollowReference>(reference_functor);
 
   opt.FixOptimizationVector(0, 3);
+
 
   // solving
   opt.Solve();

@@ -16,14 +16,12 @@
 namespace optimizer {
 
 using geometry::Matrix_t;
+using geometry::Distance;
+using geometry::Line;
+using geometry::Point;
 using commons::Parameters;
 using commons::CalculateJerk;
-using commons::CalculateDiff;
 using optimizer::BaseFunctor;
-using dynamics::InputToTrajectory;
-using dynamics::SingleTrackModel;
-using dynamics::integrationRK4;
-using dynamics::integrationEuler;
 
 
 class FollowReference : public BaseFunctor {
@@ -46,12 +44,10 @@ class FollowReference : public BaseFunctor {
     Matrix_t<T> trajectory = this->ParamsToEigen<T>(parameters);
     Matrix_t<T> initial_state_t = initial_state_.cast<T>();
 
-    //! debug
-    T dist = T(0.0);
-    for ( int i = 1; i < trajectory.rows(); i++ ) {
-      dist += ceres::sqrt((trajectory(i, 1) - T(2.0))*(trajectory(i, 1) - T(2.0)));
-    }
-    cost += T(this->GetParams()->get<double>("weight_distance", 0.1)) * dist * dist;
+    //! use boost ref line
+    Line<T, 2> boost_line(reference_line_.cast<T>());
+    Point<T, 2> pt(T(0.), T(1.0));
+    std::cout << Distance(boost_line, pt);
 
     //! calculate jerk
     T jerk = CalculateJerk<T>(
@@ -60,7 +56,6 @@ class FollowReference : public BaseFunctor {
 
     cost += T(this->GetParams()->get<double>("weight_jerk", 0.1)) * jerk * jerk;
     residuals[0] = cost;
-    std::cout << trajectory << std::endl;
     return true;
   }
 
@@ -71,7 +66,6 @@ class FollowReference : public BaseFunctor {
  private:
   Matrix_t<double> reference_line_;
   Matrix_t<double> initial_state_;
-  
 };
 
 }  // namespace optimizer

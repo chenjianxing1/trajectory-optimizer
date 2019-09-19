@@ -23,4 +23,5 @@ T CalculateJerk(const Matrix_t<T>& traj, T dt) {
 }
 
 
+
 }  // namespace parameters
