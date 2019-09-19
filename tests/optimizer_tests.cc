@@ -45,6 +45,15 @@ TEST(optimizer, basic_test) {
              0.1, 0.0,  // steering and acceleration
              0.1, 0.0;  // steering and acceleration
 
+  Matrix_t<double> opt_vec(6, 2);
+  opt_vec.setZero();
+  
+  Matrix_t<double> ref_line(3, 2);
+  ref_line << 0., 0.,
+              2., 1.,
+              10., 0.;
+
+
   // optimization
   Optimizer opt(&params);
   opt.SetOptimizationVector(opt_vec);
@@ -53,9 +62,11 @@ TEST(optimizer, basic_test) {
   DynamicModelFollowReference* reference_functor =
     new DynamicModelFollowReference(initial_state,
                                     &params);
+
   opt.AddResidualBlock<DynamicModelFollowReference>(reference_functor);
 
   opt.FixOptimizationVector(0, 2);
+
 
   // solving
   opt.Solve();

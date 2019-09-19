@@ -16,15 +16,14 @@
 namespace optimizer {
 
 using geometry::Matrix_t;
+using geometry::Distance;
+using geometry::Line;
+using geometry::Point;
 using commons::Parameters;
 using commons::CalculateJerk;
 using commons::Distance;
 using commons::CalculateDiff;
 using optimizer::BaseFunctor;
-using dynamics::InputToTrajectory;
-using dynamics::SingleTrackModel;
-using dynamics::integrationRK4;
-using dynamics::integrationEuler;
 
 
 class FollowReference : public BaseFunctor {
@@ -57,7 +56,6 @@ class FollowReference : public BaseFunctor {
 
     cost += T(params_->get<double>("weight_jerk", 0.1)) * jerk * jerk;
     residuals[0] = cost;
-    std::cout << trajectory << std::endl;
     return true;
   }
 
@@ -68,7 +66,6 @@ class FollowReference : public BaseFunctor {
  private:
   Matrix_t<double> reference_line_;
   Matrix_t<double> initial_state_;
-  
 };
 
 }  // namespace optimizer

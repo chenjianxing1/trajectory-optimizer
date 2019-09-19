@@ -26,7 +26,7 @@ class Line : public BaseGeometry<Linestring_t<T, N>> {
   explicit Line(const Matrix_t<T>& m) {
     for (int i = 0; i < m.rows(); i++)
       bg::append(this->obj_,
-                 Point<T, N>(this->obj_.row(i)).obj_);
+                 Point<T, N>(m.row(i)).obj_);
   }
   Matrix_t<T> toMatrix() const {
     Matrix_t<T> ret(this->obj_.size(), N);
@@ -36,5 +36,17 @@ class Line : public BaseGeometry<Linestring_t<T, N>> {
     return ret;
   }
 };
+
+template <typename T>
+using Line_t = Eigen::ParametrizedLine<T, 2>;
+
+template <typename T>
+Line_t<T> GenerateLineSegment(const Matrix_t<T>& start_pt,
+                              const Matrix_t<T>& end_pt) {
+  Line_t<T> line_segment;
+  line_segment = Line_t<T>::Through(start_pt, end_pt);
+  return line_segment;
+}
+
 
 }  // namespace geometry

@@ -16,7 +16,10 @@
 namespace optimizer {
 
 using geometry::Matrix_t;
+using geometry::Distance;
+using geometry::Collides;
 using geometry::Line;
+using geometry::Polygon;
 using commons::Parameters;
 using commons::DistanceTrajetory;
 using optimizer::BaseFunctor;
@@ -46,9 +49,32 @@ class DynamicModelFollowReference : public BaseFunctor {
       GenerateDynamicTrajectory<T, SingleTrackModel<T, integrationRK4>>(
         initial_state_t, opt_vec, *params_);
 
-    // Distance
-    Matrix_t<T> ref_line = reference_line_.cast<T>();
-    Line<T, 2> boost_line(ref_line);
+    //! use boost ref line
+    // Point2d_t<T>
+    // Line_t<T> bark_line;
+    /*
+    Line<T, 2> boost_line;  // TODO(@hart); make eigen passable
+    Point<T, 2> pt(T(0.), T(1.0));
+    Point<T, 2> pt1(T(10.), T(5.0));
+    Point<T, 2> pt2(T(15.), T(3.0));
+    boost_line.Append(pt);
+    boost_line.Append(pt1);*/
+    Polygon<T, 2> boost_poly;
+    Point<T, 2> pt(T(0.), T(0.0));
+    Point<T, 2> pt1(T(5.), T(0.0));
+    Point<T, 2> pt2(T(5.), T(5.0));
+    Point<T, 2> pt3(T(0.), T(5.));
+    Point<T, 2> pt4(T(0.), T(.0));
+    Point<T, 2> pt5(T(110.), T(110.));
+
+    boost_poly.Append(pt);
+    boost_poly.Append(pt1);
+    boost_poly.Append(pt2);
+    boost_poly.Append(pt3);
+    boost_poly.Append(pt4);
+
+    //std::cout << Collides<Polygon<T, 2>, Point<T, 2>>(boost_poly, pt5);
+    std::cout << Distance<T, Polygon<T, 2>, Point<T, 2>>(boost_poly, pt5);
 
     T dist = DistanceTrajetory<T>(ref_line, trajectory);
     cost += T(params_->get<double>("weight_distance", 0.1)) * dist * dist;
@@ -59,7 +85,6 @@ class DynamicModelFollowReference : public BaseFunctor {
       T(params_->get<double>("dt", 0.2)));
     cost += T(params_->get<double>("weight_jerk", 2500.0)) * jerk * jerk;
 
-    // Normalize
     residuals[0] = cost / (
       T(params_->get<double>("weight_distance", 0.1)) +
       T(params_->get<double>("weight_jerk", 2500.0)));
