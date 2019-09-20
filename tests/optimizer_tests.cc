@@ -33,7 +33,7 @@ TEST(optimizer, basic_test) {
 
   Matrix_t<double> opt_vec(6, 2);
   opt_vec.setZero();
-  
+
   Matrix_t<double> ref_line(3, 2);
   ref_line << 0., 0.,
               2., 1.,
@@ -43,12 +43,12 @@ TEST(optimizer, basic_test) {
   // optimization
   Optimizer opt(&params);
   opt.SetOptimizationVector(opt_vec);
-  
+
   // add functor
   DynamicModelFollowReference* reference_functor =
     new DynamicModelFollowReference(initial_state,
                                     &params);
-
+  reference_functor->SetReferenceLine(ref_line);
   opt.AddResidualBlock<DynamicModelFollowReference>(reference_functor);
 
   opt.FixOptimizationVector(0, 3);

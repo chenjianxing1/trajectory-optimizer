@@ -33,6 +33,11 @@ bool Disjoint(const A& a, const B& b) {
   return bg::disjoint(a.obj_, b.obj_);
 }
 
+template <class A, class B>
+bool Within(const A& a, const B& b) {
+  return bg::within(a.obj_, b.obj_);
+}
+
 //! translate geometry
 template <class A, class B>
 A Translate(const A& geom,
