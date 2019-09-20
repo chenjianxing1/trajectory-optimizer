@@ -26,21 +26,21 @@ using dynamics::IntegrationRK4;
 
 
 template<class M, class I>
-class DynamicModelFollowReference : public FollowReference {
+class DynamicFunctor : public FollowReference {
  public:
-  explicit DynamicModelFollowReference(Matrix_t<double> initial_state) :
+  explicit DynamicFunctor(Matrix_t<double> initial_state) :
     FollowReference(initial_state, nullptr) {}
-  explicit DynamicModelFollowReference(Matrix_t<double> initial_state,
+  explicit DynamicFunctor(Matrix_t<double> initial_state,
                                        Parameters* params) :
     FollowReference(initial_state, params) {}
-  virtual ~DynamicModelFollowReference() {}
+  virtual ~DynamicFunctor() {}
 
   template<typename T>
   bool operator()(T const* const* parameters, T* residuals, T cost = T(0.0)) {
     //! convert parameters to Eigen Matrix
     Matrix_t<T> opt_vec = this->ParamsToEigen<T>(parameters);
     Matrix_t<T> initial_state_t = initial_state_.cast<T>();
-
+    
     Matrix_t<T> trajectory =
       GenerateDynamicTrajectory<T, M, I>(
         initial_state_t,
@@ -66,4 +66,5 @@ class DynamicModelFollowReference : public FollowReference {
   }
 };
 
+typedef DynamicFunctor<SingleTrackModel, IntegrationRK4> SingleTrackFunctor;
 }  // namespace optimizer

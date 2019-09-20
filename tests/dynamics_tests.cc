@@ -34,7 +34,31 @@ TEST(dynamics, single_track_model) {
   Matrix_t<double> state_after_again(1, 4);
   state_after_again << 1.0, 0.0, 0.0, 5.0;  // x, y, theta, v
   ASSERT_EQ(state, state_after_again);
+}
 
+TEST(dynamics, copy_model) {
+  using dynamics::CopyModel;
+  using geometry::Matrix_t;
+  using dynamics::IntegrationRK4;
+  using commons::Parameters;
+
+  Parameters params;
+  params.set<double>("wheel_base", 2.7);
+  params.set<double>("dt", 0.1);
+
+  //! add objects to world
+  Matrix_t<double> state(1, 2);
+  state << 0.0, 0.0;  // x, y, theta, v
+
+  Matrix_t<double> inp(1, 2);
+  inp << 1.0, 1.0;  // acceleration and steering angle
+
+  CopyModel model(&params);
+  state = model.Step<double, IntegrationRK4>(state, inp, &params);
+
+  Matrix_t<double> state_after(1, 2);
+  state_after << 1.0, 1.0;  // x, y, theta, v
+  ASSERT_EQ(state, state_after);
 }
 
 TEST(dynamics, traj_gen) {
@@ -49,8 +73,8 @@ TEST(dynamics, traj_gen) {
   params.set<double>("dt", 0.1);
 
   //! add objects to world
-  Matrix_t<double> state(1, 4);
-  state << 0.0, 0.0, 0.0, 5.0;  // x, y, theta, v
+  Matrix_t<double> initial_state(1, 4);
+  initial_state << 0.0, 0.0, 0.0, 5.0;  // x, y, theta, v
   Matrix_t<double> inp(3, 2);
   inp << 0.0, 0.0,
          0.0, 0.0,
@@ -59,11 +83,10 @@ TEST(dynamics, traj_gen) {
   SingleTrackModel model(&params);
   Matrix_t<double> trajectory =
     GenerateDynamicTrajectory<double, SingleTrackModel, IntegrationRK4>(
-      state,
+      initial_state,
       inp,
       &params);
   std::cout << trajectory << std::endl;
-
 }
 
 int main(int argc, char **argv) {

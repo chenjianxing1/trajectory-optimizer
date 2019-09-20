@@ -8,15 +8,14 @@
 #include "src/optimizer.h"
 #include "src/functors/base_functor.h"
 #include "src/functors/follow_reference.h"
-#include "src/functors/dynamic_follow_reference.h"
+#include "src/functors/dynamic_functor.h"
 
 
 TEST(optimizer, basic_test) {
   using commons::Parameters;
   using optimizer::Optimizer;
   using optimizer::BaseFunctor;
-  using optimizer::FollowReference;
-  using optimizer::DynamicModelFollowReference;
+  using optimizer::SingleTrackFunctor;
   using geometry::Matrix_t;
   using dynamics::SingleTrackModel;
   using dynamics::IntegrationRK4;
@@ -45,14 +44,13 @@ TEST(optimizer, basic_test) {
   opt.SetOptimizationVector(opt_vec);
 
   // add reference functor
-  DynamicModelFollowReference<SingleTrackModel,
-                              IntegrationRK4>* reference_functor =
-    new DynamicModelFollowReference<SingleTrackModel,
-                                    IntegrationRK4>(initial_state,
-                                                    &params);
+  SingleTrackFunctor* reference_functor = new SingleTrackFunctor(initial_state,
+                                                                 &params);
+  
+  // TODO(@hart): should be removed
   reference_functor->SetReferenceLine(ref_line);
-  opt.AddResidualBlock<DynamicModelFollowReference<SingleTrackModel,
-                                                   IntegrationRK4>>(
+
+  opt.AddResidualBlock<SingleTrackFunctor>(
     reference_functor);
 
   // fix first two opt vec params
