@@ -16,7 +16,6 @@ namespace optimizer {
 
 using geometry::Matrix_t;
 using geometry::Distance;
-using geometry::Within;
 using geometry::Line;
 using geometry::Polygon;
 using commons::Parameters;
@@ -52,6 +51,7 @@ class DynamicModelFollowReference : public FollowReference {
     T dist = CalculateDistance<T>(ref_line, trajectory);
     cost += T(params_->get<double>("weight_distance", 0.1)) * dist * dist;
 
+    // add boundaries, input constrains and dynamic objects here to save computation power
 
     //! calculate jerk
     T jerk = CalculateJerk<T>(
