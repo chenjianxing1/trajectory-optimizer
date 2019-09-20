@@ -6,7 +6,6 @@
 #include <Eigen/Dense>
 #include <functional>
 #include "src/geometry/geometry.h"
-#include "src/dynamics/state.h"
 #include "src/dynamics/dynamics.h"
 #include "src/dynamics/integration/rk4.h"
 #include "src/dynamics/models/base_model.h"
@@ -47,16 +46,17 @@ class SingleTrackModel : public BaseModel {
   }
 
   template<typename T, class I>
-  Matrix_t<T> Step(const Matrix_t<T>& state,
-                   const Matrix_t<T>& u) {
+  static Matrix_t<T> Step(const Matrix_t<T>& state,
+                          const Matrix_t<T>& u,
+                          Parameters* params) {
     std::function<Matrix_t<T> (const Matrix_t<T>&)> fDot_ =
       std::bind(fDot<T>,
                 std::placeholders::_1,
                 u,
-                params_);
+                params);
     return I::template Integrate<T>(state,
                                     fDot_,
-                                    T(params_->get<double>("dt", 0.1)));
+                                    T(params->get<double>("dt", 0.1)));
   }
 };
 

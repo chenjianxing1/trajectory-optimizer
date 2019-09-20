@@ -8,6 +8,7 @@
 #include "src/dynamics/integration/base_integration.h"
 
 namespace dynamics {
+using geometry::Matrix_t;
 
 class IntegrationRK4 : public BaseIntegration {
  public:

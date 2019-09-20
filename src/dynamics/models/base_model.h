@@ -7,7 +7,6 @@
 #include <Eigen/Dense>
 #include <functional>
 #include "src/geometry/geometry.h"
-#include "src/dynamics/state.h"
 #include "src/dynamics/dynamics.h"
 #include "src/dynamics/integration/rk4.h"
 

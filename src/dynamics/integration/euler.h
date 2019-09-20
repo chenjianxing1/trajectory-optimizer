@@ -9,6 +9,7 @@
 #include "src/dynamics/integration/base_integration.h"
 
 namespace dynamics {
+using geometry::Matrix_t;
 
 class IntegrationEuler : public BaseIntegration {
  public:
