@@ -50,7 +50,6 @@ TEST(optimizer, basic_test) {
     new DynamicModelFollowReference<SingleTrackModel,
                                     IntegrationRK4>(initial_state,
                                                     &params);
-
   reference_functor->SetReferenceLine(ref_line);
   opt.AddResidualBlock<DynamicModelFollowReference<SingleTrackModel,
                                                    IntegrationRK4>>(

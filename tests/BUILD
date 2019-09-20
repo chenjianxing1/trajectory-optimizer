@@ -33,14 +33,3 @@ cc_test(
   ],
 	visibility = ["//visibility:public"]
 )
-
-cc_test(
-  name = "geometry_tests",
-  srcs = ["geometry_tests.cc"],
-  copts = ["-Iexternal/gtest/include"],
-  deps = [
-    "//src/geometry:geometry",
-    "@gtest//:main"
-  ],
-	visibility = ["//visibility:public"]
-)

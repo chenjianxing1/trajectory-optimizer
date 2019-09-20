@@ -40,7 +40,6 @@ TEST(dynamics, single_track_model) {
 TEST(dynamics, traj_gen) {
   using dynamics::SingleTrackModel;
   using dynamics::IntegrationRK4;
-  using dynamics::BaseModel;
   using dynamics::GenerateDynamicTrajectory;
   using geometry::Matrix_t;
   using commons::Parameters;
@@ -59,9 +58,11 @@ TEST(dynamics, traj_gen) {
 
   SingleTrackModel model(&params);
   Matrix_t<double> trajectory =
-    GenerateDynamicTrajectory<double, SingleTrackModel, IntegrationRK4>(state, inp, &params);
+    GenerateDynamicTrajectory<double, SingleTrackModel, IntegrationRK4>(
+      state,
+      inp,
+      &params);
   std::cout << trajectory << std::endl;
-
 
 }
 
