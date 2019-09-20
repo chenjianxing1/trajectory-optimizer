@@ -38,43 +38,30 @@ class FollowReference : public BaseFunctor {
   virtual ~FollowReference() {}
 
   template<typename T>
-  T CalculateDistance(const Line<T, 2>& line, const Matrix_t<T>& trajectory) {
-    T dist = T(0.);
-    for ( int i = 1; i < trajectory.rows(); i++ ) {
-      Point<T, 2> pt(T(trajectory(i, 0)), T(trajectory(i, 1)));
-      dist += Distance<T, Line<T, 2>, Point<T, 2>>(line, pt);
-    }
-    return dist;
-  }
-
-  template<typename T>
   bool operator()(T const* const* parameters, T* residuals, T cost = T(0.0)) {
-    //! convert parameters to Eigen Matrix
+    // convert parameters to Eigen Matrix
     Matrix_t<T> trajectory = this->ParamsToEigen<T>(parameters);
     Matrix_t<T> initial_state_t = initial_state_.cast<T>();
 
-    // calculate distance
-    Line<T, 2> ref_line(reference_line_.cast<T>());
-    T dist = CalculateDistance<T, 2>(ref_line, trajectory);
-    cost += T(params_->get<double>("weight_distance", 0.1)) * dist * dist;
+    // use boost ref line
+    Line<T, 2> left_line(left_boundary_.cast<T>());
+    Line<T, 2> right_line(right_boundary_.cast<T>());
 
-    // calculate jerk
-    T jerk = CalculateJerk<T>(
-      trajectory,
-      T(params_->get<double>("dt", 0.1)));
-    cost += T(params_->get<double>("weight_jerk", 0.1)) * jerk * jerk;
-
-    // TODO(@hart): normalize
+    // TODO(@hart): make sure to be within the boundaries
     residuals[0] = cost;
     return true;
   }
 
-  void SetReferenceLine(const Matrix_t<double>& line) {
-    reference_line_ = line;
+  void SetLeftBoundary(const Matrix_t<double>& line) {
+    left_boundary_ = line;
   }
 
-  // TODO(@hart): could be a trajectory
-  Matrix_t<double> reference_line_;
+  void SetRightBoundary(const Matrix_t<double>& line) {
+    right_boundary_ = line;
+  }
+
+  Matrix_t<double> left_boundary_;
+  Matrix_t<double> right_boundary_;
   Matrix_t<double> initial_state_;
 };
 

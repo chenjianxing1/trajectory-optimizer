@@ -48,31 +48,11 @@ class DynamicModelFollowReference : public FollowReference {
         initial_state_t, opt_vec, *params_);
 
     //! use boost ref line
-    // Point2d_t<T>
-    // Line_t<T> bark_line;
-    /*
-    Line<T, 2> boost_line;  // TODO(@hart); make eigen passable
-    Point<T, 2> pt(T(0.), T(1.0));
-    Point<T, 2> pt1(T(10.), T(5.0));
-    Point<T, 2> pt2(T(15.), T(3.0));
-    boost_line.Append(pt);
-    boost_line.Append(pt1);*/
-    Polygon<T, 2> boost_poly;
-    Point<T, 2> pt(T(0.), T(0.0));
-    Point<T, 2> pt1(T(5.), T(0.0));
-    Point<T, 2> pt2(T(5.), T(5.0));
-    Point<T, 2> pt3(T(0.), T(5.));
-    Point<T, 2> pt4(T(0.), T(.0));
-    Point<T, 2> pt5(T(110.), T(110.));
-    boost_poly.Append(pt);
-    boost_poly.Append(pt1);
-    boost_poly.Append(pt2);
-    boost_poly.Append(pt3);
-    boost_poly.Append(pt4);
+    Line<T, 2> ref_line(reference_line_.cast<T>());
+    T dist = CalculateDistance<T>(ref_line, trajectory);
+    cost += T(params_->get<double>("weight_distance", 0.1)) * dist * dist;
 
-    // std::cout << Collides<Polygon<T, 2>, Point<T, 2>>(boost_poly, pt5);
-    // std::cout << Distance<T, Polygon<T, 2>, Point<T, 2>>(boost_poly, pt5);
-    std::cout << Distance<T, 2>(boost_poly, pt5);
+
     //! calculate jerk
     T jerk = CalculateJerk<T>(
       trajectory,
