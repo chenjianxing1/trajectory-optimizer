@@ -38,8 +38,7 @@ class FollowReference : public BaseFunctor {
   virtual ~FollowReference() {}
 
   template<typename T>
-  bool operator()(T const* const* parameters, T* residuals) {
-    T cost = T(0.0);
+  bool operator()(T const* const* parameters, T* residuals, T cost = T(0.0)) {
     //! convert parameters to Eigen Matrix
     Matrix_t<T> trajectory = this->ParamsToEigen<T>(parameters);
     Matrix_t<T> initial_state_t = initial_state_.cast<T>();
@@ -52,9 +51,9 @@ class FollowReference : public BaseFunctor {
     //! calculate jerk
     T jerk = CalculateJerk<T>(
       trajectory,
-      T(this->GetParams()->get<double>("dt", 0.1)));
+      T(params_->get<double>("dt", 0.1)));
 
-    cost += T(this->GetParams()->get<double>("weight_jerk", 0.1)) * jerk * jerk;
+    cost += T(params_->get<double>("weight_jerk", 0.1)) * jerk * jerk;
     residuals[0] = cost;
     return true;
   }

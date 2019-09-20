@@ -40,7 +40,6 @@ class BaseFunctor {
   void SetParamCount(int len) { param_count_ = len; }
   Parameters* GetParams() { return params_; }
 
- private:
   Parameters* params_;
   int opt_vec_len_;
   int param_count_;

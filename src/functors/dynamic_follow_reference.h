@@ -29,7 +29,7 @@ using dynamics::integrationEuler;
 
 class DynamicModelFollowReference : public FollowReference {
  public:
-  DynamicModelFollowReference(Matrix_t<double> initial_state) :
+  explicit DynamicModelFollowReference(Matrix_t<double> initial_state) :
     FollowReference(initial_state, nullptr) {}
   explicit DynamicModelFollowReference(Matrix_t<double> initial_state,
                                        Parameters* params) :
@@ -37,8 +37,7 @@ class DynamicModelFollowReference : public FollowReference {
   virtual ~DynamicModelFollowReference() {}
 
   template<typename T>
-  bool operator()(T const* const* parameters, T* residuals) {
-    T cost = T(0.0);
+  bool operator()(T const* const* parameters, T* residuals, T cost = T(0.0)) {
     //! convert parameters to Eigen Matrix
     Matrix_t<T> opt_vec = this->ParamsToEigen<T>(parameters);
     Matrix_t<T> initial_state_t = initial_state_.cast<T>();
@@ -46,7 +45,7 @@ class DynamicModelFollowReference : public FollowReference {
     // either (x, y) or (x, y, theta, v)
     Matrix_t<T> trajectory =
       GenerateDynamicTrajectory<T, SingleTrackModel<T, integrationRK4>>(
-        initial_state_t, opt_vec, *this->GetParams());
+        initial_state_t, opt_vec, *params_);
 
     //! use boost ref line
     // Point2d_t<T>
@@ -77,11 +76,11 @@ class DynamicModelFollowReference : public FollowReference {
     //! calculate jerk
     T jerk = CalculateJerk<T>(
       trajectory,
-      T(this->GetParams()->get<double>("dt", 0.1)));
-    cost += T(this->GetParams()->get<double>("weight_jerk", 1000.0)) * jerk * jerk;
+      T(params_->get<double>("dt", 0.1)));
+    cost += T(params_->get<double>("weight_jerk", 1000.0)) * jerk * jerk;
     residuals[0] = cost / (
-      T(this->GetParams()->get<double>("weight_distance", 0.1)) +
-      T(this->GetParams()->get<double>("weight_jerk", 1000.0)));
+      T(params_->get<double>("weight_distance", 0.1)) +
+      T(params_->get<double>("weight_jerk", 1000.0)));
     return true;
   }
 
