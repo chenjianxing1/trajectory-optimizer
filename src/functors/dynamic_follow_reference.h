@@ -8,7 +8,7 @@
 #include <vector>
 #include <functional>
 #include "src/geometry/geometry.h"
-#include "src/functors/base_functor.h"
+#include "src/functors/follow_reference.h"
 #include "src/commons/parameters.h"
 #include "src/dynamics/dynamics.h"
 
@@ -20,20 +20,20 @@ using geometry::Collides;
 using geometry::Line;
 using geometry::Polygon;
 using commons::Parameters;
-using optimizer::BaseFunctor;
+using optimizer::FollowReference;
 using dynamics::GenerateDynamicTrajectory;
 using dynamics::SingleTrackModel;
 using dynamics::integrationRK4;
 using dynamics::integrationEuler;
 
 
-class DynamicModelFollowReference : public BaseFunctor {
+class DynamicModelFollowReference : public FollowReference {
  public:
-  DynamicModelFollowReference() : BaseFunctor(nullptr) {}
+  DynamicModelFollowReference(Matrix_t<double> initial_state) :
+    FollowReference(initial_state, nullptr) {}
   explicit DynamicModelFollowReference(Matrix_t<double> initial_state,
-                           Parameters* params) :
-    initial_state_(initial_state),
-    BaseFunctor(params) {}
+                                       Parameters* params) :
+    FollowReference(initial_state, params) {}
   virtual ~DynamicModelFollowReference() {}
 
   template<typename T>
@@ -73,15 +73,11 @@ class DynamicModelFollowReference : public BaseFunctor {
 
     // std::cout << Collides<Polygon<T, 2>, Point<T, 2>>(boost_poly, pt5);
     // std::cout << Distance<T, Polygon<T, 2>, Point<T, 2>>(boost_poly, pt5);
-  
     std::cout << Distance<T, 2>(boost_poly, pt5);
-
-
     //! calculate jerk
     T jerk = CalculateJerk<T>(
       trajectory,
       T(this->GetParams()->get<double>("dt", 0.1)));
-
     cost += T(this->GetParams()->get<double>("weight_jerk", 1000.0)) * jerk * jerk;
     residuals[0] = cost / (
       T(this->GetParams()->get<double>("weight_distance", 0.1)) +
@@ -89,14 +85,6 @@ class DynamicModelFollowReference : public BaseFunctor {
     return true;
   }
 
-  void SetReferenceLine(const Matrix_t<double>& line) {
-    reference_line_ = line;
-  }
-
- private:
-  Matrix_t<double> reference_line_;
-  Matrix_t<double> initial_state_;
-  
 };
 
 }  // namespace optimizer

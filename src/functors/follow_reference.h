@@ -63,7 +63,6 @@ class FollowReference : public BaseFunctor {
     reference_line_ = line;
   }
 
- private:
   Matrix_t<double> reference_line_;
   Matrix_t<double> initial_state_;
 };
