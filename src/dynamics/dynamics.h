@@ -13,7 +13,6 @@
 
 namespace dynamics {
   using commons::Parameters;
-  using dynamics::BaseModel;
   using geometry::Matrix_t;
 
   enum DynamicModels {

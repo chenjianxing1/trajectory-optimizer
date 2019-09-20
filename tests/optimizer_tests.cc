@@ -19,7 +19,7 @@ TEST(optimizer, basic_test) {
   using optimizer::DynamicModelFollowReference;
   using geometry::Matrix_t;
   using dynamics::SingleTrackModel;
-  using dynamics::integrationRK4;
+  using dynamics::IntegrationRK4;
   using dynamics::GenerateDynamicTrajectory;
 
   // initialization
@@ -45,11 +45,16 @@ TEST(optimizer, basic_test) {
   opt.SetOptimizationVector(opt_vec);
 
   // add reference functor
-  DynamicModelFollowReference* reference_functor =
-    new DynamicModelFollowReference(initial_state,
-                                    &params);
+  DynamicModelFollowReference<SingleTrackModel,
+                              IntegrationRK4>* reference_functor =
+    new DynamicModelFollowReference<SingleTrackModel,
+                                    IntegrationRK4>(initial_state,
+                                                    &params);
+
   reference_functor->SetReferenceLine(ref_line);
-  opt.AddResidualBlock<DynamicModelFollowReference>(reference_functor);
+  opt.AddResidualBlock<DynamicModelFollowReference<SingleTrackModel,
+                                                   IntegrationRK4>>(
+    reference_functor);
 
   // fix first two opt vec params
   // opt.FixOptimizationVector(0, 2);
@@ -61,10 +66,10 @@ TEST(optimizer, basic_test) {
 
   // trajectory
   Matrix_t<double> trajectory =
-    GenerateDynamicTrajectory<double, SingleTrackModel<double, integrationRK4>>(
+    GenerateDynamicTrajectory<double,  SingleTrackModel, IntegrationRK4>(
       initial_state,
       opt.GetOptimizationVector(),
-      params);
+      &params);
   std::cout << trajectory << std::endl;
 }
 

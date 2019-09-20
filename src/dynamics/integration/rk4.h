@@ -5,14 +5,13 @@
 #pragma once
 #include <Eigen/Dense>
 #include "src/geometry/geometry.h"
-#include "src/dynamics/integration/base_integration.h"
 
 namespace dynamics {
 using geometry::Matrix_t;
 
-class IntegrationRK4 : public BaseIntegration {
+class IntegrationRK4 {
  public:
-  IntegrationRK4() : BaseIntegration() {}
+  IntegrationRK4() {}
   virtual ~IntegrationRK4() {}
 
   template<typename T>

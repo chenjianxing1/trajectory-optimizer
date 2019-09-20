@@ -22,10 +22,10 @@ using commons::Parameters;
 using optimizer::FollowReference;
 using dynamics::GenerateDynamicTrajectory;
 using dynamics::SingleTrackModel;
-using dynamics::integrationRK4;
-using dynamics::integrationEuler;
+using dynamics::IntegrationRK4;
 
 
+template<class M, class I>
 class DynamicModelFollowReference : public FollowReference {
  public:
   explicit DynamicModelFollowReference(Matrix_t<double> initial_state) :
@@ -41,12 +41,11 @@ class DynamicModelFollowReference : public FollowReference {
     Matrix_t<T> opt_vec = this->ParamsToEigen<T>(parameters);
     Matrix_t<T> initial_state_t = initial_state_.cast<T>();
 
-    // either (x, y) or (x, y, theta, v)
     Matrix_t<T> trajectory =
-      GenerateDynamicTrajectory<T, SingleTrackModel<T, integrationRK4>>(
-        initial_state_t, opt_vec, *params_);
-
-    // now go through all functors, such as ref, jerk, blabla
+      GenerateDynamicTrajectory<T, M, I>(
+        initial_state_t,
+        opt_vec,
+        params_);
 
     //! use boost ref line
     Line<T, 2> ref_line(reference_line_.cast<T>());
@@ -65,7 +64,6 @@ class DynamicModelFollowReference : public FollowReference {
       T(params_->get<double>("weight_jerk", 1000.0)));
     return true;
   }
-
 };
 
 }  // namespace optimizer

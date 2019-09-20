@@ -8,7 +8,6 @@
 #include "src/geometry/geometry.h"
 #include "src/dynamics/dynamics.h"
 #include "src/dynamics/integration/rk4.h"
-#include "src/dynamics/models/base_model.h"
 
 namespace dynamics {
 
@@ -27,10 +26,9 @@ enum InputSingleTrackModel {
   ACCELERATION = 1,
 };
 
-class SingleTrackModel : public BaseModel {
+class SingleTrackModel{
  public:
-  explicit SingleTrackModel(Parameters* params) :
-    BaseModel(params) {}
+  explicit SingleTrackModel(Parameters* params) {}
 
   template<typename T>
   static Matrix_t<T> fDot(const Matrix_t<T>& state,
