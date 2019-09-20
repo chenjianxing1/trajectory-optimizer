@@ -46,6 +46,8 @@ class DynamicModelFollowReference : public FollowReference {
       GenerateDynamicTrajectory<T, SingleTrackModel<T, integrationRK4>>(
         initial_state_t, opt_vec, *params_);
 
+    // now go through all functors, such as ref, jerk, blabla
+
     //! use boost ref line
     Line<T, 2> ref_line(reference_line_.cast<T>());
     T dist = CalculateDistance<T>(ref_line, trajectory);

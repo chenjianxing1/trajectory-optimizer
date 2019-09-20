@@ -6,13 +6,20 @@
 #include <Eigen/Dense>
 #include <functional>
 #include "src/geometry/geometry.h"
+#include "src/dynamics/integration/base_integration.h"
 
 namespace dynamics {
+
+class IntegrationEuler : public BaseIntegration {
+ public:
+  IntegrationEuler() : BaseIntegration() {}
   template<typename T>
-  Matrix_t<T>
-  integrationEuler(const Matrix_t<T>& state,
-                   std::function<Matrix_t<T>(const Matrix_t<T>&)> fDot,
-                   T dt) {
+  static Matrix_t<T> Integrate(
+    const Matrix_t<T>& state,
+    std::function<Matrix_t<T>(const Matrix_t<T>&)> fDot,
+    T dt) {
     return state + dt * fDot(state);
   }
+};
+
 }  // namespace dynamics

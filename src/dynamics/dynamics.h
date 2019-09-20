@@ -39,13 +39,4 @@ namespace dynamics {
     return trajectory;
   }
 
-  template<typename T,
-           Matrix_t<T> (*Fn)(const Matrix_t<T>&,
-                             const Matrix_t<T>&,
-                             const Parameters&)>
-  Matrix_t<T> InputToTrajectory(const Matrix_t<T>& initial_state,
-                                const Matrix_t<T>& input_vector,
-                                const Parameters& params) {
-    return input_vector;
-  }
 }  // namespace dynamics

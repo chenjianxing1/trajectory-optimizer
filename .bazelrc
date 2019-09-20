@@ -4,4 +4,4 @@ common --color=yes
 
 // set compiler stuff
 // --action_env CC=/usr/bin/gcc-7
-build --action_env CC=/usr/bin/gcc-7 --cxxopt='-std=c++17'
+build --cxxopt='-std=c++17'
