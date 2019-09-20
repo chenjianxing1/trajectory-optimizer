@@ -65,15 +65,17 @@ class DynamicModelFollowReference : public BaseFunctor {
     Point<T, 2> pt3(T(0.), T(5.));
     Point<T, 2> pt4(T(0.), T(.0));
     Point<T, 2> pt5(T(110.), T(110.));
-
     boost_poly.Append(pt);
     boost_poly.Append(pt1);
     boost_poly.Append(pt2);
     boost_poly.Append(pt3);
     boost_poly.Append(pt4);
 
-    //std::cout << Collides<Polygon<T, 2>, Point<T, 2>>(boost_poly, pt5);
-    std::cout << Distance<T, Polygon<T, 2>, Point<T, 2>>(boost_poly, pt5);
+    // std::cout << Collides<Polygon<T, 2>, Point<T, 2>>(boost_poly, pt5);
+    // std::cout << Distance<T, Polygon<T, 2>, Point<T, 2>>(boost_poly, pt5);
+  
+    std::cout << Distance<T, 2>(boost_poly, pt5);
+
 
     //! calculate jerk
     T jerk = CalculateJerk<T>(

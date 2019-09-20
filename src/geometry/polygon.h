@@ -11,6 +11,7 @@
 #include <boost/geometry/index/rtree.hpp>
 #include "src/geometry/base.h"
 #include "src/geometry/commons.h"
+#include "src/geometry/line.h"
 
 namespace geometry {
 
@@ -41,6 +42,15 @@ class Polygon : public BaseGeometry<Polygon_t<T, N>> {
       i++;
     }
     return ret;
+  }
+
+  Line<T, N> ToLine() const {
+    Line<T, N> ret_line;
+    for (auto it = boost::begin(exterior_ring(this->obj_));
+         it != boost::end(exterior_ring(this->obj_)); ++it) {
+      bg::append(ret_line.obj_, *it);
+    }
+    return ret_line;
   }
 };
 
