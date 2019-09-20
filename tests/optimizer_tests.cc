@@ -44,17 +44,17 @@ TEST(optimizer, basic_test) {
   Optimizer opt(&params);
   opt.SetOptimizationVector(opt_vec);
 
-  // add functor
+  // add reference functor
   DynamicModelFollowReference* reference_functor =
     new DynamicModelFollowReference(initial_state,
                                     &params);
   reference_functor->SetReferenceLine(ref_line);
   opt.AddResidualBlock<DynamicModelFollowReference>(reference_functor);
 
-  opt.FixOptimizationVector(0, 3);
+  // fix first two opt vec params
+  // opt.FixOptimizationVector(0, 2);
 
-
-  // solving
+  // solve
   opt.Solve();
   opt.Report();
   std::cout << opt.GetOptimizationVector() << std::endl;

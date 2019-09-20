@@ -8,7 +8,7 @@
 #include <vector>
 #include <functional>
 #include "src/geometry/geometry.h"
-#include "src/functors/base_functor.h"
+#include "src/functors/follow_reference.h"
 #include "src/commons/parameters.h"
 #include "src/dynamics/dynamics.h"
 
@@ -20,25 +20,24 @@ using geometry::Within;
 using geometry::Line;
 using geometry::Polygon;
 using commons::Parameters;
-using optimizer::BaseFunctor;
+using optimizer::FollowReference;
 using dynamics::GenerateDynamicTrajectory;
 using dynamics::SingleTrackModel;
 using dynamics::integrationRK4;
 using dynamics::integrationEuler;
 
 
-class DynamicModelFollowReference : public BaseFunctor {
+class DynamicModelFollowReference : public FollowReference {
  public:
-  DynamicModelFollowReference() : BaseFunctor(nullptr) {}
+  explicit DynamicModelFollowReference(Matrix_t<double> initial_state) :
+    FollowReference(initial_state, nullptr) {}
   explicit DynamicModelFollowReference(Matrix_t<double> initial_state,
-                           Parameters* params) :
-    initial_state_(initial_state),
-    BaseFunctor(params) {}
+                                       Parameters* params) :
+    FollowReference(initial_state, params) {}
   virtual ~DynamicModelFollowReference() {}
 
   template<typename T>
-  bool operator()(T const* const* parameters, T* residuals) {
-    T cost = T(0.0);
+  bool operator()(T const* const* parameters, T* residuals, T cost = T(0.0)) {
     //! convert parameters to Eigen Matrix
     Matrix_t<T> opt_vec = this->ParamsToEigen<T>(parameters);
     Matrix_t<T> initial_state_t = initial_state_.cast<T>();
@@ -46,37 +45,25 @@ class DynamicModelFollowReference : public BaseFunctor {
     // either (x, y) or (x, y, theta, v)
     Matrix_t<T> trajectory =
       GenerateDynamicTrajectory<T, SingleTrackModel<T, integrationRK4>>(
-        initial_state_t, opt_vec, *this->GetParams());
+        initial_state_t, opt_vec, *params_);
 
-    //! check line
-    Line<T, 2> boost_line(reference_line_.cast<T>());
-    Point<T, 2> pt2(T(15.), T(3.0));
-    std::cout << Distance<T, Line<T, 2>, Point<T, 2>>(boost_line, pt2);
+    //! use boost ref line
+    Line<T, 2> ref_line(reference_line_.cast<T>());
+    T dist = CalculateDistance<T>(ref_line, trajectory);
+    cost += T(params_->get<double>("weight_distance", 0.1)) * dist * dist;
 
-    //! check polygon
-    Polygon<T, 2> boost_poly(reference_line_.cast<T>());
-    std::cout << Within<Polygon<T, 2>, Point<T, 2>>(boost_poly, pt2);
 
     //! calculate jerk
     T jerk = CalculateJerk<T>(
       trajectory,
-      T(this->GetParams()->get<double>("dt", 0.1)));
-
-    cost += T(this->GetParams()->get<double>("weight_jerk", 1000.0)) * jerk * jerk;
+      T(params_->get<double>("dt", 0.1)));
+    cost += T(params_->get<double>("weight_jerk", 1000.0)) * jerk * jerk;
     residuals[0] = cost / (
-      T(this->GetParams()->get<double>("weight_distance", 0.1)) +
-      T(this->GetParams()->get<double>("weight_jerk", 1000.0)));
+      T(params_->get<double>("weight_distance", 0.1)) +
+      T(params_->get<double>("weight_jerk", 1000.0)));
     return true;
   }
 
-  void SetReferenceLine(const Matrix_t<double>& line) {
-    reference_line_ = line;
-  }
-
- private:
-  Matrix_t<double> reference_line_;
-  Matrix_t<double> initial_state_;
-  
 };
 
 }  // namespace optimizer

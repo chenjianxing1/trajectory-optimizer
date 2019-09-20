@@ -33,9 +33,13 @@ bool Disjoint(const A& a, const B& b) {
   return bg::disjoint(a.obj_, b.obj_);
 }
 
-template <class A, class B>
-bool Within(const A& a, const B& b) {
-  return bg::within(a.obj_, b.obj_);
+//! hacky solution for distance calc. for polygon
+template <typename T, int N>
+T Distance(const Polygon<T, N>& a, const Point<T, N>& b) {
+  if ( Collides<Polygon<T, N>, Point<T, N>>(a, b) ) {
+    return T(0.0);
+  }
+  return bg::distance(a.ToLine().obj_, b.obj_);
 }
 
 //! translate geometry
