@@ -5,6 +5,9 @@
 
 namespace commons {
 using geometry::Matrix_t;
+using geometry::Line;
+using geometry::Point;
+using geometry::Distance;
 
 template<typename T>
 Matrix_t<T> CalculateDiff(const Matrix_t<T>& traj, T dt) {
@@ -24,5 +27,14 @@ T CalculateJerk(const Matrix_t<T>& traj, T dt) {
   return traj_j.sum();
 }
 
+template<typename T>
+T CalculateDistance(const Line<T, 2>& line, const Matrix_t<T>& trajectory) {
+  T dist = T(0.);
+  for ( int i = 1; i < trajectory.rows(); i++ ) {
+    Point<T, 2> pt(T(trajectory(i, 0)), T(trajectory(i, 1)));
+    dist += Distance<T, Line<T, 2>, Point<T, 2>>(line, pt);
+  }
+  return dist;
+}
 
-}  // namespace commons
+}  // namespace parameters

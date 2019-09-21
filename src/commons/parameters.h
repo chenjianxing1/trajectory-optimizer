@@ -11,7 +11,12 @@ using std::map;
 using std::vector;
 
 // allowed variants
-typedef variant<int, double, string, vector<double>, bool> Variants;
+typedef variant<int,
+                double,
+                string,
+                vector<double>,
+                bool,
+                std::map<string, double>> Variants;
 
 class Parameters {
  public:
@@ -31,4 +36,5 @@ class Parameters {
   map<string, Variants> parameters_;
 };
 
-}  // namespace parameters
+}  // namespace commons
+

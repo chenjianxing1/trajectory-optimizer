@@ -31,7 +31,7 @@ class Optimizer {
     params_(params),
     optimization_vector_len_(0) {
       options_.max_num_consecutive_invalid_steps =
-        params->get<int>("max_num_consecutive_invalid_steps", 200);
+        params->get<int>("max_num_consecutive_invalid_steps", 100);
       options_.max_num_iterations =
         params->get<int>("max_num_iterations", 4000);
       options_.minimizer_type = ceres::MinimizerType::LINE_SEARCH;

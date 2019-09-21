@@ -6,19 +6,22 @@
 #include <Eigen/Dense>
 #include <functional>
 #include "src/geometry/geometry.h"
+#include "src/dynamics/dynamics.h"
 
 namespace dynamics {
-using geometry::Matrix_t;
 
-class IntegrationEuler {
+using geometry::Matrix_t;
+using commons::Parameters;
+
+class NullModel {
  public:
-  IntegrationEuler() {}
-  template<typename T>
-  static Matrix_t<T> Integrate(
-    const Matrix_t<T>& state,
-    std::function<Matrix_t<T>(const Matrix_t<T>&)> fDot,
-    T dt) {
-    return state + dt * fDot(state);
+  explicit NullModel(Parameters* params) {}
+
+  template<typename T, class I>
+  static Matrix_t<T> Step(const Matrix_t<T>& state,
+                          const Matrix_t<T>& u,
+                          Parameters* params) {
+    return u;
   }
 };
 

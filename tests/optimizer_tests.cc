@@ -7,19 +7,21 @@
 #include "src/dynamics/dynamics.h"
 #include "src/optimizer.h"
 #include "src/functors/base_functor.h"
-#include "src/functors/follow_reference.h"
-#include "src/functors/dynamic_follow_reference.h"
+#include "src/functors/dynamic_functor.h"
+#include "src/functors/costs/jerk.h"
+#include "src/functors/costs/reference.h"
 
 
 TEST(optimizer, basic_test) {
   using commons::Parameters;
   using optimizer::Optimizer;
   using optimizer::BaseFunctor;
-  using optimizer::FollowReference;
-  using optimizer::DynamicModelFollowReference;
+  using optimizer::JerkCost;
+  using optimizer::ReferenceCost;
+  using optimizer::SingleTrackFunctor;
   using geometry::Matrix_t;
   using dynamics::SingleTrackModel;
-  using dynamics::integrationRK4;
+  using dynamics::IntegrationRK4;
   using dynamics::GenerateDynamicTrajectory;
 
   // initialization
@@ -32,22 +34,12 @@ TEST(optimizer, basic_test) {
   params.set<double>("weight_distance", 0.1);
 
 
-  Matrix_t<double> initial_state(1, 4);
-  initial_state << 0.0, 0.0 , 0.0, 5.0;  // x, y, theta, v
-  Matrix_t<double> opt_vec(9, 2);
-  opt_vec << 0.0, 0.0,
-             0.0, 0.0,
-             0.0, 0.0,
-             0.0, 0.0,
-             0.1, 0.0,
-             0.1, 0.0,  // steering and acceleration
-             0.1, 0.0,  // steering and acceleration
-             0.1, 0.0,  // steering and acceleration
-             0.1, 0.0;  // steering and acceleration
+  Matrix_t<double> initial_states(1, 4);
+  initial_states << 0.0, 0.0 , 0.0, 5.0;  // x, y, theta, v
 
   Matrix_t<double> opt_vec(6, 2);
   opt_vec.setZero();
-  
+
   Matrix_t<double> ref_line(3, 2);
   ref_line << 0., 0.,
               2., 1.,
@@ -58,27 +50,36 @@ TEST(optimizer, basic_test) {
   Optimizer opt(&params);
   opt.SetOptimizationVector(opt_vec);
 
-  // add functor
-  DynamicModelFollowReference* reference_functor =
-    new DynamicModelFollowReference(initial_state,
-                                    &params);
+  // add reference functor
+  SingleTrackFunctor* functor = new SingleTrackFunctor(initial_states,
+                                                       &params);
 
-  opt.AddResidualBlock<DynamicModelFollowReference>(reference_functor);
+  // jerk
+  JerkCost* jerk_costs = new JerkCost(&params);
+  functor->AddCost(jerk_costs);
 
-  opt.FixOptimizationVector(0, 2);
+  // reference line
+  ReferenceCost* ref_costs = new ReferenceCost(&params);
+  ref_costs->SetReferenceLine(ref_line);
+  functor->AddCost(ref_costs);
 
 
-  // solving
+  opt.AddResidualBlock<SingleTrackFunctor>(functor);
+
+  // fix first two opt vec params
+  // opt.FixOptimizationVector(0, 2);
+
+  // solve
   opt.Solve();
   opt.Report();
   std::cout << opt.GetOptimizationVector() << std::endl;
 
   // trajectory
   Matrix_t<double> trajectory =
-    GenerateDynamicTrajectory<double, SingleTrackModel<double, integrationRK4>>(
-      initial_state,
+    GenerateDynamicTrajectory<double,  SingleTrackModel, IntegrationRK4>(
+      initial_states,
       opt.GetOptimizationVector(),
-      params);
+      &params);
   std::cout << trajectory << std::endl;
 }
 
