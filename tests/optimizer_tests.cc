@@ -26,8 +26,8 @@ TEST(optimizer, basic_test) {
   params.set<double>("dt", 0.2);
 
 
-  Matrix_t<double> initial_state(1, 4);
-  initial_state << 0.0, 0.0 , 0.0, 5.0;  // x, y, theta, v
+  Matrix_t<double> initial_states(1, 4);
+  initial_states << 0.0, 0.0 , 0.0, 5.0;  // x, y, theta, v
 
   Matrix_t<double> opt_vec(6, 2);
   opt_vec.setZero();
@@ -43,14 +43,13 @@ TEST(optimizer, basic_test) {
   opt.SetOptimizationVector(opt_vec);
 
   // add reference functor
-  SingleTrackFunctor* reference_functor = new SingleTrackFunctor(initial_state,
+  SingleTrackFunctor* reference_functor = new SingleTrackFunctor(initial_states,
                                                                  &params);
-  
+
   // TODO(@hart): should be removed
   // reference_functor->SetReferenceLine(ref_line);
 
-  opt.AddResidualBlock<SingleTrackFunctor>(
-    reference_functor);
+  opt.AddResidualBlock<SingleTrackFunctor>(reference_functor);
 
   // fix first two opt vec params
   // opt.FixOptimizationVector(0, 2);
@@ -63,7 +62,7 @@ TEST(optimizer, basic_test) {
   // trajectory
   Matrix_t<double> trajectory =
     GenerateDynamicTrajectory<double,  SingleTrackModel, IntegrationRK4>(
-      initial_state,
+      initial_states,
       opt.GetOptimizationVector(),
       &params);
   std::cout << trajectory << std::endl;

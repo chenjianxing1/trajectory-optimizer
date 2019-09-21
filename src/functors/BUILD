@@ -1,6 +1,6 @@
 cc_library(
   name = "functors",
-  hdrs = glob(["*.h"]),
+  hdrs = glob(["*.h", "costs/*.h"]),
   deps = [
     "//src/commons:parameters",
     "//src/commons:commons",

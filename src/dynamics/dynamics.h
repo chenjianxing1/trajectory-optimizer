@@ -22,13 +22,16 @@ namespace dynamics {
   };
 
   template<typename T, class M, class I>
-  Matrix_t<T> GenerateDynamicTrajectory(const Matrix_t<T>& initial_state,
+  Matrix_t<T> GenerateDynamicTrajectory(const Matrix_t<T>& initial_states,
                                         const Matrix_t<T>& input_vector,
                                         Parameters* params) {
     Matrix_t<T> trajectory(input_vector.rows(),
-                           initial_state.cols());
-    trajectory.row(0) = initial_state;
-    for (int i = 1; i < input_vector.rows(); i++) {
+                           initial_states.cols());
+    trajectory.block(0,
+                     0,
+                     initial_states.rows(),
+                     initial_states.cols()) = initial_states;
+    for (int i = initial_states.rows(); i < input_vector.rows(); i++) {
       trajectory.row(i) = M::template Step<T, I>(
         trajectory.row(i-1),
         input_vector.row(i-1),

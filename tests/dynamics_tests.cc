@@ -73,8 +73,8 @@ TEST(dynamics, traj_gen) {
   params.set<double>("dt", 0.1);
 
   //! add objects to world
-  Matrix_t<double> initial_state(1, 4);
-  initial_state << 0.0, 0.0, 0.0, 5.0;  // x, y, theta, v
+  Matrix_t<double> initial_states(1, 4);
+  initial_states << 0.0, 0.0, 0.0, 5.0;  // x, y, theta, v
   Matrix_t<double> inp(3, 2);
   inp << 0.0, 0.0,
          0.0, 0.0,
@@ -83,7 +83,7 @@ TEST(dynamics, traj_gen) {
   SingleTrackModel model(&params);
   Matrix_t<double> trajectory =
     GenerateDynamicTrajectory<double, SingleTrackModel, IntegrationRK4>(
-      initial_state,
+      initial_states,
       inp,
       &params);
   std::cout << trajectory << std::endl;
