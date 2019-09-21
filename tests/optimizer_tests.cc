@@ -8,12 +8,16 @@
 #include "src/optimizer.h"
 #include "src/functors/base_functor.h"
 #include "src/functors/dynamic_functor.h"
+#include "src/functors/costs/jerk.h"
+#include "src/functors/costs/reference.h"
 
 
 TEST(optimizer, basic_test) {
   using commons::Parameters;
   using optimizer::Optimizer;
   using optimizer::BaseFunctor;
+  using optimizer::JerkCost;
+  using optimizer::ReferenceCost;
   using optimizer::SingleTrackFunctor;
   using geometry::Matrix_t;
   using dynamics::SingleTrackModel;
@@ -43,13 +47,20 @@ TEST(optimizer, basic_test) {
   opt.SetOptimizationVector(opt_vec);
 
   // add reference functor
-  SingleTrackFunctor* reference_functor = new SingleTrackFunctor(initial_states,
-                                                                 &params);
+  SingleTrackFunctor* functor = new SingleTrackFunctor(initial_states,
+                                                       &params);
 
-  // TODO(@hart): should be removed
-  // reference_functor->SetReferenceLine(ref_line);
+  // jerk
+  JerkCost* jerk_costs = new JerkCost(&params);
+  functor->AddCost(jerk_costs);
 
-  opt.AddResidualBlock<SingleTrackFunctor>(reference_functor);
+  // reference line
+  ReferenceCost* ref_costs = new ReferenceCost(&params);
+  ref_costs->SetReferenceLine(ref_line);
+  functor->AddCost(ref_costs);
+
+
+  opt.AddResidualBlock<SingleTrackFunctor>(functor);
 
   // fix first two opt vec params
   // opt.FixOptimizationVector(0, 2);

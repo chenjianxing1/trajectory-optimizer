@@ -44,7 +44,7 @@ class DynamicFunctor : public BaseFunctor {
   virtual ~DynamicFunctor() {}
 
   template<typename T>
-  bool operator()(T const* const* parameters, T* residuals, T cost = T(0.0)) {
+  bool operator()(T const* const* parameters, T* residuals, T costs = T(0.0)) {
     // conversion
     Matrix_t<T> opt_vec = this->ParamsToEigen<T>(parameters);
     Matrix_t<T> initial_states_t = initial_states_.cast<T>();
@@ -58,17 +58,16 @@ class DynamicFunctor : public BaseFunctor {
     // costs
     for ( int i = 0; i < costs_.size(); i++ ) {
       // TODO(@hart): either sum up or add to residuals
-      costs_[i]->Evaluate<T>(trajectory, opt_vec);
+      costs += costs_[i]->Evaluate<T>(trajectory, opt_vec);
     }
 
-    //! use boost ref line
-    // Line<T, 2> ref_line(reference_line_.cast<T>());
-    // T dist = CalculateDistance<T>(ref_line, trajectory);
-    // cost += T(params_->get<double>("weight_distance", 0.1)) * dist * dist;
 
-
-    residuals[0] = cost;
+    residuals[0] = costs;
     return true;
+  }
+
+  void AddCost(BaseCost* cost) {
+    costs_.push_back(cost);
   }
 
   Matrix_t<double> initial_states_;

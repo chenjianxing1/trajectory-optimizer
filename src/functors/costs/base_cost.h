@@ -13,6 +13,7 @@ namespace optimizer {
 using geometry::Matrix_t;
 using commons::Parameters;
 
+
 class BaseCost {
  public:
   BaseCost() {}
