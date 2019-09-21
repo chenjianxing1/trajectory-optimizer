@@ -7,7 +7,6 @@
 #include "src/dynamics/dynamics.h"
 #include "src/optimizer.h"
 #include "src/functors/base_functor.h"
-#include "src/functors/follow_reference.h"
 #include "src/functors/dynamic_functor.h"
 
 
@@ -48,7 +47,7 @@ TEST(optimizer, basic_test) {
                                                                  &params);
   
   // TODO(@hart): should be removed
-  reference_functor->SetReferenceLine(ref_line);
+  // reference_functor->SetReferenceLine(ref_line);
 
   opt.AddResidualBlock<SingleTrackFunctor>(
     reference_functor);

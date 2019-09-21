@@ -37,7 +37,7 @@ TEST(dynamics, single_track_model) {
 }
 
 TEST(dynamics, copy_model) {
-  using dynamics::CopyModel;
+  using dynamics::NullModel;
   using geometry::Matrix_t;
   using dynamics::IntegrationRK4;
   using commons::Parameters;
@@ -53,7 +53,7 @@ TEST(dynamics, copy_model) {
   Matrix_t<double> inp(1, 2);
   inp << 1.0, 1.0;  // acceleration and steering angle
 
-  CopyModel model(&params);
+  NullModel model(&params);
   state = model.Step<double, IntegrationRK4>(state, inp, &params);
 
   Matrix_t<double> state_after(1, 2);

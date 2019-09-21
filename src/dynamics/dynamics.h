@@ -9,7 +9,7 @@
 #include "src/dynamics/integration/euler.h"
 #include "src/dynamics/integration/rk4.h"
 #include "src/dynamics/models/single_track.h"
-#include "src/dynamics/models/copy_model.h"
+#include "src/dynamics/models/null_model.h"
 #include "src/commons/parameters.h"
 
 namespace dynamics {

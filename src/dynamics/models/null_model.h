@@ -13,9 +13,9 @@ namespace dynamics {
 using geometry::Matrix_t;
 using commons::Parameters;
 
-class CopyModel {
+class NullModel {
  public:
-  explicit CopyModel(Parameters* params) {}
+  explicit NullModel(Parameters* params) {}
 
   template<typename T, class I>
   static Matrix_t<T> Step(const Matrix_t<T>& state,

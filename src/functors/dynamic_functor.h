@@ -8,8 +8,8 @@
 #include <vector>
 #include <functional>
 #include "src/geometry/geometry.h"
-#include "src/functors/follow_reference.h"
 #include "src/commons/parameters.h"
+#include "src/commons/commons.h"
 #include "src/dynamics/dynamics.h"
 
 namespace optimizer {
@@ -17,22 +17,26 @@ namespace optimizer {
 using geometry::Matrix_t;
 using geometry::Distance;
 using geometry::Line;
+using geometry::Point;
 using geometry::Polygon;
 using commons::Parameters;
-using optimizer::FollowReference;
+using commons::CalculateJerk;
 using dynamics::GenerateDynamicTrajectory;
 using dynamics::SingleTrackModel;
+using dynamics::NullModel;
 using dynamics::IntegrationRK4;
 
 
 template<class M, class I>
-class DynamicFunctor : public FollowReference {
+class DynamicFunctor : public BaseFunctor {
  public:
   explicit DynamicFunctor(Matrix_t<double> initial_state) :
-    FollowReference(initial_state, nullptr) {}
+    BaseFunctor(nullptr),
+    initial_state_(initial_state) {}
   explicit DynamicFunctor(Matrix_t<double> initial_state,
-                                       Parameters* params) :
-    FollowReference(initial_state, params) {}
+                          Parameters* params) :
+    BaseFunctor(params),
+    initial_state_(initial_state) {}
   virtual ~DynamicFunctor() {}
 
   template<typename T>
@@ -40,6 +44,7 @@ class DynamicFunctor : public FollowReference {
     //! convert parameters to Eigen Matrix
     Matrix_t<T> opt_vec = this->ParamsToEigen<T>(parameters);
     Matrix_t<T> initial_state_t = initial_state_.cast<T>();
+
     
     Matrix_t<T> trajectory =
       GenerateDynamicTrajectory<T, M, I>(
@@ -48,23 +53,28 @@ class DynamicFunctor : public FollowReference {
         params_);
 
     //! use boost ref line
-    Line<T, 2> ref_line(reference_line_.cast<T>());
-    T dist = CalculateDistance<T>(ref_line, trajectory);
-    cost += T(params_->get<double>("weight_distance", 0.1)) * dist * dist;
+    // Line<T, 2> ref_line(reference_line_.cast<T>());
+    // T dist = CalculateDistance<T>(ref_line, trajectory);
+    // cost += T(params_->get<double>("weight_distance", 0.1)) * dist * dist;
 
-    // add boundaries, input constrains and dynamic objects here to save computation power
 
     //! calculate jerk
+    /*
     T jerk = CalculateJerk<T>(
       trajectory,
       T(params_->get<double>("dt", 0.1)));
     cost += T(params_->get<double>("weight_jerk", 1000.0)) * jerk * jerk;
     residuals[0] = cost / (
       T(params_->get<double>("weight_distance", 0.1)) +
-      T(params_->get<double>("weight_jerk", 1000.0)));
+      T(params_->get<double>("weight_jerk", 1000.0)));*/
+    
+    residuals[0] = cost;
     return true;
   }
+
+  Matrix_t<double> initial_state_;
 };
 
 typedef DynamicFunctor<SingleTrackModel, IntegrationRK4> SingleTrackFunctor;
+typedef DynamicFunctor<NullModel, IntegrationRK4> NullModelFunctor;
 }  // namespace optimizer
