@@ -30,7 +30,7 @@ class Polygon : public BaseGeometry<Polygon_t<T, N>> {
   explicit Polygon(const Matrix_t<T>& m) {
     for (int i = 0; i < m.rows(); i++)
       bg::append(this->obj_,
-                 Point<T, N>(m.row(i)).obj_);
+                 Point<T, N>(m(i, 0), m(i, 1)).obj_);
   }
 
   Matrix_t<T> toMatrix() const {
