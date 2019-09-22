@@ -54,9 +54,8 @@ TEST(optimizer, basic_test) {
   opt.SetOptimizationVector(opt_vec);
 
   // add reference functor
-  DynamicFunctor<SingleTrackModel, IntegrationRK4>* functor =
-    new DynamicFunctor<SingleTrackModel, IntegrationRK4>(initial_states,
-                                                         &params);
+  FastSingleTrackFunctor* functor =
+    new FastSingleTrackFunctor(initial_states, &params);
 
   // jerk
   JerkCost* jerk_costs = new JerkCost(&params);
@@ -68,7 +67,7 @@ TEST(optimizer, basic_test) {
   functor->AddCost(ref_costs);
 
 
-  opt.AddResidualBlock<SingleTrackFunctor>(functor);
+  opt.AddResidualBlock<FastSingleTrackFunctor>(functor);
 
   // fix first two opt vec params
   // opt.FixOptimizationVector(0, 2);

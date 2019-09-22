@@ -20,9 +20,10 @@ using commons::CalculateDistance;
 
 class ReferenceCost : public BaseCost {
  public:
-  ReferenceCost() : BaseCost(nullptr) {}
+  ReferenceCost() : BaseCost(nullptr), reference_line_() {}
   explicit ReferenceCost(Parameters* params) :
-    BaseCost(params) {
+    BaseCost(params),
+    reference_line_() {
       weight_ = params_->get<double>("weight_distance", 1000.0);
     }
   virtual ~ReferenceCost() {}
