@@ -2,8 +2,8 @@
 package(default_visibility = ["//visibility:public"])
 
 cc_binary(
-  name = "bark.so",
-  srcs = glob(["*.cc", "*.h"),
+  name = "optimizer.so",
+  srcs = glob(["*.cc", "*.h"]),
   deps = [
     "@python_linux//:python-lib",
     "@pybind11//:pybind11",

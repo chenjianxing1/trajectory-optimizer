@@ -30,7 +30,6 @@ http_archive(
     name = "pybind11",
     strip_prefix = "pybind11-2.3.0",
     urls = ["https://github.com/pybind/pybind11/archive/v2.3.0.zip"],
-    build_file = "@//tools/pybind11:pybind.BUILD",
     build_file_content=
 """
 cc_library(

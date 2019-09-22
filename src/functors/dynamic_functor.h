@@ -6,11 +6,13 @@
 
 #pragma once
 #include <vector>
+#include <ceres/ceres.h>
 #include <functional>
 #include "src/geometry/geometry.h"
 #include "src/commons/parameters.h"
 #include "src/commons/commons.h"
 #include "src/dynamics/dynamics.h"
+#include "src/functors/base_functor.h"
 #include "src/functors/costs/base_cost.h"
 #include "src/functors/costs/jerk.h"
 #include "src/functors/costs/reference.h"

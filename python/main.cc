@@ -10,10 +10,10 @@
 #include "boost/variant.hpp"
 
 // optimizer specific includes
-#include "python/commons.hpp"
-#include "python/geometry.hpp"
-#include "python/dynamics.hpp"
-#include "python/optimizer.hpp"
+#include "python/commons.h"
+#include "python/geometry.h"
+#include "python/dynamics.h"
+#include "python/optimizer.h"
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 namespace py = pybind11;
