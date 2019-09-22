@@ -4,7 +4,6 @@
 // For a copy, see <https://opensource.org/licenses/MIT>.
 #pragma once
 #include <Eigen/Dense>
-#include <functional>
 #include "src/geometry/geometry.h"
 
 namespace dynamics {
@@ -13,12 +12,15 @@ using geometry::Matrix_t;
 class IntegrationEuler {
  public:
   IntegrationEuler() {}
+  virtual ~IntegrationEuler() {}
+
   template<typename T>
   static Matrix_t<T> Integrate(
     const Matrix_t<T>& state,
     std::function<Matrix_t<T>(const Matrix_t<T>&)> fDot,
     T dt) {
-    return state + dt * fDot(state);
+    Matrix_t<T> k0 = dt*fDot(state);
+    return state + T(1.0)*k0;
   }
 };
 

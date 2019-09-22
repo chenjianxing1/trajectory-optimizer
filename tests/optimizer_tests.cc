@@ -17,11 +17,14 @@ TEST(optimizer, basic_test) {
   using optimizer::Optimizer;
   using optimizer::BaseFunctor;
   using optimizer::JerkCost;
+  using optimizer::DynamicFunctor;
   using optimizer::ReferenceCost;
   using optimizer::SingleTrackFunctor;
+  using optimizer::FastSingleTrackFunctor;
   using geometry::Matrix_t;
   using dynamics::SingleTrackModel;
   using dynamics::IntegrationRK4;
+  using dynamics::IntegrationEuler;
   using dynamics::GenerateDynamicTrajectory;
 
   // initialization
@@ -31,8 +34,8 @@ TEST(optimizer, basic_test) {
 
   // weights
   params.set<double>("weight_jerk", 1e3);
-  params.set<double>("weight_distance", 0.1);
-
+  params.set<double>("weight_distance", 1);
+  params.set<double>("function_tolerance", 1e-9);
 
   Matrix_t<double> initial_states(1, 4);
   initial_states << 0.0, 0.0 , 0.0, 5.0;  // x, y, theta, v
@@ -42,7 +45,7 @@ TEST(optimizer, basic_test) {
 
   Matrix_t<double> ref_line(3, 2);
   ref_line << 0., 0.,
-              2., 1.,
+              5., 0.5,
               10., 0.;
 
 
@@ -51,8 +54,9 @@ TEST(optimizer, basic_test) {
   opt.SetOptimizationVector(opt_vec);
 
   // add reference functor
-  SingleTrackFunctor* functor = new SingleTrackFunctor(initial_states,
-                                                       &params);
+  DynamicFunctor<SingleTrackModel, IntegrationRK4>* functor =
+    new DynamicFunctor<SingleTrackModel, IntegrationRK4>(initial_states,
+                                                         &params);
 
   // jerk
   JerkCost* jerk_costs = new JerkCost(&params);

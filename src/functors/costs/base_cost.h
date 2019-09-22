@@ -18,7 +18,8 @@ class BaseCost {
  public:
   BaseCost() {}
   explicit BaseCost(Parameters* params) :
-    params_(params) {}
+    params_(params),
+    weight_(0.) {}
   virtual ~BaseCost() = default;
 
   template<typename T>
@@ -26,6 +27,7 @@ class BaseCost {
              const Matrix_t<T>& inputs) { return T(0.); }
 
   Parameters* params_;
+  double weight_;
 };
 
 }  // namespace optimizer

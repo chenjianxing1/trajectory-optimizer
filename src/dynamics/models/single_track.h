@@ -8,6 +8,7 @@
 #include "src/geometry/geometry.h"
 #include "src/dynamics/dynamics.h"
 #include "src/dynamics/integration/rk4.h"
+#include "src/dynamics/integration/euler.h"
 
 namespace dynamics {
 

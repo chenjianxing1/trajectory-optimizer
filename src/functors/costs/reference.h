@@ -14,6 +14,7 @@
 namespace optimizer {
 
 using geometry::Matrix_t;
+using geometry::Line;
 using commons::Parameters;
 using commons::CalculateDistance;
 
@@ -21,20 +22,26 @@ class ReferenceCost : public BaseCost {
  public:
   ReferenceCost() : BaseCost(nullptr) {}
   explicit ReferenceCost(Parameters* params) :
-    BaseCost(params) {}
+    BaseCost(params) {
+      weight_ = params_->get<double>("weight_distance", 1000.0);
+    }
   virtual ~ReferenceCost() {}
 
   template<typename T>
   T Evaluate(const Matrix_t<T>& trajectory,
              const Matrix_t<T>& inputs) {
-    std::cout << "we got here" << std::endl;
     Line<T, 2> ref_line(reference_line_.cast<T>());
     T dist = CalculateDistance<T>(ref_line, trajectory);
-    return T(params_->get<double>("weight_distance", 0.1)) * dist * dist;
+    return Weight<T>() * dist * dist;
   }
 
   void SetReferenceLine(const Matrix_t<double>& ref_line) {
     reference_line_ = ref_line;
+  }
+
+  template<typename T>
+  T Weight() const {
+    return T(weight_);
   }
 
   Matrix_t<double> reference_line_;

@@ -40,6 +40,7 @@ TEST(dynamics, copy_model) {
   using dynamics::NullModel;
   using geometry::Matrix_t;
   using dynamics::IntegrationRK4;
+  using dynamics::IntegrationEuler;
   using commons::Parameters;
 
   Parameters params;
@@ -64,6 +65,7 @@ TEST(dynamics, copy_model) {
 TEST(dynamics, traj_gen) {
   using dynamics::SingleTrackModel;
   using dynamics::IntegrationRK4;
+  using dynamics::IntegrationEuler;
   using dynamics::GenerateDynamicTrajectory;
   using geometry::Matrix_t;
   using commons::Parameters;
@@ -80,9 +82,15 @@ TEST(dynamics, traj_gen) {
          0.0, 0.0,
          0.0, 0.0;  // acceleration and steering angle
 
-  SingleTrackModel model(&params);
   Matrix_t<double> trajectory =
     GenerateDynamicTrajectory<double, SingleTrackModel, IntegrationRK4>(
+      initial_states,
+      inp,
+      &params);
+  std::cout << trajectory << std::endl;
+
+  trajectory =
+    GenerateDynamicTrajectory<double, SingleTrackModel, IntegrationEuler>(
       initial_states,
       inp,
       &params);

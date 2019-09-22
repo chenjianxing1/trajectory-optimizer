@@ -22,7 +22,9 @@ class JerkCost : public BaseCost {
  public:
   JerkCost() : BaseCost(nullptr) {}
   explicit JerkCost(Parameters* params) :
-    BaseCost(params) {}
+    BaseCost(params) {
+      weight_ = params_->get<double>("weight_jerk", 1000.0);
+    }
   virtual ~JerkCost() {}
 
   template<typename T>
@@ -31,7 +33,12 @@ class JerkCost : public BaseCost {
     T jerk = CalculateJerk<T>(
       trajectory,
       T(params_->get<double>("dt", 0.1)));
-    return T(params_->get<double>("weight_jerk", 1000.0)) * jerk * jerk;
+    return Weight<T>() * jerk * jerk;
+  }
+
+  template<typename T>
+  T Weight() const {
+    return T(weight_);
   }
 };
 

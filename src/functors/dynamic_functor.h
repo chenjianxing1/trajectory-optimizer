@@ -12,6 +12,8 @@
 #include "src/commons/commons.h"
 #include "src/dynamics/dynamics.h"
 #include "src/functors/costs/base_cost.h"
+#include "src/functors/costs/jerk.h"
+#include "src/functors/costs/reference.h"
 
 namespace optimizer {
 
@@ -26,6 +28,7 @@ using dynamics::GenerateDynamicTrajectory;
 using dynamics::SingleTrackModel;
 using dynamics::NullModel;
 using dynamics::IntegrationRK4;
+using dynamics::IntegrationEuler;
 using std::vector;
 
 
@@ -44,11 +47,14 @@ class DynamicFunctor : public BaseFunctor {
   virtual ~DynamicFunctor() {}
 
   template<typename T>
-  bool operator()(T const* const* parameters, T* residuals, T costs = T(0.0)) {
+  bool operator()(T const* const* parameters,
+                  T* residuals,
+                  T costs = T(0.),
+                  T weights = T(0.)) {
     // conversion
     Matrix_t<T> opt_vec = this->ParamsToEigen<T>(parameters);
     Matrix_t<T> initial_states_t = initial_states_.cast<T>();
-
+    
     // generation
     Matrix_t<T> trajectory = GenerateDynamicTrajectory<T, M, I>(
       initial_states_t,
@@ -57,12 +63,20 @@ class DynamicFunctor : public BaseFunctor {
 
     // costs
     for ( int i = 0; i < costs_.size(); i++ ) {
-      // TODO(@hart): either sum up or add to residuals
-      costs += costs_[i]->Evaluate<T>(trajectory, opt_vec);
+      if (dynamic_cast<JerkCost*>(costs_[i])) {
+        JerkCost* cost = dynamic_cast<JerkCost*>(costs_[i]);
+        costs += cost->Evaluate<T>(trajectory, opt_vec);
+        weights += cost->Weight<T>();
+      }
+      if (dynamic_cast<ReferenceCost*>(costs_[i])) {
+        ReferenceCost* cost = dynamic_cast<ReferenceCost*>(costs_[i]);
+        costs += cost->Evaluate<T>(trajectory, opt_vec);
+        weights += cost->Weight<T>();
+      }
+      // TODO(@hart): boundaries, input constraints, dynamic objects
     }
 
-
-    residuals[0] = costs;
+    residuals[0] = costs/ weights;
     return true;
   }
 
@@ -75,5 +89,6 @@ class DynamicFunctor : public BaseFunctor {
 };
 
 typedef DynamicFunctor<SingleTrackModel, IntegrationRK4> SingleTrackFunctor;
+typedef DynamicFunctor<SingleTrackModel, IntegrationEuler> FastSingleTrackFunctor;
 typedef DynamicFunctor<NullModel, IntegrationRK4> NullModelFunctor;
 }  // namespace optimizer
