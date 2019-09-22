@@ -23,6 +23,7 @@ T CalculateJerk(const Matrix_t<T>& traj, T dt) {
   Matrix_t<T> reduced_traj = traj.block(0, 0, traj.rows(), 2);
   Matrix_t<T> traj_v = CalculateDiff(reduced_traj, dt);
   Matrix_t<T> traj_a = CalculateDiff(traj_v, dt);
+  // std::cout << "speed: "<< reduced_traj << traj_v << std::endl;
   Matrix_t<T> traj_j = CalculateDiff(traj_a, dt);
   return traj_j.sum();
 }
