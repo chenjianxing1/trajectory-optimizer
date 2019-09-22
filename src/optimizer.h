@@ -43,11 +43,8 @@ class Optimizer {
         params->get<bool>("minimizer_progress_to_stdout", false);
   }
 
-  template<typename T, int N = 4>
-  void AddResidualBlock(
-    BaseFunctor* functor,
-    LossFunction* loss = new TrivialLoss(),
-    int num_residuals = 1) {
+  template<typename T, class L = TrivialLoss, int N = 4>
+  void AddResidualBlock(BaseFunctor* functor, int num_residuals = 1) {
     DynamicAutoDiffCostFunction<T, N>* ceres_functor =
       new DynamicAutoDiffCostFunction<T, N>(dynamic_cast<T*>(functor));
     for (vector<double>& vec : optimization_vectors_) {
@@ -56,6 +53,7 @@ class Optimizer {
     functor->SetOptVecLen(optimization_vector_len_);
     functor->SetParamCount(parameter_block_.size());
     ceres_functor->SetNumResiduals(num_residuals);
+    LossFunction* loss = new L();
     problem_.AddResidualBlock(ceres_functor, loss, parameter_block_);
   }
 
