@@ -14,6 +14,7 @@
 #include "src/functors/costs/base_cost.h"
 #include "src/functors/costs/jerk.h"
 #include "src/functors/costs/reference.h"
+#include "src/functors/costs/inputs.h"
 
 namespace optimizer {
 
@@ -54,7 +55,7 @@ class DynamicFunctor : public BaseFunctor {
     // conversion
     Matrix_t<T> opt_vec = this->ParamsToEigen<T>(parameters);
     Matrix_t<T> initial_states_t = initial_states_.cast<T>();
-    
+
     // generation
     Matrix_t<T> trajectory = GenerateDynamicTrajectory<T, M, I>(
       initial_states_t,
@@ -73,10 +74,15 @@ class DynamicFunctor : public BaseFunctor {
         costs += cost->Evaluate<T>(trajectory, opt_vec);
         weights += cost->Weight<T>();
       }
+      if (dynamic_cast<InputCost*>(costs_[i])) {
+        InputCost* cost = dynamic_cast<InputCost*>(costs_[i]);
+        costs += cost->Evaluate<T>(trajectory, opt_vec);
+        weights += cost->Weight<T>();
+      }
       // TODO(@hart): boundaries, input constraints, dynamic objects
     }
 
-    residuals[0] = costs/ weights;
+    residuals[0] = costs / weights;
     return true;
   }
 
@@ -89,6 +95,7 @@ class DynamicFunctor : public BaseFunctor {
 };
 
 typedef DynamicFunctor<SingleTrackModel, IntegrationRK4> SingleTrackFunctor;
-typedef DynamicFunctor<SingleTrackModel, IntegrationEuler> FastSingleTrackFunctor;
+typedef DynamicFunctor<SingleTrackModel,
+                       IntegrationEuler> FastSingleTrackFunctor;
 typedef DynamicFunctor<NullModel, IntegrationRK4> NullModelFunctor;
 }  // namespace optimizer

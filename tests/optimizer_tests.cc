@@ -10,6 +10,7 @@
 #include "src/functors/dynamic_functor.h"
 #include "src/functors/costs/jerk.h"
 #include "src/functors/costs/reference.h"
+#include "src/functors/costs/inputs.h"
 
 
 TEST(optimizer, basic_test) {
@@ -17,10 +18,12 @@ TEST(optimizer, basic_test) {
   using optimizer::Optimizer;
   using optimizer::BaseFunctor;
   using optimizer::JerkCost;
+  using optimizer::InputCost;
   using optimizer::DynamicFunctor;
   using optimizer::ReferenceCost;
   using optimizer::SingleTrackFunctor;
   using optimizer::FastSingleTrackFunctor;
+  using optimizer::NullModelFunctor;
   using geometry::Matrix_t;
   using dynamics::SingleTrackModel;
   using dynamics::IntegrationRK4;
@@ -67,6 +70,16 @@ TEST(optimizer, basic_test) {
   functor->AddCost(ref_costs);
 
 
+  // input constraints
+  InputCost* inp_costs = new InputCost(&params);
+  Matrix_t<double> lb(1, 2);
+  lb << -0.2, -1.0;
+  Matrix_t<double> ub(1, 2);
+  ub << 0.2, 1.0;
+  inp_costs->SetLowerBound(lb);
+  inp_costs->SetUpperBound(ub);
+  functor->AddCost(inp_costs);
+
   opt.AddResidualBlock<FastSingleTrackFunctor>(functor);
 
   // fix first two opt vec params
@@ -79,7 +92,7 @@ TEST(optimizer, basic_test) {
 
   // trajectory
   Matrix_t<double> trajectory =
-    GenerateDynamicTrajectory<double,  SingleTrackModel, IntegrationRK4>(
+    GenerateDynamicTrajectory<double, SingleTrackModel, IntegrationEuler>(
       initial_states,
       opt.GetOptimizationVector(),
       &params);
