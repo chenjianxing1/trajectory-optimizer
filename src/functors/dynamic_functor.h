@@ -79,7 +79,7 @@ class DynamicFunctor : public BaseFunctor {
         costs += cost->Evaluate<T>(trajectory, opt_vec);
         weights += cost->Weight<T>();
       }
-      // TODO(@hart): boundaries, input constraints, dynamic objects
+      // TODO(@hart): boundaries, dynamic objects
     }
 
     residuals[0] = costs / weights;

@@ -27,6 +27,39 @@ cc_library(
 )
 
 http_archive(
+    name = "pybind11",
+    strip_prefix = "pybind11-2.3.0",
+    urls = ["https://github.com/pybind/pybind11/archive/v2.3.0.zip"],
+    build_file = "@//tools/pybind11:pybind.BUILD",
+    build_file_content=
+"""
+cc_library(
+    name = "pybind11",
+    hdrs = glob([
+        "include/**/**/*.h",
+    ]),
+    linkopts = ["-pthread"],
+    visibility = ["//visibility:public"],
+    strip_include_prefix = "include/"
+)
+"""
+)
+
+new_local_repository(
+    name = "python_linux",
+    path = "./python/venv/",
+    build_file_content = """
+cc_library(
+    name = "python-lib",
+    srcs = glob(["lib/libpython3.*", "libs/python3.lib", "libs/python36.lib"]),
+    hdrs = glob(["include/**/*.h", "include/*.h"]),
+    includes = ["include/python3.6m", "include", "include/python3.7m", "include/python3.5m"], 
+    visibility = ["//visibility:public"],
+)
+    """
+)
+
+http_archive(
   name = "com_github_eigen_eigen",
   sha256 = "dd254beb0bafc695d0f62ae1a222ff85b52dbaa3a16f76e781dce22d0d20a4a6",
   strip_prefix = "eigen-eigen-5a0156e40feb",
