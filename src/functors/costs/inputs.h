@@ -20,13 +20,9 @@ using commons::Parameters;
 class InputCost : public BaseCost {
  public:
   InputCost() :
-    BaseCost(nullptr),
-    lower_bounds_(),
-    upper_bounds_() {}
+    BaseCost(nullptr){}
   explicit InputCost(Parameters* params) :
-    BaseCost(params),
-    lower_bounds_(),
-    upper_bounds_()  {
+    BaseCost(params) {
       weight_ = params_->get<double>("weight_input", 100.0);
     }
   virtual ~InputCost() {}
@@ -56,11 +52,11 @@ class InputCost : public BaseCost {
     return T(weight_);
   }
 
-  void SetLowerBound(const Matrix_t<double>& lb) {
+  void SetLowerBound(Matrix_t<double> lb) {
     lower_bounds_ = lb;
   }
 
-  void SetUpperBound(const Matrix_t<double>& ub) {
+  void SetUpperBound(Matrix_t<double> ub) {
     upper_bounds_ = ub;
   }
 

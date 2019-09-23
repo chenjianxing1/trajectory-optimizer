@@ -60,9 +60,10 @@ class Optimizer {
   // each column of an Eigen Matrix will become an optimization vector
   void SetOptimizationVector(Matrix_t<double> inputs) {
     for (int i = 0; i < inputs.cols(); i++) {
-      vector<double>* empty_vec = new vector<double>(inputs.rows(), 0.0);
-      optimization_vectors_.push_back(*empty_vec);
-      parameter_block_.push_back(&empty_vec->at(0));
+      // TODO(@hart): FIX; here it goes south
+      vector<double> empty_vec(inputs.rows(), 0.0);
+      optimization_vectors_.push_back(empty_vec);
+      parameter_block_.push_back(&optimization_vectors_[i][0]);
     }
     optimization_vector_len_ = inputs.rows();
   }

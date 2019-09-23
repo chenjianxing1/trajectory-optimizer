@@ -23,16 +23,13 @@ class OptimizerTests(unittest.TestCase):
                         [0., 0.]])
     opt.SetOptimizationVector(opt_vec)
 
-    # functor with costs
     functor = SingleTrackFunctor(initial_state, params)
     jerk_cost = JerkCost(params)
     functor.AddCost(jerk_cost)
 
-    opt.AddResidualBlock(functor, 1)
+    # opt.AddResidualBlock(functor, 1)
 
-    del params
-    del opt
-    del functor
+
 
 
 if __name__ == '__main__':

@@ -62,6 +62,7 @@ TEST(optimizer, single_track_model) {
   functor->AddCost(jerk_costs);
 
   // reference line
+
   ReferenceCost* ref_costs = new ReferenceCost(&params);
   ref_costs->SetReferenceLine(ref_line);
   functor->AddCost(ref_costs);
@@ -75,7 +76,7 @@ TEST(optimizer, single_track_model) {
   inp_costs->SetLowerBound(lb);
   inp_costs->SetUpperBound(ub);
   functor->AddCost(inp_costs);
-
+  
   opt.AddResidualBlock<FastSingleTrackFunctor>(functor);
 
   // fix first two opt vec params
@@ -93,69 +94,6 @@ TEST(optimizer, single_track_model) {
       opt.GetOptimizationVector(),
       &params);
   std::cout << trajectory << std::endl;
-}
-
-
-TEST(optimizer, null_model) {
-  using commons::Parameters;
-  using commons::CalculateJerk;
-  using optimizer::Optimizer;
-  using optimizer::JerkCost;
-  using optimizer::ReferenceCost;
-  using optimizer::NullModelFunctor;
-  using geometry::Matrix_t;
-  using dynamics::SingleTrackModel;
-  using dynamics::NullModel;
-  using dynamics::IntegrationRK4;
-  using dynamics::IntegrationEuler;
-  using dynamics::GenerateDynamicTrajectory;
-
-  // initialization
-  Parameters params;
-  params.set<double>("wheel_base", 2.7);
-  params.set<double>("dt", 0.1);
-  params.set<double>("weight_jerk", 1e3);
-  params.set<double>("weight_distance", 1);
-  params.set<double>("function_tolerance", 1e-9);
-  Matrix_t<double> initial_states(1, 2);
-  initial_states << 0.0, 0.0;  // x, y
-  Matrix_t<double> opt_vec(5, 2);
-  opt_vec << 1.0, 0.0,
-             2.0, 0.0,
-             3.0, 0.0,
-             4.0, 0.0,
-             5.0, 0.0;  // x, y
-  Matrix_t<double> ref_line(3, 2);
-  ref_line << 0., 1.,
-              5., 1.,
-              10., 1.;
-
-  // Optimizer
-  Optimizer opt(&params);
-  opt.SetOptimizationVector(opt_vec);
-  NullModelFunctor* functor =
-    new NullModelFunctor(initial_states, &params);
-  // Costs
-  JerkCost* jerk_costs = new JerkCost(&params);
-  functor->AddCost(jerk_costs);
-
-  ReferenceCost* ref_costs = new ReferenceCost(&params);
-  ref_costs->SetReferenceLine(ref_line);
-  functor->AddCost(ref_costs);
-
-  // Add functor
-  opt.AddResidualBlock<NullModelFunctor>(functor);
-  opt.Solve();
-
-  // Results
-  opt.Report();
-  Matrix_t<double> trajectory =
-    GenerateDynamicTrajectory<double, NullModel, IntegrationEuler>(
-      initial_states,
-      opt.GetOptimizationVector(),
-      &params);
-  std::cout << opt.GetOptimizationVector() << std::endl;
-  std::cout << "Trajectory: " << std::endl << trajectory << std::endl;
 }
 
 

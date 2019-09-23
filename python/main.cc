@@ -11,7 +11,6 @@
 
 // optimizer specific includes
 #include "python/commons.h"
-#include "python/geometry.h"
 #include "python/dynamics.h"
 #include "python/optimizer.h"
 
@@ -21,7 +20,6 @@ namespace py = pybind11;
 PYBIND11_MODULE(optimizer, m) {
   m.doc() = "Python wrappings.";
   python_optimizer(m.def_submodule("optimizer", ".."));
-  python_geometry(m.def_submodule("geometry", ".."));
   python_dynamics(m.def_submodule("dynamics", ".."));
   python_commons(m.def_submodule("commons", ".."));
 }

@@ -39,5 +39,6 @@ py_test(
   name = "py_basics_tests",
   srcs = ["py_basics_tests.py"],
   data = ["//python:optimizer.so"],
-  imports = ["../python/"]
+  imports = ["../python/",
+             "../python"]
 )

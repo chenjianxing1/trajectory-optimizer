@@ -22,8 +22,7 @@ class ReferenceCost : public BaseCost {
  public:
   ReferenceCost() : BaseCost(nullptr), reference_line_() {}
   explicit ReferenceCost(Parameters* params) :
-    BaseCost(params),
-    reference_line_() {
+    BaseCost(params) {
       weight_ = params_->get<double>("weight_distance", 1000.0);
     }
   virtual ~ReferenceCost() {}
@@ -36,7 +35,7 @@ class ReferenceCost : public BaseCost {
     return Weight<T>() * dist * dist;
   }
 
-  void SetReferenceLine(const Matrix_t<double>& ref_line) {
+  void SetReferenceLine(Matrix_t<double> ref_line) {
     reference_line_ = ref_line;
   }
 
