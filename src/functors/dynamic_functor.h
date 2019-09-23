@@ -47,7 +47,11 @@ class DynamicFunctor : public BaseFunctor {
     BaseFunctor(params),
     initial_states_(initial_states),
     costs_() {}
-  virtual ~DynamicFunctor() {}
+  virtual ~DynamicFunctor() {
+    for ( int i = 0; i < costs_.size(); i++ ) {
+      delete costs_[i];
+    }
+  }
 
   template<typename T>
   bool operator()(T const* const* parameters,

@@ -76,7 +76,7 @@ TEST(optimizer, single_track_model) {
   inp_costs->SetLowerBound(lb);
   inp_costs->SetUpperBound(ub);
   functor->AddCost(inp_costs);
-  
+
   opt.AddResidualBlock<FastSingleTrackFunctor>(functor);
 
   // fix first two opt vec params

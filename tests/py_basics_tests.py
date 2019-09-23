@@ -27,7 +27,7 @@ class OptimizerTests(unittest.TestCase):
     jerk_cost = JerkCost(params)
     functor.AddCost(jerk_cost)
 
-    # opt.AddResidualBlock(functor, 1)
+    opt.AddResidualBlock(functor, 1)
 
 
 
