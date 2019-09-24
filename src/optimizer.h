@@ -24,7 +24,7 @@ using ceres::TrivialLoss;
 
 class Optimizer {
  public:
-  explicit Optimizer(ParameterPtr& params) :
+  explicit Optimizer(const ParameterPtr& params) :
     optimization_vectors_(),
     parameter_block_(),
     problem_(),
@@ -46,19 +46,23 @@ class Optimizer {
 
   template<typename T, int N = 4>
   void AddResidualBlock(BaseFunctor* functor, int num_residuals = 1) {
+
     DynamicAutoDiffCostFunction<T, N>* ceres_functor =
       new DynamicAutoDiffCostFunction<T, N>(dynamic_cast<T*>(functor));
+
     for (vector<double>& vec : optimization_vectors_) {
       ceres_functor->AddParameterBlock(optimization_vector_len_);
     }
     functor->SetOptVecLen(optimization_vector_len_);
     functor->SetParamCount(parameter_block_.size());
     ceres_functor->SetNumResiduals(num_residuals);
-    problem_.AddResidualBlock(ceres_functor, new ceres::TrivialLoss(), parameter_block_);
+    problem_.AddResidualBlock(ceres_functor,
+                              new ceres::TrivialLoss(),
+                              parameter_block_);
   }
 
   // each column of an Eigen Matrix will become an optimization vector
-  void SetOptimizationVector(Matrix_t<double> inputs) {
+  void SetOptimizationVector(const Matrix_t<double>& inputs) {
     for (int i = 0; i < inputs.cols(); i++) {
       // TODO(@hart): FIX; here it goes south
       vector<double> empty_vec(inputs.rows(), 0.0);

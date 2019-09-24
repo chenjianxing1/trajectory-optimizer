@@ -19,7 +19,7 @@ using commons::ParameterPtr;
 class BaseFunctor {
  public:
   BaseFunctor() : opt_vec_len_(0), param_count_(0) {}
-  explicit BaseFunctor(ParameterPtr& params) :
+  explicit BaseFunctor(const ParameterPtr& params) :
     params_(params), opt_vec_len_(0), param_count_(0) {}
   virtual ~BaseFunctor() = default;
 

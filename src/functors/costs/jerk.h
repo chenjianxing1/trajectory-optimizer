@@ -23,7 +23,7 @@ using commons::ParameterPtr;
 class JerkCost : public BaseCost {
  public:
   JerkCost() : BaseCost() {}
-  explicit JerkCost(ParameterPtr& params) :
+  explicit JerkCost(const ParameterPtr& params) :
     BaseCost(params) {
       weight_ = params_->get<double>("weight_jerk", 1000.0);
     }
@@ -31,7 +31,7 @@ class JerkCost : public BaseCost {
 
   template<typename T>
   T Evaluate(const Matrix_t<T>& trajectory,
-             const Matrix_t<T>& inputs) {
+             const Matrix_t<T>& inputs) const {
     T jerk = CalculateJerk<T>(
       trajectory,
       T(params_->get<double>("dt", 0.1)));

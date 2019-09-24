@@ -14,45 +14,37 @@
 #include "src/optimizer.h"
 
 namespace py = pybind11;
-using optimizer::Optimizer;
-using optimizer::BaseFunctor;
-using optimizer::SingleTrackFunctor;
-using optimizer::FastSingleTrackFunctor;
-using optimizer::InputCost;
-using optimizer::JerkCost;
-using optimizer::BaseCost;
-using optimizer::ReferenceCost;
-using commons::Parameter;
-using geometry::Matrix_t;
 
+using namespace optimizer;
+using namespace commons;
+using namespace dynamics;
 
 void python_optimizer(py::module m) {
-  py::class_<BaseFunctor>(m, "BaseFunctor")
-    .def(py::init<Parameter*>());
+  py::class_<BaseFunctor, BaseFunctorPtr>(m, "BaseFunctor")
+    .def(py::init<const ParameterPtr&>());
 
   py::class_<SingleTrackFunctor,
-             BaseFunctor>(m, "SingleTrackFunctor")
-    .def(py::init<Matrix_t<double>, Parameter*>())
+             BaseFunctor,
+             SingleTrackFunctorPtr>(m, "SingleTrackFunctor")
+    .def(py::init<Matrix_t<double>, const ParameterPtr&>())
     .def("AddCost", &SingleTrackFunctor::AddCost);
 
-  py::class_<BaseCost>(m, "BaseCost")
-    .def(py::init<Parameter*>());
+  py::class_<BaseCost, BaseCostPtr>(m, "BaseCost")
+    .def(py::init<const ParameterPtr& >());
 
-  py::class_<JerkCost, BaseCost>(m, "JerkCost")
-    .def(py::init<Parameter*>());
+  py::class_<JerkCost, BaseCost, JerkCostPtr>(m, "JerkCost")
+    .def(py::init<const ParameterPtr&>());
 
-  py::class_<ReferenceCost, BaseCost>(m, "ReferenceCost")
-    .def(py::init<Parameter*>());
+  py::class_<ReferenceCost, BaseCost, ReferenceCostPtr>(m, "ReferenceCost")
+    .def(py::init<const ParameterPtr&>());
 
-  py::class_<InputCost, BaseCost>(m, "InputCost")
-    .def(py::init<Parameter*>());
+  py::class_<InputCost, BaseCost, InputCostPtr>(m, "InputCost")
+    .def(py::init<const ParameterPtr&>());
 
-  py::class_<Optimizer>(m, "Optimizer")
-    .def(py::init<Parameter*>())
+  py::class_<Optimizer, std::shared_ptr<Optimizer>>(m, "Optimizer")
+    .def(py::init<const ParameterPtr&>())
     .def("AddResidualBlock",
-      &optimizer::Optimizer::AddResidualBlock<SingleTrackFunctor,
-                                              ceres::TrivialLoss,
-                                              4>)
+      &optimizer::Optimizer::AddResidualBlock<SingleTrackFunctor, 4>)
     .def("Solve", &optimizer::Optimizer::Solve)
     .def("GetOptimizationVector", &optimizer::Optimizer::GetOptimizationVector)
     .def("SetOptimizationVector", &optimizer::Optimizer::SetOptimizationVector)

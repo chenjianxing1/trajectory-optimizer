@@ -17,14 +17,14 @@ using commons::ParameterPtr;
 class BaseCost {
  public:
   BaseCost() {}
-  explicit BaseCost(ParameterPtr& params) :
+  explicit BaseCost(const ParameterPtr& params) :
     params_(params),
     weight_(0.) {}
   virtual ~BaseCost() = default;
 
   template<typename T>
   T Evaluate(const Matrix_t<T>& trajectory,
-             const Matrix_t<T>& inputs) { return T(0.); }
+             const Matrix_t<T>& inputs) const { return T(0.); }
 
   ParameterPtr params_;
   double weight_;

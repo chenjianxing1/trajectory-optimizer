@@ -13,8 +13,9 @@ namespace py = pybind11;
 
 void python_commons(py::module m) {
   using commons::Parameter;
+  using commons::ParameterPtr;
 
-  py::class_<Parameter>(m, "Parameter")
+  py::class_<Parameter, ParameterPtr>(m, "Parameter")
     .def(py::init<>())
     .def("get", &commons::Parameter::get<double>)
     .def("get", &commons::Parameter::get<int>)

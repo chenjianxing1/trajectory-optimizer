@@ -22,7 +22,7 @@ using commons::CalculateDistance;
 class ReferenceCost : public BaseCost {
  public:
   ReferenceCost() : BaseCost(), reference_line_() {}
-  explicit ReferenceCost(ParameterPtr& params) :
+  explicit ReferenceCost(const ParameterPtr& params) :
     BaseCost(params) {
       weight_ = params_->get<double>("weight_distance", 1000.0);
     }
@@ -30,13 +30,13 @@ class ReferenceCost : public BaseCost {
 
   template<typename T>
   T Evaluate(const Matrix_t<T>& trajectory,
-             const Matrix_t<T>& inputs) {
+             const Matrix_t<T>& inputs) const {
     Line<T, 2> ref_line(reference_line_.cast<T>());
     T dist = CalculateDistance<T>(ref_line, trajectory);
     return Weight<T>() * dist * dist;
   }
 
-  void SetReferenceLine(Matrix_t<double> ref_line) {
+  void SetReferenceLine(const Matrix_t<double>& ref_line) {
     reference_line_ = ref_line;
   }
 

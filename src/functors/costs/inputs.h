@@ -22,19 +22,19 @@ class InputCost : public BaseCost {
  public:
   InputCost() :
     BaseCost(){}
-  explicit InputCost(ParameterPtr& params) :
+  explicit InputCost(const ParameterPtr& params) :
     BaseCost(params) {
       weight_ = params_->get<double>("weight_input", 100.0);
     }
   virtual ~InputCost() {}
 
   template<typename T>
-  T SquaredNorm(const T& x, int N = 2) {
+  T SquaredNorm(const T& x, int N = 2) const {
     return ceres::sqrt(ceres::pow(x, N));
   }
   template<typename T>
   T Evaluate(const Matrix_t<T>& trajectory,
-             const Matrix_t<T>& inputs) {
+             const Matrix_t<T>& inputs) const {
     T cost = T(0.);
     for (int i = 0; i < inputs.cols(); i++) {
       // check if within bounds
@@ -53,11 +53,11 @@ class InputCost : public BaseCost {
     return T(weight_);
   }
 
-  void SetLowerBound(Matrix_t<double> lb) {
+  void SetLowerBound(const Matrix_t<double>& lb) {
     lower_bounds_ = lb;
   }
 
-  void SetUpperBound(Matrix_t<double> ub) {
+  void SetUpperBound(const Matrix_t<double>& ub) {
     upper_bounds_ = ub;
   }
 
