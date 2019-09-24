@@ -13,7 +13,8 @@
 
 namespace optimizer {
 
-using commons::Parameters;
+using commons::Parameter;
+using commons::ParameterPtr;
 using geometry::Matrix_t;
 using optimizer::BaseFunctor;
 using std::vector;
@@ -23,7 +24,7 @@ using ceres::TrivialLoss;
 
 class Optimizer {
  public:
-  explicit Optimizer(Parameters* params) :
+  explicit Optimizer(ParameterPtr& params) :
     optimization_vectors_(),
     parameter_block_(),
     problem_(),
@@ -36,14 +37,14 @@ class Optimizer {
         params->get<int>("max_num_iterations", 4000);
       options_.minimizer_type = ceres::MinimizerType::LINE_SEARCH;
       options_.function_tolerance =
-        params->get<double>("function_tolerance", 1e-12);
+        params->get<double>("function_tolerance", 1e-8);
       options_.line_search_direction_type =
         ceres::LineSearchDirectionType::LBFGS;
       options_.minimizer_progress_to_stdout =
         params->get<bool>("minimizer_progress_to_stdout", false);
   }
 
-  template<typename T, class L = TrivialLoss, int N = 4>
+  template<typename T, int N = 4>
   void AddResidualBlock(BaseFunctor* functor, int num_residuals = 1) {
     DynamicAutoDiffCostFunction<T, N>* ceres_functor =
       new DynamicAutoDiffCostFunction<T, N>(dynamic_cast<T*>(functor));
@@ -53,8 +54,7 @@ class Optimizer {
     functor->SetOptVecLen(optimization_vector_len_);
     functor->SetParamCount(parameter_block_.size());
     ceres_functor->SetNumResiduals(num_residuals);
-    LossFunction* loss = new L();
-    problem_.AddResidualBlock(ceres_functor, loss, parameter_block_);
+    problem_.AddResidualBlock(ceres_functor, new ceres::TrivialLoss(), parameter_block_);
   }
 
   // each column of an Eigen Matrix will become an optimization vector
@@ -101,7 +101,7 @@ class Optimizer {
   }
 
  private:
-  Parameters* params_;
+  ParameterPtr params_;
   ceres::Problem problem_;
   ceres::Solver::Options options_;
   ceres::Solver::Summary summary_;

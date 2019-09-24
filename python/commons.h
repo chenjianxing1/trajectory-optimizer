@@ -12,18 +12,18 @@
 namespace py = pybind11;
 
 void python_commons(py::module m) {
-  using commons::Parameters;
+  using commons::Parameter;
 
-  py::class_<Parameters>(m, "Parameters")
+  py::class_<Parameter>(m, "Parameter")
     .def(py::init<>())
-    .def("get", &commons::Parameters::get<double>)
-    .def("get", &commons::Parameters::get<int>)
-    .def("get", &commons::Parameters::get<std::string>)
-    .def("get", &commons::Parameters::get<bool>)
-    .def("get", &commons::Parameters::get<std::vector<double>>)
-    .def("set", &commons::Parameters::set<double>)
-    .def("set", &commons::Parameters::set<int>)
-    .def("set", &commons::Parameters::set<std::string>)
-    .def("set", &commons::Parameters::set<bool>)
-    .def("set", &commons::Parameters::set<std::vector<double>>);
+    .def("get", &commons::Parameter::get<double>)
+    .def("get", &commons::Parameter::get<int>)
+    .def("get", &commons::Parameter::get<std::string>)
+    .def("get", &commons::Parameter::get<bool>)
+    .def("get", &commons::Parameter::get<std::vector<double>>)
+    .def("set", &commons::Parameter::set<double>)
+    .def("set", &commons::Parameter::set<int>)
+    .def("set", &commons::Parameter::set<std::string>)
+    .def("set", &commons::Parameter::set<bool>)
+    .def("set", &commons::Parameter::set<std::vector<double>>);
 }

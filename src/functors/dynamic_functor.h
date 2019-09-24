@@ -25,7 +25,8 @@ using geometry::Distance;
 using geometry::Line;
 using geometry::Point;
 using geometry::Polygon;
-using commons::Parameters;
+using commons::Parameter;
+using commons::ParameterPtr;
 using commons::CalculateJerk;
 using dynamics::GenerateDynamicTrajectory;
 using dynamics::SingleTrackModel;
@@ -40,18 +41,11 @@ class DynamicFunctor : public BaseFunctor {
  public:
   explicit DynamicFunctor(Matrix_t<double> initial_states) :
     BaseFunctor(nullptr),
-    initial_states_(initial_states),
-    costs_() {}
+    initial_states_(initial_states) {}
   explicit DynamicFunctor(Matrix_t<double> initial_states,
-                          Parameters* params) :
+                          ParameterPtr params) :
     BaseFunctor(params),
-    initial_states_(initial_states),
-    costs_() {}
-  virtual ~DynamicFunctor() {
-    for ( int i = 0; i < costs_.size(); i++ ) {
-      delete costs_[i];
-    }
-  }
+    initial_states_(initial_states) {}
 
   template<typename T>
   bool operator()(T const* const* parameters,
@@ -66,22 +60,24 @@ class DynamicFunctor : public BaseFunctor {
     Matrix_t<T> trajectory = GenerateDynamicTrajectory<T, M, I>(
       initial_states_t,
       opt_vec,
-      params_);
+      params_.get());
 
     // costs
+    vector<BaseCostPtr> costs_ = this->GetCosts();
     for ( int i = 0; i < costs_.size(); i++ ) {
-      if (dynamic_cast<JerkCost*>(costs_[i])) {
-        JerkCost* cost = dynamic_cast<JerkCost*>(costs_[i]);
+      if (std::dynamic_pointer_cast<JerkCost>(costs_[i])) {
+        JerkCostPtr cost = std::dynamic_pointer_cast<JerkCost>(costs_[i]);
         costs += cost->Evaluate<T>(trajectory, opt_vec);
         weights += cost->Weight<T>();
       }
-      if (dynamic_cast<ReferenceCost*>(costs_[i])) {
-        ReferenceCost* cost = dynamic_cast<ReferenceCost*>(costs_[i]);
+      if (std::dynamic_pointer_cast<ReferenceCost>(costs_[i])) {
+        ReferenceCostPtr cost =
+          std::dynamic_pointer_cast<ReferenceCost>(costs_[i]);
         costs += cost->Evaluate<T>(trajectory, opt_vec);
         weights += cost->Weight<T>();
       }
-      if (dynamic_cast<InputCost*>(costs_[i])) {
-        InputCost* cost = dynamic_cast<InputCost*>(costs_[i]);
+      if (std::dynamic_pointer_cast<InputCost>(costs_[i])) {
+        InputCostPtr cost = std::dynamic_pointer_cast<InputCost>(costs_[i]);
         costs += cost->Evaluate<T>(trajectory, opt_vec);
         weights += cost->Weight<T>();
       }
@@ -92,16 +88,17 @@ class DynamicFunctor : public BaseFunctor {
     return true;
   }
 
-  void AddCost(BaseCost* cost) {
-    costs_.push_back(cost);
-  }
+
 
   Matrix_t<double> initial_states_;
-  vector<BaseCost*> costs_;
 };
 
 typedef DynamicFunctor<SingleTrackModel, IntegrationRK4> SingleTrackFunctor;
 typedef DynamicFunctor<SingleTrackModel,
                        IntegrationEuler> FastSingleTrackFunctor;
 typedef DynamicFunctor<NullModel, IntegrationRK4> NullModelFunctor;
+
+typedef std::shared_ptr<SingleTrackFunctor> SingleTrackFunctorPtr;
+typedef std::shared_ptr<FastSingleTrackFunctor> FastSingleTrackFunctorPtr;
+typedef std::shared_ptr<NullModelFunctor> NullModelFunctorPtr;
 }  // namespace optimizer

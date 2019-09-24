@@ -11,16 +11,17 @@
 namespace dynamics {
 
 using geometry::Matrix_t;
-using commons::Parameters;
+using commons::ParameterPtr;
+using commons::Parameter;
 
 class NullModel {
  public:
-  explicit NullModel(Parameters* params) {}
+  NullModel() {}
 
   template<typename T, class I>
   static Matrix_t<T> Step(const Matrix_t<T>& state,
-                          const Matrix_t<T>& u,
-                          Parameters* params) {
+                   const Matrix_t<T>& u,
+                   Parameter* params) {
     return u;
   }
 };

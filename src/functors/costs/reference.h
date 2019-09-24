@@ -15,13 +15,14 @@ namespace optimizer {
 
 using geometry::Matrix_t;
 using geometry::Line;
-using commons::Parameters;
+using commons::ParameterPtr;
+using commons::Parameter;
 using commons::CalculateDistance;
 
 class ReferenceCost : public BaseCost {
  public:
-  ReferenceCost() : BaseCost(nullptr), reference_line_() {}
-  explicit ReferenceCost(Parameters* params) :
+  ReferenceCost() : BaseCost(), reference_line_() {}
+  explicit ReferenceCost(ParameterPtr& params) :
     BaseCost(params) {
       weight_ = params_->get<double>("weight_distance", 1000.0);
     }
@@ -46,5 +47,7 @@ class ReferenceCost : public BaseCost {
 
   Matrix_t<double> reference_line_;
 };
+
+typedef std::shared_ptr<ReferenceCost> ReferenceCostPtr;
 
 }  // namespace optimizer

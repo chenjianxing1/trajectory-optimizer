@@ -15,13 +15,15 @@
 namespace optimizer {
 
 using geometry::Matrix_t;
-using commons::Parameters;
+using commons::Parameter;
 using commons::CalculateJerk;
+using commons::ParameterPtr;
+
 
 class JerkCost : public BaseCost {
  public:
-  JerkCost() : BaseCost(nullptr) {}
-  explicit JerkCost(Parameters* params) :
+  JerkCost() : BaseCost() {}
+  explicit JerkCost(ParameterPtr& params) :
     BaseCost(params) {
       weight_ = params_->get<double>("weight_jerk", 1000.0);
     }
@@ -41,5 +43,7 @@ class JerkCost : public BaseCost {
     return T(weight_);
   }
 };
+
+typedef std::shared_ptr<JerkCost> JerkCostPtr;
 
 }  // namespace optimizer

@@ -13,7 +13,8 @@
 #include "src/commons/parameters.h"
 
 namespace dynamics {
-  using commons::Parameters;
+  using commons::ParameterPtr;
+  using commons::Parameter;
   using geometry::Matrix_t;
 
   enum DynamicModels {
@@ -22,9 +23,10 @@ namespace dynamics {
   };
 
   template<typename T, class M, class I>
-  Matrix_t<T> GenerateDynamicTrajectory(const Matrix_t<T>& initial_states,
-                                        const Matrix_t<T>& input_vector,
-                                        Parameters* params) {
+  inline Matrix_t<T> GenerateDynamicTrajectory(
+    const Matrix_t<T>& initial_states,
+    const Matrix_t<T>& input_vector,
+    Parameter* params) {
     Matrix_t<T> trajectory(input_vector.rows(),
                            initial_states.cols());
     trajectory.block(0,

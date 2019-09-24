@@ -15,13 +15,14 @@
 namespace optimizer {
 
 using geometry::Matrix_t;
-using commons::Parameters;
+using commons::Parameter;
+using commons::ParameterPtr;
 
 class InputCost : public BaseCost {
  public:
   InputCost() :
-    BaseCost(nullptr){}
-  explicit InputCost(Parameters* params) :
+    BaseCost(){}
+  explicit InputCost(ParameterPtr& params) :
     BaseCost(params) {
       weight_ = params_->get<double>("weight_input", 100.0);
     }
@@ -63,5 +64,7 @@ class InputCost : public BaseCost {
   Matrix_t<double> lower_bounds_;
   Matrix_t<double> upper_bounds_;
 };
+
+typedef std::shared_ptr<InputCost> InputCostPtr;
 
 }  // namespace optimizer

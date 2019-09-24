@@ -3,6 +3,7 @@
 // This work is licensed under the terms of the MIT license.
 // For a copy, see <https://opensource.org/licenses/MIT>.
 #include <functional>
+#include <memory>
 #include "gtest/gtest.h"
 #include "src/commons/parameters.h"
 #include "src/dynamics/dynamics.h"
@@ -13,11 +14,12 @@ TEST(dynamics, single_track_model) {
   using dynamics::IntegrationRK4;
   using dynamics::IntegrationEuler;
   using geometry::Matrix_t;
-  using commons::Parameters;
+  using commons::Parameter;
+  using commons::ParameterPtr;
 
-  Parameters params;
-  params.set<double>("wheel_base", 2.7);
-  params.set<double>("dt", 0.1);
+  ParameterPtr params = std::make_shared<Parameter>();
+  params->set<double>("wheel_base", 2.7);
+  params->set<double>("dt", 0.1);
 
   //! add objects to world
   Matrix_t<double> state(1, 4);
@@ -25,27 +27,29 @@ TEST(dynamics, single_track_model) {
   Matrix_t<double> inp(1, 2);
   inp << 0.0, 0.0;  // acceleration and steering angle
 
-  SingleTrackModel model(&params);
-  state = model.Step<double, IntegrationRK4>(state, inp, &params);
+  SingleTrackModel model;
+  state = model.Step<double, IntegrationRK4>(state, inp, params.get());
   Matrix_t<double> state_after(1, 4);
   state_after << 0.5, 0.0, 0.0, 5.0;  // x, y, theta, v
   ASSERT_EQ(state, state_after);
-  state = model.Step<double, IntegrationEuler>(state, inp, &params);
+  state = model.Step<double, IntegrationEuler>(state, inp, params.get());
   Matrix_t<double> state_after_again(1, 4);
   state_after_again << 1.0, 0.0, 0.0, 5.0;  // x, y, theta, v
   ASSERT_EQ(state, state_after_again);
 }
+
 
 TEST(dynamics, copy_model) {
   using dynamics::NullModel;
   using geometry::Matrix_t;
   using dynamics::IntegrationRK4;
   using dynamics::IntegrationEuler;
-  using commons::Parameters;
+  using commons::ParameterPtr;
+  using commons::Parameter;
 
-  Parameters params;
-  params.set<double>("wheel_base", 2.7);
-  params.set<double>("dt", 0.1);
+  ParameterPtr params = std::make_shared<Parameter>();
+  params->set<double>("wheel_base", 2.7);
+  params->set<double>("dt", 0.1);
 
   //! add objects to world
   Matrix_t<double> state(1, 2);
@@ -54,8 +58,8 @@ TEST(dynamics, copy_model) {
   Matrix_t<double> inp(1, 2);
   inp << 1.0, 1.0;  // acceleration and steering angle
 
-  NullModel model(&params);
-  state = model.Step<double, IntegrationRK4>(state, inp, &params);
+  NullModel model;
+  state = model.Step<double, IntegrationRK4>(state, inp, params.get());
 
   Matrix_t<double> state_after(1, 2);
   state_after << 1.0, 1.0;  // x, y, theta, v
@@ -68,11 +72,12 @@ TEST(dynamics, traj_gen) {
   using dynamics::IntegrationEuler;
   using dynamics::GenerateDynamicTrajectory;
   using geometry::Matrix_t;
-  using commons::Parameters;
+  using commons::Parameter;
+  using commons::ParameterPtr;
 
-  Parameters params;
-  params.set<double>("wheel_base", 2.7);
-  params.set<double>("dt", 0.1);
+  ParameterPtr params = std::make_shared<Parameter>();
+  params->set<double>("wheel_base", 2.7);
+  params->set<double>("dt", 0.1);
 
   //! add objects to world
   Matrix_t<double> initial_states(1, 4);
@@ -86,16 +91,17 @@ TEST(dynamics, traj_gen) {
     GenerateDynamicTrajectory<double, SingleTrackModel, IntegrationRK4>(
       initial_states,
       inp,
-      &params);
+      params.get());
   std::cout << trajectory << std::endl;
 
   trajectory =
     GenerateDynamicTrajectory<double, SingleTrackModel, IntegrationEuler>(
       initial_states,
       inp,
-      &params);
+      params.get());
   std::cout << trajectory << std::endl;
 }
+
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

@@ -22,33 +22,33 @@ using optimizer::InputCost;
 using optimizer::JerkCost;
 using optimizer::BaseCost;
 using optimizer::ReferenceCost;
-using commons::Parameters;
+using commons::Parameter;
 using geometry::Matrix_t;
 
 
 void python_optimizer(py::module m) {
   py::class_<BaseFunctor>(m, "BaseFunctor")
-    .def(py::init<Parameters*>());
+    .def(py::init<Parameter*>());
 
   py::class_<SingleTrackFunctor,
              BaseFunctor>(m, "SingleTrackFunctor")
-    .def(py::init<Matrix_t<double>, Parameters*>())
+    .def(py::init<Matrix_t<double>, Parameter*>())
     .def("AddCost", &SingleTrackFunctor::AddCost);
 
   py::class_<BaseCost>(m, "BaseCost")
-    .def(py::init<Parameters*>());
+    .def(py::init<Parameter*>());
 
   py::class_<JerkCost, BaseCost>(m, "JerkCost")
-    .def(py::init<Parameters*>());
+    .def(py::init<Parameter*>());
 
   py::class_<ReferenceCost, BaseCost>(m, "ReferenceCost")
-    .def(py::init<Parameters*>());
+    .def(py::init<Parameter*>());
 
   py::class_<InputCost, BaseCost>(m, "InputCost")
-    .def(py::init<Parameters*>());
+    .def(py::init<Parameter*>());
 
   py::class_<Optimizer>(m, "Optimizer")
-    .def(py::init<Parameters*>())
+    .def(py::init<Parameter*>())
     .def("AddResidualBlock",
       &optimizer::Optimizer::AddResidualBlock<SingleTrackFunctor,
                                               ceres::TrivialLoss,

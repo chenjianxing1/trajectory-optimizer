@@ -7,19 +7,30 @@
 #include "src/dynamics/dynamics.h"
 #include "src/optimizer.h"
 #include "src/functors/dynamic_functor.h"
+#include "src/functors/base_functor.h"
 #include "src/functors/costs/jerk.h"
+#include "src/functors/costs/base_cost.h"
 #include "src/functors/costs/reference.h"
 #include "src/functors/costs/inputs.h"
 
 
 TEST(optimizer, single_track_model) {
-  using commons::Parameters;
+  using commons::Parameter;
+  using commons::ParameterPtr;
   using optimizer::Optimizer;
   using optimizer::JerkCost;
+  using optimizer::BaseCost;
+  using optimizer::BaseCostPtr;
+  using optimizer::BaseFunctor;
+  using optimizer::BaseFunctorPtr;
+  using optimizer::JerkCostPtr;
+  using optimizer::InputCostPtr;
   using optimizer::InputCost;
   using optimizer::ReferenceCost;
+  using optimizer::ReferenceCostPtr;
   using optimizer::SingleTrackFunctor;
   using optimizer::FastSingleTrackFunctor;
+  using optimizer::FastSingleTrackFunctorPtr;
   using optimizer::NullModelFunctor;
   using geometry::Matrix_t;
   using dynamics::SingleTrackModel;
@@ -28,14 +39,14 @@ TEST(optimizer, single_track_model) {
   using dynamics::GenerateDynamicTrajectory;
 
   // initialization
-  Parameters params;
-  params.set<double>("wheel_base", 2.7);
-  params.set<double>("dt", 0.1);
+  ParameterPtr params = std::make_shared<Parameter>();
+  params->set<double>("wheel_base", 2.7);
+  params->set<double>("dt", 0.1);
 
   // weights
-  params.set<double>("weight_jerk", 1e3);
-  params.set<double>("weight_distance", 1);
-  params.set<double>("function_tolerance", 1e-9);
+  params->set<double>("weight_jerk", 1e3);
+  params->set<double>("weight_distance", 1);
+  params->set<double>("function_tolerance", 1e-8);
 
   Matrix_t<double> initial_states(1, 4);
   initial_states << 0.0, 0.0 , 0.0, 5.0;  // x, y, theta, v
@@ -50,25 +61,24 @@ TEST(optimizer, single_track_model) {
 
 
   // optimization
-  Optimizer opt(&params);
+  Optimizer opt(params);
   opt.SetOptimizationVector(opt_vec);
 
   // add reference functor
   FastSingleTrackFunctor* functor =
-    new FastSingleTrackFunctor(initial_states, &params);
+    new FastSingleTrackFunctor(initial_states, params);
 
   // jerk
-  JerkCost* jerk_costs = new JerkCost(&params);
+  JerkCostPtr jerk_costs = std::make_shared<JerkCost>(params);
   functor->AddCost(jerk_costs);
 
   // reference line
-
-  ReferenceCost* ref_costs = new ReferenceCost(&params);
+  ReferenceCostPtr ref_costs = std::make_shared<ReferenceCost>(params);
   ref_costs->SetReferenceLine(ref_line);
   functor->AddCost(ref_costs);
 
   // input constraints
-  InputCost* inp_costs = new InputCost(&params);
+  InputCostPtr inp_costs = std::make_shared<InputCost>(params);
   Matrix_t<double> lb(1, 2);
   lb << -0.2, -1.0;
   Matrix_t<double> ub(1, 2);
@@ -79,8 +89,6 @@ TEST(optimizer, single_track_model) {
 
   opt.AddResidualBlock<FastSingleTrackFunctor>(functor);
 
-  // fix first two opt vec params
-  // opt.FixOptimizationVector(0, 2);
 
   // solve
   opt.Solve();
@@ -92,7 +100,7 @@ TEST(optimizer, single_track_model) {
     GenerateDynamicTrajectory<double, SingleTrackModel, IntegrationEuler>(
       initial_states,
       opt.GetOptimizationVector(),
-      &params);
+      params.get());
   std::cout << trajectory << std::endl;
 }
 

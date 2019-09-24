@@ -13,7 +13,8 @@
 namespace dynamics {
 
 using geometry::Matrix_t;
-using commons::Parameters;
+using commons::ParameterPtr;
+using commons::Parameter;
 
 enum StateSingleTrackModel {
   X = 0,
@@ -29,12 +30,12 @@ enum InputSingleTrackModel {
 
 class SingleTrackModel{
  public:
-  explicit SingleTrackModel(Parameters* params) {}
+  SingleTrackModel() {}
 
   template<typename T>
   static Matrix_t<T> fDot(const Matrix_t<T>& state,
                           const Matrix_t<T>& u,
-                          Parameters* params) {
+                          Parameter* params) {
     Matrix_t<T> A(1, state.cols());
     T wheel_base = T(params->get<double>("wheel_base", 2.7));
     A << state(VELOCITY) * cos(state(THETA)),
@@ -47,7 +48,7 @@ class SingleTrackModel{
   template<typename T, class I>
   static Matrix_t<T> Step(const Matrix_t<T>& state,
                           const Matrix_t<T>& u,
-                          Parameters* params) {
+                          Parameter* params) {
     std::function<Matrix_t<T> (const Matrix_t<T>&)> fDot_ =
       std::bind(fDot<T>,
                 std::placeholders::_1,

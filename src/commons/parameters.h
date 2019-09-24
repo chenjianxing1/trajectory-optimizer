@@ -1,5 +1,10 @@
+// Copyright (c) 2019 Patrick Hart
+//
+// This work is licensed under the terms of the MIT license.
+// For a copy, see <https://opensource.org/licenses/MIT>.
 #pragma once
 #include <variant>
+#include <memory>
 #include <string>
 #include <vector>
 #include <map>
@@ -18,7 +23,7 @@ typedef variant<int,
                 bool,
                 std::map<string, double>> Variants;
 
-class Parameters {
+class Parameter {
  public:
   template<typename T>
   void set(string name, T val) {
@@ -36,5 +41,6 @@ class Parameters {
   map<string, Variants> parameters_;
 };
 
+typedef std::shared_ptr<Parameter> ParameterPtr;
 }  // namespace commons
 

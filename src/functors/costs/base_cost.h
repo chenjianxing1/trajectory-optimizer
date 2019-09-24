@@ -11,13 +11,13 @@
 namespace optimizer {
 
 using geometry::Matrix_t;
-using commons::Parameters;
-
+using commons::Parameter;
+using commons::ParameterPtr;
 
 class BaseCost {
  public:
   BaseCost() {}
-  explicit BaseCost(Parameters* params) :
+  explicit BaseCost(ParameterPtr& params) :
     params_(params),
     weight_(0.) {}
   virtual ~BaseCost() = default;
@@ -26,8 +26,10 @@ class BaseCost {
   T Evaluate(const Matrix_t<T>& trajectory,
              const Matrix_t<T>& inputs) { return T(0.); }
 
-  Parameters* params_;
+  ParameterPtr params_;
   double weight_;
 };
+
+typedef std::shared_ptr<BaseCost> BaseCostPtr;
 
 }  // namespace optimizer
