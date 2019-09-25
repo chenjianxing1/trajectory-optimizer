@@ -22,14 +22,7 @@ class BaseFunctor {
   explicit BaseFunctor(const ParameterPtr& params) :
     params_(params), opt_vec_len_(0), param_count_(0) {}
   virtual ~BaseFunctor() = default;
-  BaseFunctor(const ParameterPtr& params,
-              std::vector<BaseCostPtr>costs,
-              int opt_vec_len,
-              int param_count) :
-    params_(params),
-    opt_vec_len_(opt_vec_len),
-    param_count_(param_count),
-    costs_(costs) {}
+
   template<typename T>
   Matrix_t<T> ParamsToEigen(T const* const* parameters) {
     Matrix_t<T> eigen_params(this->GetOptVecLen(),

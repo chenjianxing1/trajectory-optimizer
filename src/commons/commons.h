@@ -14,7 +14,7 @@ using geometry::Point;
 using geometry::Distance;
 
 template<typename T>
-Matrix_t<T> CalculateDiff(const Matrix_t<T>& traj, T dt) {
+inline Matrix_t<T> CalculateDiff(const Matrix_t<T>& traj, T dt) {
   Matrix_t<T> ret_traj(traj.rows() - 1, traj.cols());
   for (int i = 1; i < traj.rows(); i++) {
     ret_traj.row(i-1) = (traj.row(i) - traj.row(i-1)) / dt;
@@ -23,18 +23,18 @@ Matrix_t<T> CalculateDiff(const Matrix_t<T>& traj, T dt) {
 }
 
 template<typename T>
-T CalculateJerk(const Matrix_t<T>& traj, T dt) {
+inline T CalculateJerk(const Matrix_t<T>& traj, T dt) {
   Matrix_t<T> reduced_traj = traj.block(0, 0, traj.rows(), 2);
   Matrix_t<T> traj_v = CalculateDiff(reduced_traj, dt);
   Matrix_t<T> traj_a = CalculateDiff(traj_v, dt);
-  // std::cout << "speed: "<< reduced_traj << traj_v << std::endl;
   Matrix_t<T> traj_j = CalculateDiff(traj_a, dt);
   return traj_j.sum();
 }
 
 template<typename T>
-T CalculateDistance(const Line<T, 2>& line, const Matrix_t<T>& trajectory) {
-  T dist = T(0.);
+inline T CalculateDistance(const Line<T, 2>& line,
+                           const Matrix_t<T>& trajectory,
+                           T dist = T(0.)) {
   for ( int i = 1; i < trajectory.rows(); i++ ) {
     Point<T, 2> pt(T(trajectory(i, 0)), T(trajectory(i, 1)));
     dist += Distance<T, Line<T, 2>, Point<T, 2>>(line, pt);

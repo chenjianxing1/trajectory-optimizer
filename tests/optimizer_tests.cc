@@ -93,13 +93,13 @@ TEST(optimizer, single_track_model) {
   // solve
   opt.Solve();
   opt.Report();
-  std::cout << opt.GetOptimizationVector() << std::endl;
+  std::cout << opt.Result() << std::endl;
 
   // trajectory
   Matrix_t<double> trajectory =
     GenerateDynamicTrajectory<double, SingleTrackModel, IntegrationEuler>(
       initial_states,
-      opt.GetOptimizationVector(),
+      opt.Result(),
       params.get());
   std::cout << trajectory << std::endl;
 }

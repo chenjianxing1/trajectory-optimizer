@@ -42,21 +42,11 @@ class DynamicFunctor : public BaseFunctor {
   explicit DynamicFunctor(Matrix_t<double> initial_states) :
     BaseFunctor(nullptr),
     initial_states_(initial_states) {}
+
   explicit DynamicFunctor(Matrix_t<double> initial_states,
                           ParameterPtr params) :
     BaseFunctor(params),
     initial_states_(initial_states) {}
-
-  explicit DynamicFunctor(const DynamicFunctor<M, I>& func) :
-    BaseFunctor(func.params_,
-                func.costs_,
-                func.opt_vec_len_,
-                func.param_count_),
-    initial_states_(func.initial_states_) {}
-
-  ~DynamicFunctor() {
-    // do nothing
-  }
 
   template<typename T>
   bool operator()(T const* const* parameters,
@@ -80,17 +70,20 @@ class DynamicFunctor : public BaseFunctor {
         JerkCostPtr cost = std::dynamic_pointer_cast<JerkCost>(costs_[i]);
         costs += cost->Evaluate<T>(trajectory, opt_vec);
         weights += cost->Weight<T>();
+        continue;
       }
       if (std::dynamic_pointer_cast<ReferenceCost>(costs_[i])) {
         ReferenceCostPtr cost =
           std::dynamic_pointer_cast<ReferenceCost>(costs_[i]);
         costs += cost->Evaluate<T>(trajectory, opt_vec);
         weights += cost->Weight<T>();
+        continue;
       }
       if (std::dynamic_pointer_cast<InputCost>(costs_[i])) {
         InputCostPtr cost = std::dynamic_pointer_cast<InputCost>(costs_[i]);
         costs += cost->Evaluate<T>(trajectory, opt_vec);
         weights += cost->Weight<T>();
+        continue;
       }
       // TODO(@hart): boundaries, dynamic objects
     }
@@ -99,8 +92,7 @@ class DynamicFunctor : public BaseFunctor {
     return true;
   }
 
-
-
+ private:
   Matrix_t<double> initial_states_;
 };
 

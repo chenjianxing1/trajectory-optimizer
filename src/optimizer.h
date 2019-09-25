@@ -48,8 +48,8 @@ class Optimizer {
 
   template<typename T>
   void PythonAddSingleTrackFunctor(const Matrix_t<double>& initial_states,
-                             const ParameterPtr& params,
-                             std::vector<BaseCostPtr> costs) {
+                                   const ParameterPtr& params,
+                                   const std::vector<BaseCostPtr>& costs) {
     BaseFunctor* functor =
       new T(initial_states, params);
     for (auto& cost : costs) {
@@ -62,7 +62,6 @@ class Optimizer {
   void AddResidualBlock(BaseFunctor* functor, int num_residuals = 1) {
     DynamicAutoDiffCostFunction<T, N>* ceres_functor =
       new DynamicAutoDiffCostFunction<T, N>(dynamic_cast<T*>(functor));
-
     for (vector<double>& vec : optimization_vectors_) {
       ceres_functor->AddParameterBlock(optimization_vector_len_);
     }
@@ -95,15 +94,13 @@ class Optimizer {
         new ceres::SubsetParameterization(optimization_vector_len_, vec));
   }
 
-
   void Solve() {
     ceres::Solve(options_, &problem_, &summary_);
   }
 
-  Matrix_t<double> GetOptimizationVector() {
+  Matrix_t<double> Result() {
     Matrix_t<double> result(optimization_vector_len_,
                             parameter_block_.size());
-
     for ( int i = 0; i < optimization_vector_len_; i++ ) {
       for ( int j = 0; j < parameter_block_.size(); j++ ) {
         result(i, j) = parameter_block_[j][i];

@@ -20,8 +20,7 @@ using commons::ParameterPtr;
 
 class InputCost : public BaseCost {
  public:
-  InputCost() :
-    BaseCost(){}
+  InputCost() : BaseCost() {}
   explicit InputCost(const ParameterPtr& params) :
     BaseCost(params) {
       weight_ = params_->get<double>("weight_input", 100.0);
@@ -32,6 +31,7 @@ class InputCost : public BaseCost {
   T SquaredNorm(const T& x, int N = 2) const {
     return ceres::sqrt(ceres::pow(x, N));
   }
+
   template<typename T>
   T Evaluate(const Matrix_t<T>& trajectory,
              const Matrix_t<T>& inputs) const {

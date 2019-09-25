@@ -20,8 +20,8 @@ class NullModel {
 
   template<typename T, class I>
   static Matrix_t<T> Step(const Matrix_t<T>& state,
-                   const Matrix_t<T>& u,
-                   Parameter* params) {
+                          const Matrix_t<T>& u,
+                          Parameter* params) {
     return u;
   }
 };

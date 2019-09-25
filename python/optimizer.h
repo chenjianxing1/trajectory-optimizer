@@ -47,7 +47,7 @@ void python_optimizer(py::module m) {
     // .def("AddResidualBlock",
     //   &optimizer::Optimizer::AddResidualBlock<SingleTrackFunctor, 4>)
     .def("Solve", &optimizer::Optimizer::Solve)
-    .def("GetOptimizationVector", &optimizer::Optimizer::GetOptimizationVector)
+    .def("Result", &optimizer::Optimizer::Result)
     .def("SetOptimizationVector", &optimizer::Optimizer::SetOptimizationVector)
     .def("AddSingleTrackFunctor",
       &optimizer::Optimizer::PythonAddSingleTrackFunctor<SingleTrackFunctor>)
