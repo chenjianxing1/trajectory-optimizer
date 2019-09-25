@@ -40,7 +40,9 @@ void python_optimizer(py::module m) {
     .def("SetReferenceLine", &optimizer::ReferenceCost::SetReferenceLine);
 
   py::class_<InputCost, BaseCost, InputCostPtr>(m, "InputCost")
-    .def(py::init<const ParameterPtr&>());
+    .def(py::init<const ParameterPtr&>())
+    .def("SetLowerBound", &optimizer::InputCost::SetLowerBound)
+    .def("SetUpperBound", &optimizer::InputCost::SetUpperBound);
 
   py::class_<Optimizer, std::shared_ptr<Optimizer>>(m, "Optimizer")
     .def(py::init<const ParameterPtr&>())

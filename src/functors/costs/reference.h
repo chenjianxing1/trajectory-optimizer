@@ -32,7 +32,10 @@ class ReferenceCost : public BaseCost {
   template<typename T>
   T Evaluate(const Matrix_t<T>& trajectory,
              const Matrix_t<T>& inputs) const {
-    static Line<T, 2> ref_line(reference_line_.cast<T>());
+    Line<T, 2> ref_line(reference_line_.cast<T>());
+    // if (ref_line.obj_.empty()) {
+    //   ref_line = Line<T, 2>(reference_line_.cast<T>());
+    // }
     T dist = CalculateDistance<T>(ref_line, trajectory);
     return Weight<T>() * dist * dist;
   }

@@ -28,12 +28,16 @@ class OptimizerTests(unittest.TestCase):
     # costs
     ref_cost = ReferenceCost(params)
     ref_cost.SetReferenceLine(ref_line)
-    jerk_costs = JerkCost(params)
+    jerk_cost = JerkCost(params)
+
+    input_cost = InputCost(params)
+    input_cost.SetLowerBound(np.array([[-0.2, -1.0]]))
+    input_cost.SetUpperBound(np.array([[0.2, 1.0]]))
 
     # optimization problem
     functor = opt.AddSingleTrackFunctor(initial_state,
                                         params,
-                                        [jerk_costs, ref_cost])
+                                        [jerk_cost, ref_cost, input_cost])
     opt.Solve()
     opt.Report()
     print(opt.Result())
