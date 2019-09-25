@@ -51,7 +51,7 @@ TEST(optimizer, single_track_model) {
   Matrix_t<double> initial_states(1, 4);
   initial_states << 0.0, 0.0 , 0.0, 5.0;  // x, y, theta, v
 
-  Matrix_t<double> opt_vec(6, 2);
+  Matrix_t<double> opt_vec(10, 2);
   opt_vec.setZero();
 
   Matrix_t<double> ref_line(3, 2);
@@ -65,7 +65,7 @@ TEST(optimizer, single_track_model) {
   opt.SetOptimizationVector(opt_vec);
 
   // add reference functor
-  FastSingleTrackFunctor* functor =
+  BaseFunctor* functor =
     new FastSingleTrackFunctor(initial_states, params);
 
   // jerk

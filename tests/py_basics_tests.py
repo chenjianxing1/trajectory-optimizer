@@ -18,16 +18,23 @@ class OptimizerTests(unittest.TestCase):
     params = Parameter()
     opt = Optimizer(params)
     initial_state = np.array([[0., 0., 0., 5.]])
-    opt_vec = np.array([[0., 0.],
-                        [0., 0.],
-                        [0., 0.]])
+    opt_vec = np.zeros(shape=(10, 2))
+
+    ref_line = np.array([[0., 0.],
+                         [5., .5],
+                         [10., .5]])
     opt.SetOptimizationVector(opt_vec)
 
-    functor = SingleTrackFunctor(initial_state, params)
-    jerk_cost = JerkCost(params)
-    functor.AddCost(jerk_cost)
+    ref_cost = ReferenceCost(params)
+    ref_cost.SetReferenceLine(ref_line)
+    jerk_costs = JerkCost(params)
 
-    opt.AddResidualBlock(functor, 1)
+    functor = opt.AddSingleTrackFunctor(initial_state,
+                                        params,
+                                        [jerk_costs, ref_cost])
+    opt.Solve()
+    opt.Report()
+    print(opt.GetOptimizationVector())
 
 
 

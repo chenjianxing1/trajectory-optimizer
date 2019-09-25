@@ -36,17 +36,20 @@ void python_optimizer(py::module m) {
     .def(py::init<const ParameterPtr&>());
 
   py::class_<ReferenceCost, BaseCost, ReferenceCostPtr>(m, "ReferenceCost")
-    .def(py::init<const ParameterPtr&>());
+    .def(py::init<const ParameterPtr&>())
+    .def("SetReferenceLine", &optimizer::ReferenceCost::SetReferenceLine);
 
   py::class_<InputCost, BaseCost, InputCostPtr>(m, "InputCost")
     .def(py::init<const ParameterPtr&>());
 
   py::class_<Optimizer, std::shared_ptr<Optimizer>>(m, "Optimizer")
     .def(py::init<const ParameterPtr&>())
-    .def("AddResidualBlock",
-      &optimizer::Optimizer::AddResidualBlock<SingleTrackFunctor, 4>)
+    // .def("AddResidualBlock",
+    //   &optimizer::Optimizer::AddResidualBlock<SingleTrackFunctor, 4>)
     .def("Solve", &optimizer::Optimizer::Solve)
     .def("GetOptimizationVector", &optimizer::Optimizer::GetOptimizationVector)
     .def("SetOptimizationVector", &optimizer::Optimizer::SetOptimizationVector)
+    .def("AddSingleTrackFunctor",
+      &optimizer::Optimizer::PythonAddSingleTrackFunctor<SingleTrackFunctor>)
     .def("Report", &optimizer::Optimizer::Report);
 }

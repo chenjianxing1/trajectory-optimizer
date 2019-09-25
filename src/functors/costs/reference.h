@@ -14,6 +14,7 @@
 namespace optimizer {
 
 using geometry::Matrix_t;
+using geometry::BaseGeometry;
 using geometry::Line;
 using commons::ParameterPtr;
 using commons::Parameter;

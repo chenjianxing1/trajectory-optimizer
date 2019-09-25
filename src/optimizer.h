@@ -10,6 +10,8 @@
 #include "src/commons/parameters.h"
 #include "src/geometry/geometry.h"
 #include "src/functors/base_functor.h"
+#include "src/functors/costs/base_cost.h"
+#include "src/functors/dynamic_functor.h"
 
 namespace optimizer {
 
@@ -44,9 +46,20 @@ class Optimizer {
         params->get<bool>("minimizer_progress_to_stdout", false);
   }
 
+  template<typename T>
+  void PythonAddSingleTrackFunctor(const Matrix_t<double>& initial_states,
+                             const ParameterPtr& params,
+                             std::vector<BaseCostPtr> costs) {
+    BaseFunctor* functor =
+      new T(initial_states, params);
+    for (auto& cost : costs) {
+      functor->AddCost(cost);
+    }
+    this->AddResidualBlock<T>(functor);
+  }
+
   template<typename T, int N = 4>
   void AddResidualBlock(BaseFunctor* functor, int num_residuals = 1) {
-
     DynamicAutoDiffCostFunction<T, N>* ceres_functor =
       new DynamicAutoDiffCostFunction<T, N>(dynamic_cast<T*>(functor));
 
@@ -64,7 +77,6 @@ class Optimizer {
   // each column of an Eigen Matrix will become an optimization vector
   void SetOptimizationVector(const Matrix_t<double>& inputs) {
     for (int i = 0; i < inputs.cols(); i++) {
-      // TODO(@hart): FIX; here it goes south
       vector<double> empty_vec(inputs.rows(), 0.0);
       optimization_vectors_.push_back(empty_vec);
       parameter_block_.push_back(&optimization_vectors_[i][0]);

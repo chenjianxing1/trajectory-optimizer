@@ -47,6 +47,17 @@ class DynamicFunctor : public BaseFunctor {
     BaseFunctor(params),
     initial_states_(initial_states) {}
 
+  explicit DynamicFunctor(const DynamicFunctor<M, I>& func) :
+    BaseFunctor(func.params_,
+                func.costs_,
+                func.opt_vec_len_,
+                func.param_count_),
+    initial_states_(func.initial_states_) {}
+
+  ~DynamicFunctor() {
+    // do nothing
+  }
+
   template<typename T>
   bool operator()(T const* const* parameters,
                   T* residuals,

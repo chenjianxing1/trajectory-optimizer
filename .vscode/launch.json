@@ -18,7 +18,7 @@
 					"name": "(gdb) Launch",
 					"type": "cppdbg",
 					"request": "launch",
-					"program": "${workspaceFolder}/bazel-bin/tests/py_basics_tests",
+					"program": "${workspaceFolder}/bazel-bin/tests/optimizer_tests",
 					"args": [],
 					"stopAtEntry": false,
 					"cwd": "${workspaceFolder}",
