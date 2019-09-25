@@ -25,7 +25,7 @@ class ReferenceCost : public BaseCost {
   ReferenceCost() : BaseCost(), reference_line_() {}
   explicit ReferenceCost(const ParameterPtr& params) :
     BaseCost(params) {
-      weight_ = params_->get<double>("weight_distance", 1000.0);
+      weight_ = params_->get<double>("weight_distance", 0.1);
     }
   virtual ~ReferenceCost() {}
 
@@ -37,7 +37,7 @@ class ReferenceCost : public BaseCost {
     //   ref_line = Line<T, 2>(reference_line_.cast<T>());
     // }
     T dist = CalculateDistance<T>(ref_line, trajectory);
-    return Weight<T>() * dist * dist;
+    return Weight<T>() * dist;
   }
 
   void SetReferenceLine(const Matrix_t<double>& ref_line) {

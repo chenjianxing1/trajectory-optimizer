@@ -33,7 +33,7 @@ namespace dynamics {
                      0,
                      initial_states.rows(),
                      initial_states.cols()) = initial_states;
-    for (int i = initial_states.rows(); i < input_vector.rows(); i++) {
+    for (int i = initial_states.rows() - 1; i < input_vector.rows(); i++) {
       trajectory.row(i) = M::template Step<T, I>(
         trajectory.row(i-1),
         input_vector.row(i-1),

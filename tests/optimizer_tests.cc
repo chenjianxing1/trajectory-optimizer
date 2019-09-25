@@ -44,12 +44,14 @@ TEST(optimizer, single_track_model) {
   params->set<double>("dt", 0.1);
 
   // weights
-  params->set<double>("weight_jerk", 1e3);
-  params->set<double>("weight_distance", 1);
+  params->set<double>("weight_jerk", 10);
+  params->set<double>("weight_distance", 0.1);
   params->set<double>("function_tolerance", 1e-8);
 
-  Matrix_t<double> initial_states(1, 4);
-  initial_states << 0.0, 0.0 , 0.0, 5.0;  // x, y, theta, v
+  Matrix_t<double> initial_states(3, 4);
+  initial_states << 0.0, 0.0, 0.0, 10.0,
+                    1.0, 0.0, 0.0, 10.0,
+                    2.0, 0.0, 0.0, 10.0;  // x, y, theta, v
 
   Matrix_t<double> opt_vec(10, 2);
   opt_vec.setZero();

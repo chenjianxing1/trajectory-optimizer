@@ -28,7 +28,12 @@ inline T CalculateJerk(const Matrix_t<T>& traj, T dt) {
   Matrix_t<T> traj_v = CalculateDiff(reduced_traj, dt);
   Matrix_t<T> traj_a = CalculateDiff(traj_v, dt);
   Matrix_t<T> traj_j = CalculateDiff(traj_a, dt);
-  return traj_j.sum();
+  T jerk = T(0.);
+  for (int i = 0; i < traj_j.rows(); i++) {
+    jerk += traj_j(i, 0)*traj_j(i, 0);
+    jerk += traj_j(i, 1)*traj_j(i, 1);
+  }
+  return jerk;
 }
 
 template<typename T>
@@ -37,7 +42,8 @@ inline T CalculateDistance(const Line<T, 2>& line,
                            T dist = T(0.)) {
   for ( int i = 1; i < trajectory.rows(); i++ ) {
     Point<T, 2> pt(T(trajectory(i, 0)), T(trajectory(i, 1)));
-    dist += Distance<T, Line<T, 2>, Point<T, 2>>(line, pt);
+    T tmp_dist = Distance<T, Line<T, 2>, Point<T, 2>>(line, pt);
+    dist += tmp_dist*tmp_dist;
   }
   return dist;
 }

@@ -28,11 +28,6 @@ class InputCost : public BaseCost {
   virtual ~InputCost() {}
 
   template<typename T>
-  T SquaredNorm(const T& x, int N = 2) const {
-    return ceres::sqrt(ceres::pow(x, N));
-  }
-
-  template<typename T>
   T Evaluate(const Matrix_t<T>& trajectory,
              const Matrix_t<T>& inputs) const {
     T cost = T(0.);
@@ -40,12 +35,12 @@ class InputCost : public BaseCost {
       // check if within bounds
       for (int j = 0; j < inputs.rows(); j++) {
         if (inputs(j, i) < lower_bounds_(0, i))
-          cost += SquaredNorm<T>(inputs(j, i) - lower_bounds_(0, i));
+          cost += ceres::pow(inputs(j, i) - lower_bounds_(0, i), 2);
         if (inputs(j, i) > upper_bounds_(0, i))
-          cost += SquaredNorm<T>(inputs(j, i) - upper_bounds_(0, i));
+          cost += ceres::pow(inputs(j, i) - upper_bounds_(0, i), 2);
       }
     }
-    return Weight<T>() * cost * cost;
+    return Weight<T>() * cost;
   }
 
   template<typename T>

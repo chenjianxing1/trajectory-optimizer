@@ -1,14 +1,16 @@
 import unittest
 import numpy as np
-
+import matplotlib.pyplot as plt
 from optimizer.optimizer import \
   Optimizer, SingleTrackFunctor, JerkCost, ReferenceCost, InputCost, BaseFunctor
 from optimizer.commons import Parameter
+from optimizer.dynamics import GenerateTrajectory
 
 class OptimizerTests(unittest.TestCase):
   def test_parameters(self):
     params = Parameter()
     params.set("wheel_base", 2.7)
+    params.set("weight_jerk", 10e4)
     wheel_base = params.get("wheel_base", 2.9)
     self.assertEqual(wheel_base, 2.7)
     wheel_base_undefined = params.get("wheel_base_undefined", 2.9)
@@ -16,11 +18,18 @@ class OptimizerTests(unittest.TestCase):
 
   def test_optimizer(self):
     params = Parameter()
-    initial_state = np.array([[0., 0., 0., 5.]])
-    opt_vec = np.zeros(shape=(10, 2))
-    ref_line = np.array([[0., 0.],
-                         [5., .5],
-                         [10., .5]])
+    params.set("wheel_base", 2.7)
+    params.set("dt", 0.1)
+    params.set("weight_jerk", 100.)
+    params.set("function_tolerance", 1e-8)
+    params.set("max_num_iterations", 1000)
+    initial_state = np.array([[0., 0., 0., 10.],
+                              [1., 0., 0., 10.],
+                              [2., 0., 0., 10.]])
+
+    opt_vec = np.zeros(shape=(30, 2))
+    ref_line = np.array([[0., .5],
+                         [1000., .5]])
     # optimizer
     opt = Optimizer(params)
     opt.SetOptimizationVector(opt_vec)
@@ -40,7 +49,11 @@ class OptimizerTests(unittest.TestCase):
                                         [jerk_cost, ref_cost, input_cost])
     opt.Solve()
     opt.Report()
-    print(opt.Result())
+    inputs = opt.Result()
+    trajectory = GenerateTrajectory(initial_state, inputs, params)
+    plt.plot(trajectory[:, 0], trajectory[:, 1])
+    plt.show()
+    #print(trajectory)
 
 
 
