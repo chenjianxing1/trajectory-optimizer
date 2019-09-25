@@ -1,3 +1,3 @@
 # Trajectory-Optimization
 
-This repository offers multiple optimizatio options.
+This repository offers multiple optimization options.

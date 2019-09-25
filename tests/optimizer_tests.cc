@@ -44,9 +44,9 @@ TEST(optimizer, single_track_model) {
   params->set<double>("dt", 0.2);
 
   // weights
-  params->set<double>("weight_jerk", 10.);
+  params->set<double>("weight_jerk", 20.);
   params->set<double>("weight_distance", 100.);
-  params->set<double>("function_tolerance", 1e-8);
+  params->set<double>("function_tolerance", 1e-6);
 
   Matrix_t<double> initial_states(3, 4);
   initial_states << 0.0, 0.0, 0.0, 10.0,
@@ -56,10 +56,9 @@ TEST(optimizer, single_track_model) {
   Matrix_t<double> opt_vec(20, 2);
   opt_vec.setZero();
 
-  Matrix_t<double> ref_line(3, 2);
+  Matrix_t<double> ref_line(2, 2);
   ref_line << 0., 0.,
-              5., 0.5,
-              10., 0.;
+              1000., 0.;
 
 
   // optimization
@@ -68,7 +67,7 @@ TEST(optimizer, single_track_model) {
 
   // add reference functor
   BaseFunctor* functor =
-    new FastSingleTrackFunctor(initial_states, params);
+    new SingleTrackFunctor(initial_states, params);
 
   // jerk
   JerkCostPtr jerk_costs = std::make_shared<JerkCost>(params);
@@ -89,7 +88,7 @@ TEST(optimizer, single_track_model) {
   inp_costs->SetUpperBound(ub);
   functor->AddCost(inp_costs);
 
-  opt.AddResidualBlock<FastSingleTrackFunctor>(functor);
+  opt.AddResidualBlock<SingleTrackFunctor>(functor);
 
 
   // solve
@@ -99,7 +98,7 @@ TEST(optimizer, single_track_model) {
 
   // trajectory
   Matrix_t<double> trajectory =
-    GenerateDynamicTrajectory<double, SingleTrackModel, IntegrationEuler>(
+    GenerateDynamicTrajectory<double, SingleTrackModel, IntegrationRK4>(
       initial_states,
       opt.Result(),
       params.get());

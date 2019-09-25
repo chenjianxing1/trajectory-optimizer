@@ -1,3 +1,7 @@
+# Copyright (c) 2019 Patrick Hart
+
+# This work is licensed under the terms of the MIT license.
+# For a copy, see <https://opensource.org/licenses/MIT>.
 import unittest
 import numpy as np
 import matplotlib.pyplot as plt
@@ -20,7 +24,7 @@ class OptimizerTests(unittest.TestCase):
     params = Parameter()
     params.set("wheel_base", 2.7)
     params.set("dt", 0.2)
-    params.set("weight_jerk", 10.)
+    params.set("weight_jerk", 20.)
     params.set("weight_distance", 100.)
     params.set("function_tolerance", 1e-6)
     params.set("max_num_iterations", 1000)
