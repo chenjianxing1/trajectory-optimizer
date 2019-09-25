@@ -19,17 +19,18 @@ class OptimizerTests(unittest.TestCase):
   def test_optimizer(self):
     params = Parameter()
     params.set("wheel_base", 2.7)
-    params.set("dt", 0.1)
-    params.set("weight_jerk", 100.)
-    params.set("function_tolerance", 1e-8)
+    params.set("dt", 0.2)
+    params.set("weight_jerk", 10.)
+    params.set("weight_distance", 100.)
+    params.set("function_tolerance", 1e-6)
     params.set("max_num_iterations", 1000)
     initial_state = np.array([[0., 0., 0., 10.],
                               [1., 0., 0., 10.],
                               [2., 0., 0., 10.]])
 
-    opt_vec = np.zeros(shape=(30, 2))
-    ref_line = np.array([[0., .5],
-                         [1000., .5]])
+    opt_vec = np.zeros(shape=(20, 2))
+    ref_line = np.array([[0., 1.],
+                         [1000., 1.]])
     # optimizer
     opt = Optimizer(params)
     opt.SetOptimizationVector(opt_vec)
@@ -52,6 +53,7 @@ class OptimizerTests(unittest.TestCase):
     inputs = opt.Result()
     trajectory = GenerateTrajectory(initial_state, inputs, params)
     plt.plot(trajectory[:, 0], trajectory[:, 1])
+    #plt.axis('equal')
     plt.show()
     #print(trajectory)
 

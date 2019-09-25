@@ -41,11 +41,11 @@ TEST(optimizer, single_track_model) {
   // initialization
   ParameterPtr params = std::make_shared<Parameter>();
   params->set<double>("wheel_base", 2.7);
-  params->set<double>("dt", 0.1);
+  params->set<double>("dt", 0.2);
 
   // weights
-  params->set<double>("weight_jerk", 10);
-  params->set<double>("weight_distance", 0.1);
+  params->set<double>("weight_jerk", 10.);
+  params->set<double>("weight_distance", 100.);
   params->set<double>("function_tolerance", 1e-8);
 
   Matrix_t<double> initial_states(3, 4);
@@ -53,7 +53,7 @@ TEST(optimizer, single_track_model) {
                     1.0, 0.0, 0.0, 10.0,
                     2.0, 0.0, 0.0, 10.0;  // x, y, theta, v
 
-  Matrix_t<double> opt_vec(10, 2);
+  Matrix_t<double> opt_vec(20, 2);
   opt_vec.setZero();
 
   Matrix_t<double> ref_line(3, 2);
