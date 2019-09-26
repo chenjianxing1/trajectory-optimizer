@@ -57,7 +57,6 @@ class DynamicFunctor : public BaseFunctor {
     // conversion
     Matrix_t<T> opt_vec = this->ParamsToEigen<T>(parameters);
     Matrix_t<T> initial_states_t = initial_states_.cast<T>();
-
     // generation
     Matrix_t<T> trajectory = GenerateDynamicTrajectory<T, M, I>(
       initial_states_t,

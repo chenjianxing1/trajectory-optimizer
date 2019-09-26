@@ -36,9 +36,15 @@ cc_test(
 
   
 py_test(
-  name = "py_basics_tests",
-  srcs = ["py_basics_tests.py"],
+  name = "py_optimizer_single_track_tests",
+  srcs = ["py_optimizer_single_track_tests.py"],
   data = ["//python:optimizer.so"],
-  imports = ["../python/",
-             "../python"]
+  imports = ["../python/"]
+)
+
+py_test(
+  name = "py_optimizer_null_model_tests",
+  srcs = ["py_optimizer_null_model_tests.py"],
+  data = ["//python:optimizer.so"],
+  imports = ["../python/"]
 )

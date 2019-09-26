@@ -10,7 +10,7 @@
 #include "src/functors/base_functor.h"
 #include "src/functors/costs/jerk.h"
 #include "src/functors/costs/base_cost.h"
-#include "src/functors/costs/distance"
+#include "src/functors/costs/distance.h"
 #include "src/functors/costs/inputs.h"
 
 
@@ -57,8 +57,8 @@ TEST(optimizer, single_track_model) {
   opt_vec.setZero();
 
   Matrix_t<double> ref_line(2, 2);
-  ref_line << 0., 0.,
-              1000., .001;
+  ref_line << 0., 1.,
+              1000., 1.;
 
 
   // optimization

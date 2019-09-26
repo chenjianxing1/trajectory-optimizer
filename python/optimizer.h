@@ -60,5 +60,7 @@ void python_optimizer(py::module m) {
       &optimizer::Optimizer::PythonAddSingleTrackFunctor<SingleTrackFunctor>)
     .def("AddFastSingleTrackFunctor",
       &optimizer::Optimizer::PythonAddSingleTrackFunctor<FastSingleTrackFunctor>)
+    .def("AddNullModelFunctor",
+      &optimizer::Optimizer::PythonAddSingleTrackFunctor<NullModelFunctor>)
     .def("Report", &optimizer::Optimizer::Report);
 }
