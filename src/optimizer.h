@@ -41,7 +41,7 @@ class Optimizer {
       options_.function_tolerance =
         params->get<double>("function_tolerance", 1e-8);
       options_.line_search_direction_type =
-        ceres::LineSearchDirectionType::LBFGS;
+        ceres::LineSearchDirectionType::BFGS;
       options_.minimizer_progress_to_stdout =
         params->get<bool>("minimizer_progress_to_stdout", false);
   }

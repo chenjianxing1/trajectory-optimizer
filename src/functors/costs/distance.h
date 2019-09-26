@@ -20,25 +20,26 @@ using commons::ParameterPtr;
 using commons::Parameter;
 using commons::CalculateDistance;
 
-class ReferenceCost : public BaseCost {
+class ReferenceLineCost : public BaseCost {
  public:
-  ReferenceCost() : BaseCost(), reference_() {}
-  explicit ReferenceCost(const ParameterPtr& params) :
+  ReferenceLineCost() : BaseCost(), reference_line_() {}
+  explicit ReferenceLineCost(const ParameterPtr& params) :
     BaseCost(params) {
-      weight_ = params_->get<double>("weight_reference", 0.1);
+      weight_ = params_->get<double>("weight_distance", 0.1);
     }
-  virtual ~ReferenceCost() {}
+  virtual ~ReferenceLineCost() {}
 
   template<typename T>
   T Evaluate(const Matrix_t<T>& trajectory,
              const Matrix_t<T>& inputs,
              T dist = T(0.)) const {
-    dist = CalculateDistance<T>(reference_.cast<T>(), trajectory);
+    Line<T, 2> ref_line(reference_line_.cast<T>());
+    dist = CalculateDistance<T>(ref_line, trajectory);
     return Weight<T>() * dist;
   }
 
-  void SetReference(const Matrix_t<double>& ref) {
-    reference_ = ref;
+  void SetReferenceLine(const Matrix_t<double>& ref_line) {
+    reference_line_ = ref_line;
   }
 
   template<typename T>
@@ -46,9 +47,9 @@ class ReferenceCost : public BaseCost {
     return T(weight_);
   }
 
-  Matrix_t<double> reference_;
+  Matrix_t<double> reference_line_;
 };
 
-typedef std::shared_ptr<ReferenceCost> ReferenceCostPtr;
+typedef std::shared_ptr<ReferenceLineCost> ReferenceLineCostPtr;
 
 }  // namespace optimizer

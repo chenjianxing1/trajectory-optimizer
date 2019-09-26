@@ -4,6 +4,7 @@
 // For a copy, see <https://opensource.org/licenses/MIT>.
 #pragma once
 #include <limits>
+#include <ceres/ceres.h>
 #include <utility>
 #include "src/geometry/geometry.h"
 
@@ -40,12 +41,32 @@ template<typename T>
 inline T CalculateDistance(const Line<T, 2>& line,
                            const Matrix_t<T>& trajectory,
                            T dist = T(0.)) {
-  for ( int i = 1; i < trajectory.rows(); i++ ) {
-    Point<T, 2> pt(T(trajectory(i, 0)), T(trajectory(i, 1)));
-    T tmp_dist = Distance<T, Line<T, 2>, Point<T, 2>>(line, pt);
+  T tmp_dist = T(0.);
+  Point<T, 2> pt;
+  for ( int i = 0; i < trajectory.rows(); i++ ) {
+    boost::geometry::set<0>(pt.obj_, trajectory(i, 0));
+    boost::geometry::set<1>(pt.obj_, trajectory(i, 1));
+    tmp_dist = Distance<T, Line<T, 2>, Point<T, 2>>(line, pt);
     dist += tmp_dist*tmp_dist;
   }
   return dist;
 }
 
-}  // namespace parameters
+template<typename T>
+inline T CalculateDistance(const Matrix_t<T>& traj0,
+                           const Matrix_t<T>& traj1,
+                           T dist = T(0.)) {
+  T tmp_dist = T(0.);
+  for (int i = 0; i < traj0.rows(); i++) {
+    T loc = T(0.);
+    for (int j = 0; j < traj0.cols(); j++) {
+      loc += (traj0(i, j) - traj1(i, j))*(traj0(i, j) - traj1(i, j));
+    }
+    tmp_dist = loc;
+    dist += tmp_dist*tmp_dist;
+  }
+  return dist;
+}
+
+}  // namespace commons
+

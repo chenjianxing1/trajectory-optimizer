@@ -10,6 +10,7 @@
 #include "src/functors/dynamic_functor.h"
 #include "src/functors/costs/jerk.h"
 #include "src/functors/costs/inputs.h"
+#include "src/functors/costs/distance.h"
 #include "src/functors/costs/reference.h"
 #include "src/optimizer.h"
 
@@ -35,9 +36,13 @@ void python_optimizer(py::module m) {
   py::class_<JerkCost, BaseCost, JerkCostPtr>(m, "JerkCost")
     .def(py::init<const ParameterPtr&>());
 
+  py::class_<ReferenceLineCost, BaseCost, ReferenceLineCostPtr>(m, "ReferenceLineCost")
+    .def(py::init<const ParameterPtr&>())
+    .def("SetReferenceLine", &optimizer::ReferenceLineCost::SetReferenceLine);
+  
   py::class_<ReferenceCost, BaseCost, ReferenceCostPtr>(m, "ReferenceCost")
     .def(py::init<const ParameterPtr&>())
-    .def("SetReferenceLine", &optimizer::ReferenceCost::SetReferenceLine);
+    .def("SetReference", &optimizer::ReferenceCost::SetReference);
 
   py::class_<InputCost, BaseCost, InputCostPtr>(m, "InputCost")
     .def(py::init<const ParameterPtr&>())
@@ -53,5 +58,7 @@ void python_optimizer(py::module m) {
     .def("SetOptimizationVector", &optimizer::Optimizer::SetOptimizationVector)
     .def("AddSingleTrackFunctor",
       &optimizer::Optimizer::PythonAddSingleTrackFunctor<SingleTrackFunctor>)
+    .def("AddFastSingleTrackFunctor",
+      &optimizer::Optimizer::PythonAddSingleTrackFunctor<FastSingleTrackFunctor>)
     .def("Report", &optimizer::Optimizer::Report);
 }

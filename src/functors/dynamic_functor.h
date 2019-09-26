@@ -15,6 +15,7 @@
 #include "src/functors/base_functor.h"
 #include "src/functors/costs/base_cost.h"
 #include "src/functors/costs/jerk.h"
+#include "src/functors/costs/distance.h"
 #include "src/functors/costs/reference.h"
 #include "src/functors/costs/inputs.h"
 
@@ -72,15 +73,22 @@ class DynamicFunctor : public BaseFunctor {
         weights += cost->Weight<T>();
         continue;
       }
-      if (std::dynamic_pointer_cast<ReferenceCost>(costs_[i])) {
-        ReferenceCostPtr cost =
-          std::dynamic_pointer_cast<ReferenceCost>(costs_[i]);
+      if (std::dynamic_pointer_cast<ReferenceLineCost>(costs_[i])) {
+        ReferenceLineCostPtr cost =
+          std::dynamic_pointer_cast<ReferenceLineCost>(costs_[i]);
         costs += cost->Evaluate<T>(trajectory, opt_vec);
         weights += cost->Weight<T>();
         continue;
       }
       if (std::dynamic_pointer_cast<InputCost>(costs_[i])) {
         InputCostPtr cost = std::dynamic_pointer_cast<InputCost>(costs_[i]);
+        costs += cost->Evaluate<T>(trajectory, opt_vec);
+        weights += cost->Weight<T>();
+        continue;
+      }
+      if (std::dynamic_pointer_cast<ReferenceCost>(costs_[i])) {
+        ReferenceCostPtr cost =
+          std::dynamic_pointer_cast<ReferenceCost>(costs_[i]);
         costs += cost->Evaluate<T>(trajectory, opt_vec);
         weights += cost->Weight<T>();
         continue;

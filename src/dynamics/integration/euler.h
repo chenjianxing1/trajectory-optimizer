@@ -19,8 +19,7 @@ class IntegrationEuler {
     const Matrix_t<T>& state,
     std::function<Matrix_t<T>(const Matrix_t<T>&)> fDot,
     T dt) {
-    Matrix_t<T> k0 = dt*fDot(state);
-    return state + k0;
+    return state + dt*fDot(state);
   }
 };
 

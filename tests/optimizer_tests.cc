@@ -10,7 +10,7 @@
 #include "src/functors/base_functor.h"
 #include "src/functors/costs/jerk.h"
 #include "src/functors/costs/base_cost.h"
-#include "src/functors/costs/reference.h"
+#include "src/functors/costs/distance"
 #include "src/functors/costs/inputs.h"
 
 
@@ -26,8 +26,8 @@ TEST(optimizer, single_track_model) {
   using optimizer::JerkCostPtr;
   using optimizer::InputCostPtr;
   using optimizer::InputCost;
-  using optimizer::ReferenceCost;
-  using optimizer::ReferenceCostPtr;
+  using optimizer::ReferenceLineCost;
+  using optimizer::ReferenceLineCostPtr;
   using optimizer::SingleTrackFunctor;
   using optimizer::FastSingleTrackFunctor;
   using optimizer::FastSingleTrackFunctorPtr;
@@ -46,7 +46,7 @@ TEST(optimizer, single_track_model) {
   // weights
   params->set<double>("weight_jerk", 20.);
   params->set<double>("weight_distance", 100.);
-  params->set<double>("function_tolerance", 1e-6);
+  params->set<double>("function_tolerance", 1e-8);
 
   Matrix_t<double> initial_states(3, 4);
   initial_states << 0.0, 0.0, 0.0, 10.0,
@@ -58,7 +58,7 @@ TEST(optimizer, single_track_model) {
 
   Matrix_t<double> ref_line(2, 2);
   ref_line << 0., 0.,
-              1000., 0.;
+              1000., .001;
 
 
   // optimization
@@ -74,7 +74,7 @@ TEST(optimizer, single_track_model) {
   functor->AddCost(jerk_costs);
 
   // reference line
-  ReferenceCostPtr ref_costs = std::make_shared<ReferenceCost>(params);
+  ReferenceLineCostPtr ref_costs = std::make_shared<ReferenceLineCost>(params);
   ref_costs->SetReferenceLine(ref_line);
   functor->AddCost(ref_costs);
 
