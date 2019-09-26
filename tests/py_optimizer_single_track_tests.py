@@ -24,14 +24,15 @@ class OptimizerTests(unittest.TestCase):
     params = Parameter()
     params.set("wheel_base", 2.7)
     params.set("dt", 0.2)
-    params.set("weight_jerk", 2.5)
+    params.set("weight_jerk", 5.)
     params.set("weight_distance", 10.)
     params.set("function_tolerance", 1e-8)
     params.set("max_num_iterations", 1000)
+
     initial_state = np.array([[0., 0., 0., 10.],
                               [2., 0., 0., 10.],
-                              [4., 0., 0., 10.]])
-
+                              [4., 0., 0., 10.],
+                              [6., 0., 0., 10.]])
     opt_vec = np.zeros(shape=(20, 2))
     ref_line = np.array([[0., 4.],
                          [1000., 4.]])

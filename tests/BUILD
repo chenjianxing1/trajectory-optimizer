@@ -43,8 +43,8 @@ py_test(
 )
 
 py_test(
-  name = "py_optimizer_null_model_tests",
-  srcs = ["py_optimizer_null_model_tests.py"],
+  name = "py_commons_tests",
+  srcs = ["py_commons_tests.py"],
   data = ["//python:optimizer.so"],
   imports = ["../python/"]
 )

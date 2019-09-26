@@ -14,6 +14,7 @@ namespace py = pybind11;
 void python_commons(py::module m) {
   using commons::Parameter;
   using commons::ParameterPtr;
+  using commons::CalculateJerk;
 
   py::class_<Parameter, ParameterPtr>(m, "Parameter")
     .def(py::init<>())
@@ -27,4 +28,6 @@ void python_commons(py::module m) {
     .def("set", &commons::Parameter::set<std::string>)
     .def("set", &commons::Parameter::set<bool>)
     .def("set", &commons::Parameter::set<std::vector<double>>);
+  
+  m.def("CalculateJerk", &commons::CalculateJerk<double>);
 }
