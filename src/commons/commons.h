@@ -17,8 +17,8 @@ using geometry::Distance;
 template<typename T>
 inline Matrix_t<T> CalculateDiff(const Matrix_t<T>& traj, T dt) {
   Matrix_t<T> ret_traj(traj.rows() - 1, traj.cols());
-  for (int i = 1; i < traj.rows(); i++) {
-    ret_traj.row(i-1) = (traj.row(i) - traj.row(i-1)) / dt;
+  for (int i = 0; i < traj.rows() - 1; i++) {
+    ret_traj.row(i) = (traj.row(i+1) - traj.row(i)) / dt;
   }
   return ret_traj;
 }
@@ -26,6 +26,7 @@ inline Matrix_t<T> CalculateDiff(const Matrix_t<T>& traj, T dt) {
 template<typename T>
 inline T CalculateJerk(const Matrix_t<T>& traj, T dt) {
   Matrix_t<T> reduced_traj = traj.block(0, 0, traj.rows(), 2);
+  // TODO(@hart): make more efficient
   Matrix_t<T> traj_v = CalculateDiff(reduced_traj, dt);
   Matrix_t<T> traj_a = CalculateDiff(traj_v, dt);
   Matrix_t<T> traj_j = CalculateDiff(traj_a, dt);

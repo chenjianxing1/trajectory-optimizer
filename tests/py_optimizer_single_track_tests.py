@@ -20,7 +20,6 @@ class OptimizerTests(unittest.TestCase):
     wheel_base_undefined = params.get("wheel_base_undefined", 2.9)
     self.assertEqual(wheel_base_undefined, 2.9)
 
-  @unittest.skip("...")
   def test_single_track_optimizer(self):
     params = Parameter()
     params.set("wheel_base", 2.7)
@@ -57,13 +56,17 @@ class OptimizerTests(unittest.TestCase):
     opt.Report()
     inputs = opt.Result()
     trajectory = GenerateTrajectory(initial_state, inputs, params)
-    plt.plot(trajectory[:, 0], trajectory[:, 1])
-    plt.axis("equal")
-    #plt.plot(trajectory[:, 2])
+    fig, ax = plt.subplots(nrows=1, ncols=2)
+    ax[0].plot(trajectory[:, 0], trajectory[:, 1], marker='o')
+    ax[0].axis("equal")
+    ax[1].plot(inputs[:, 0], label="Steering angle", marker='o')
+    ax[1].plot(inputs[:, 1], label="Acceleration", marker='o')
+    ax[1].legend()
     plt.show()
-    #print(repr(trajectory))
-    #print(repr(inputs))
+    print(repr(trajectory))
+    print(repr(inputs))
 
+  @unittest.skip("...")
   def test_single_track_optimizer_reference(self):
     params = Parameter()
     params.set("wheel_base", 2.7)
@@ -125,7 +128,6 @@ class OptimizerTests(unittest.TestCase):
     ref_cost.SetReference(ref)
     jerk_cost = JerkCost(params)
 
-
     # optimization problem
     functor = opt.AddFastSingleTrackFunctor(initial_state,
                                             params,
@@ -136,9 +138,8 @@ class OptimizerTests(unittest.TestCase):
     plt.plot(trajectory[:, 0], trajectory[:, 1])
     plt.plot(ref[:, 0], ref[:, 1])
     plt.axis("equal")
-    #plt.plot(trajectory[:, 2])
     plt.show()
-    print(trajectory)
+    #print(trajectory)
 
 
 if __name__ == '__main__':
