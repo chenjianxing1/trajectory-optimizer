@@ -14,6 +14,12 @@
 
 namespace geometry {
 
+/**
+ * @brief Implements a line class
+ * 
+ * @tparam T Type of data
+ * @tparam N Dimenstionality
+ */
 template <typename T, int N>
 class Line : public BaseGeometry<Linestring_t<T, N>> {
  public:

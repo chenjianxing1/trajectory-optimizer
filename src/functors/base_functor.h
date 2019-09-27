@@ -16,6 +16,10 @@ using geometry::Matrix_t;
 using commons::Parameter;
 using commons::ParameterPtr;
 
+/**
+ * @brief Base functor from which all functors shall be derived
+ * 
+ */
 class BaseFunctor {
  public:
   BaseFunctor() : opt_vec_len_(0), param_count_(0) {}
@@ -35,16 +39,23 @@ class BaseFunctor {
     return eigen_params;
   }
 
+  /**
+   * @brief Adds a cost term, such as JerkCost to the functor
+   * 
+   * @param cost BaseCostPtr to cost term
+   */
   void AddCost(const BaseCostPtr& cost) {
     costs_.push_back(cost);
   }
 
   std::vector<BaseCostPtr>& GetCosts() { return costs_; }
 
-  //! getter and setter
+  //! Optimization length is the row length of the optimization vector
   int GetOptVecLen() const { return opt_vec_len_; }
   void SetOptVecLen(int len) { opt_vec_len_ = len; }
 
+  //! Parameter count is the amount of different inputs (e.g. steering angle
+  //  and acceleration)
   int GetParamCount() const { return param_count_; }
   void SetParamCount(int len) { param_count_ = len; }
 

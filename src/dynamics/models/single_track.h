@@ -28,6 +28,10 @@ enum InputSingleTrackModel {
   ACCELERATION = 1,
 };
 
+/**
+ * @brief Simplified single-track model
+ * 
+ */
 class SingleTrackModel{
  public:
   SingleTrackModel() {}

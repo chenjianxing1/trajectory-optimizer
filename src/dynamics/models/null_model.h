@@ -14,6 +14,10 @@ using geometry::Matrix_t;
 using commons::ParameterPtr;
 using commons::Parameter;
 
+/**
+ * @brief A model that does nothing
+ * 
+ */
 class NullModel {
  public:
   NullModel() {}

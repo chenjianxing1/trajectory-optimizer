@@ -37,6 +37,12 @@ using dynamics::IntegrationEuler;
 using std::vector;
 
 
+/**
+ * @brief A functor for dynamic optimization
+ * 
+ * @tparam M Used model (e.g. SingleTrackModel)
+ * @tparam I Used integration method (e.g. Explicit Euler)
+ */
 template<class M, class I>
 class DynamicFunctor : public BaseFunctor {
  public:
@@ -49,6 +55,16 @@ class DynamicFunctor : public BaseFunctor {
     BaseFunctor(params),
     initial_states_(initial_states) {}
 
+  /**
+   * @brief Function that is called by the ceres-solver
+   * 
+   * @tparam T Type of data
+   * @param parameters Parameter class
+   * @param residuals Residuals that will be optimized
+   * @param costs Calculated costs
+   * @param weights Calculated weights
+   * @return true Whether the optimization was successful
+   */
   template<typename T>
   bool operator()(T const* const* parameters,
                   T* residuals,

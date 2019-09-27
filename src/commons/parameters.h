@@ -22,7 +22,10 @@ typedef variant<int,
                 vector<double>,
                 bool,
                 std::map<string, double>> Variants;
-
+/**
+ * @brief Parameter class with setter and getter capabilities
+ * 
+ */
 class Parameter {
  public:
   template<typename T>

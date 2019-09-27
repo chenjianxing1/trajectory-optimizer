@@ -24,6 +24,10 @@ using ceres::DynamicAutoDiffCostFunction;
 using ceres::LossFunction;
 using ceres::TrivialLoss;
 
+/**
+ * @brief Main optimization class
+ * 
+ */
 class Optimizer {
  public:
   explicit Optimizer(const ParameterPtr& params) :
@@ -46,22 +50,39 @@ class Optimizer {
         params->get<bool>("minimizer_progress_to_stdout", false);
   }
 
-  template<typename T>
+  /**
+   * @brief Due to pointer handling a wrapper for the python bindings needs
+   * to be provided
+   * 
+   * @tclass F Type of functor
+   * @param initial_states Initial sates of the trajectory
+   * @param params Parameter class
+   * @param costs Cost terms (such as JerkCost, etc.)
+   */
+  template<class F>
   void PythonAddSingleTrackFunctor(const Matrix_t<double>& initial_states,
                                    const ParameterPtr& params,
                                    const std::vector<BaseCostPtr>& costs) {
     BaseFunctor* functor =
-      new T(initial_states, params);
+      new F(initial_states, params);
     for (auto& cost : costs) {
       functor->AddCost(cost);
     }
     this->AddResidualBlock<T>(functor);
   }
 
-  template<typename T, int N = 4>
+  /**
+   * @brief Adds a residual block to the optimization problem
+   * 
+   * @tclass F The functor that shall be used, such as the DynamicFunctor 
+   * @tparam 4 Stride used for the AutoDiff
+   * @param functor Pointer to the used functor
+   * @param num_residuals amount of residuals within the functor
+   */
+  template<class F, int N = 4>
   void AddResidualBlock(BaseFunctor* functor, int num_residuals = 1) {
-    DynamicAutoDiffCostFunction<T, N>* ceres_functor =
-      new DynamicAutoDiffCostFunction<T, N>(dynamic_cast<T*>(functor));
+    DynamicAutoDiffCostFunction<F, N>* ceres_functor =
+      new DynamicAutoDiffCostFunction<T, N>(dynamic_cast<F*>(functor));
     for (vector<double>& vec : optimization_vectors_) {
       ceres_functor->AddParameterBlock(optimization_vector_len_);
     }
@@ -73,7 +94,11 @@ class Optimizer {
                               parameter_block_);
   }
 
-  // each column of an Eigen Matrix will become an optimization vector
+  /**
+   * @brief Set the Optimization Vector object
+   * 
+   * @param inputs 
+   */
   void SetOptimizationVector(const Matrix_t<double>& inputs) {
     for (int i = 0; i < inputs.cols(); i++) {
       vector<double> empty_vec;
@@ -86,10 +111,19 @@ class Optimizer {
     optimization_vector_len_ = inputs.rows();
   }
 
+  /**
+   * @brief Solves the formulated optimization problem
+   * 
+   */
   void Solve() {
     ceres::Solve(options_, &problem_, &summary_);
   }
 
+  /**
+   * @brief Returns the optimized optimization vector
+   * 
+   * @return Matrix_t<double> Inputs for the dynamic model
+   */
   Matrix_t<double> Result() {
     Matrix_t<double> result(optimization_vector_len_,
                             parameter_block_.size());
@@ -101,6 +135,10 @@ class Optimizer {
     return result;
   }
 
+  /**
+   * @brief Information about the optimization process
+   * 
+   */
   void Report() {
     std::cout << summary_.FullReport() << std::endl;
   }

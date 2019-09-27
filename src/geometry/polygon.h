@@ -15,6 +15,12 @@
 
 namespace geometry {
 
+/**
+ * @brief Implements a polygon class
+ * 
+ * @tparam T Type of data
+ * @tparam N Dimensionality
+ */
 template <typename T, int N>
 class Polygon : public BaseGeometry<Polygon_t<T, N>> {
  public:

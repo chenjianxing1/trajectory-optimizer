@@ -13,6 +13,12 @@
 
 namespace geometry {
 
+/**
+ * @brief Implements a point class
+ * 
+ * @tparam T Type of data
+ * @tparam N Dimensionality
+ */
 template <typename T, int N>
 class Point : public BaseGeometry<Point_t<T, N>> {
  public:

@@ -21,7 +21,17 @@ namespace dynamics {
     SINGLE_TRACK = 0,
     COPY_MODEL = 1
   };
-
+  /**
+   * @brief Function that generates a dynamic trajectory
+   * 
+   * @tparam T Type of data
+   * @tparam M Dynamic model used
+   * @tparam I Integration method (euler, rk4, ..)
+   * @param initial_states Initial state(s) for trajectory 
+   * @param input_vector Input vector of size (N, InputSize)
+   * @param params Parameters, such as delta time, wheel_base etc.
+   * @return Matrix_t<T> Trajectory of size (N, State)
+   */
   template<typename T, class M, class I>
   inline Matrix_t<T> GenerateDynamicTrajectory(
     const Matrix_t<T>& initial_states,
