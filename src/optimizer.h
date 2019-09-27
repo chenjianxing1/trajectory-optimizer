@@ -110,6 +110,22 @@ class Optimizer {
     }
     optimization_vector_len_ = inputs.rows();
   }
+  
+  /**
+   * @brief Fix the optimization vector within a certain range
+   * 
+   * @param start Starting index
+   * @param end Ending index
+   */
+  void FixOptimizationVector(int start, int end) {
+    vector<int> vec;
+    for (int i = start; i < end; i++)
+      vec.push_back(i);
+    for ( auto& pblock : parameter_block_)
+      problem_.SetParameterization(
+        pblock,
+        new ceres::SubsetParameterization(optimization_vector_len_, vec));
+  }
 
   /**
    * @brief Solves the formulated optimization problem

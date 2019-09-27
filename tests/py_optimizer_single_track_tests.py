@@ -25,10 +25,11 @@ class OptimizerTests(unittest.TestCase):
     params = Parameter()
     params.set("wheel_base", 2.7)
     params.set("dt", 0.2)
-    params.set("weight_jerk", 1.)
+    params.set("weight_jerk", 10.)
     params.set("weight_distance", 10.)
     params.set("weight_object", 200.)
-    params.set("weight_speed", 10.)
+    params.set("weight_speed", 100.)
+    params.set("weight_input", 200.)
     params.set("function_tolerance", 1e-10)
     params.set("max_num_iterations", 1000)
 
@@ -67,7 +68,12 @@ class OptimizerTests(unittest.TestCase):
     # optimization problem
     functor = opt.AddFastSingleTrackFunctor(initial_state,
                                             params,
-                                            [jerk_cost, ref_cost, input_cost, object_cost, speed_cost])
+                                            [jerk_cost,
+                                             ref_cost,
+                                             input_cost,
+                                             object_cost,
+                                             speed_cost])
+    opt.FixOptimizationVector(0, 1)    
     opt.Solve()
     opt.Report()
     inputs = opt.Result()

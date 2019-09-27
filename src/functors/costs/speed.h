@@ -20,6 +20,10 @@ using commons::ParameterPtr;
 using commons::Parameter;
 using commons::CalculateDistance;
 
+/**
+ * @brief Cost for deviation to desired speed
+ * 
+ */
 class SpeedCost : public BaseCost {
  public:
   SpeedCost() : BaseCost(), v_des_() {}
