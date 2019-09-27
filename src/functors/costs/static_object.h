@@ -20,12 +20,19 @@ using geometry::Line;
 using geometry::Distance;
 using commons::ParameterPtr;
 using commons::Parameter;
-using commons::CalculateDistance;
+using commons::GetCosts;
+
+class ObjectOutline {
+ public:
+  ObjectOutline() {}
+ private:
+  std::vector<Matrix_t<double>> object_outlines_;
+};
 
 class StaticObjectCost : public BaseCost {
  public:
   StaticObjectCost() : BaseCost() {}
-  explicit StaticObjectCost(const ParameterPtr& params, double eps = 1.0) :
+  explicit StaticObjectCost(const ParameterPtr& params, double eps = 2.0) :
     BaseCost(params),
     epsilon_(eps) {
       weight_ = params_->get<double>("weight_object", 0.1);
@@ -38,7 +45,7 @@ class StaticObjectCost : public BaseCost {
              T dist = T(0.)) const {
     for (auto& obj_out : object_outlines_) {
       Polygon<T, 2> obj(obj_out.cast<T>());
-      T distance = CalculateDistance<T>(obj, trajectory, T(epsilon_));
+      dist = GetCosts<T>(obj, trajectory, T(epsilon_));
     }
     return Weight<T>() * dist;
   }

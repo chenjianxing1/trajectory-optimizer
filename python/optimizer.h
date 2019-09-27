@@ -13,6 +13,7 @@
 #include "src/functors/costs/distance.h"
 #include "src/functors/costs/reference.h"
 #include "src/functors/costs/static_object.h"
+#include "src/functors/costs/speed.h"
 #include "src/optimizer.h"
 
 namespace py = pybind11;
@@ -52,6 +53,10 @@ void python_optimizer(py::module m) {
   py::class_<ReferenceCost, BaseCost, ReferenceCostPtr>(m, "ReferenceCost")
     .def(py::init<const ParameterPtr&>())
     .def("SetReference", &optimizer::ReferenceCost::SetReference);
+
+  py::class_<SpeedCost, BaseCost, SpeedCostPtr>(m, "SpeedCost")
+    .def(py::init<const ParameterPtr&>())
+    .def("SetDesiredSpeed", &optimizer::SpeedCost::SetDesiredSpeed);
 
   py::class_<InputCost, BaseCost, InputCostPtr>(m, "InputCost")
     .def(py::init<const ParameterPtr&>())

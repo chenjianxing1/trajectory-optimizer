@@ -18,8 +18,8 @@ using geometry::Distance;
 template<typename T>
 inline Matrix_t<T> CalculateDiff(const Matrix_t<T>& traj, T dt) {
   Matrix_t<T> ret_traj(traj.rows() - 1, traj.cols());
-  for (int i = 0; i < traj.rows() - 1; i++) {
-    ret_traj.row(i) = (traj.row(i+1) - traj.row(i)) / dt;
+  for (int i = 1; i < traj.rows(); i++) {
+    ret_traj.row(i-1) = (traj.row(i) - traj.row(i-1)) / dt;
   }
   return ret_traj;
 }
@@ -55,9 +55,9 @@ inline T CalculateDistance(const Line<T, 2>& line,
 }
 
 template<typename T>
-inline T CalculateDistance(const Polygon<T, 2>& poly,
+inline T GetCosts(const Polygon<T, 2>& poly,
                            const Matrix_t<T>& trajectory,
-                           T eps = T(0.)) {
+                           T eps = T(1.)) {
   T tmp_dist = T(0.);
   T dist = T(0.);
   Point<T, 2> pt;
@@ -68,7 +68,6 @@ inline T CalculateDistance(const Polygon<T, 2>& poly,
     if (tmp_dist < T(eps)) {
       dist += (T(eps) - tmp_dist)*(T(eps) - tmp_dist);
     }
-    dist += tmp_dist*tmp_dist;
   }
   return dist;
 }

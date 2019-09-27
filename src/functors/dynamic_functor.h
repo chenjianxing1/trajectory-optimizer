@@ -18,6 +18,7 @@
 #include "src/functors/costs/distance.h"
 #include "src/functors/costs/reference.h"
 #include "src/functors/costs/static_object.h"
+#include "src/functors/costs/speed.h"
 #include "src/functors/costs/inputs.h"
 
 namespace optimizer {
@@ -105,6 +106,13 @@ class DynamicFunctor : public BaseFunctor {
       if (std::dynamic_pointer_cast<ReferenceCost>(costs_[i])) {
         ReferenceCostPtr cost =
           std::dynamic_pointer_cast<ReferenceCost>(costs_[i]);
+        costs += cost->Evaluate<T>(trajectory, opt_vec);
+        weights += cost->Weight<T>();
+        continue;
+      }
+      if (std::dynamic_pointer_cast<SpeedCost>(costs_[i])) {
+        SpeedCostPtr cost =
+          std::dynamic_pointer_cast<SpeedCost>(costs_[i]);
         costs += cost->Evaluate<T>(trajectory, opt_vec);
         weights += cost->Weight<T>();
         continue;
