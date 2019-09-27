@@ -26,7 +26,7 @@ class ReferenceCost : public BaseCost {
   explicit ReferenceCost(const ParameterPtr& params) :
     BaseCost(params) {
       weight_ = params_->get<double>("weight_reference", 0.1);
-    }
+  }
   virtual ~ReferenceCost() {}
 
   template<typename T>

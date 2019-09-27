@@ -26,7 +26,7 @@ class JerkCost : public BaseCost {
   explicit JerkCost(const ParameterPtr& params) :
     BaseCost(params) {
       weight_ = params_->get<double>("weight_jerk", 100.);
-    }
+  }
   virtual ~JerkCost() {}
 
   template<typename T>

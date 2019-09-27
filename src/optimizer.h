@@ -68,7 +68,7 @@ class Optimizer {
     for (auto& cost : costs) {
       functor->AddCost(cost);
     }
-    this->AddResidualBlock<T>(functor);
+    this->AddResidualBlock<F>(functor);
   }
 
   /**
@@ -82,7 +82,7 @@ class Optimizer {
   template<class F, int N = 4>
   void AddResidualBlock(BaseFunctor* functor, int num_residuals = 1) {
     DynamicAutoDiffCostFunction<F, N>* ceres_functor =
-      new DynamicAutoDiffCostFunction<T, N>(dynamic_cast<F*>(functor));
+      new DynamicAutoDiffCostFunction<F, N>(dynamic_cast<F*>(functor));
     for (vector<double>& vec : optimization_vectors_) {
       ceres_functor->AddParameterBlock(optimization_vector_len_);
     }

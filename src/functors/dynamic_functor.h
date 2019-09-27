@@ -17,6 +17,7 @@
 #include "src/functors/costs/jerk.h"
 #include "src/functors/costs/distance.h"
 #include "src/functors/costs/reference.h"
+#include "src/functors/costs/static_object.h"
 #include "src/functors/costs/inputs.h"
 
 namespace optimizer {
@@ -108,7 +109,13 @@ class DynamicFunctor : public BaseFunctor {
         weights += cost->Weight<T>();
         continue;
       }
-      // TODO(@hart): boundaries, dynamic objects
+      if (std::dynamic_pointer_cast<StaticObjectCost>(costs_[i])) {
+        StaticObjectCostPtr cost =
+          std::dynamic_pointer_cast<StaticObjectCost>(costs_[i]);
+        costs += cost->Evaluate<T>(trajectory, opt_vec);
+        weights += cost->Weight<T>();
+        continue;
+      }
     }
 
     residuals[0] = costs / weights;

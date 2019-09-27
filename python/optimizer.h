@@ -12,6 +12,7 @@
 #include "src/functors/costs/inputs.h"
 #include "src/functors/costs/distance.h"
 #include "src/functors/costs/reference.h"
+#include "src/functors/costs/static_object.h"
 #include "src/optimizer.h"
 
 namespace py = pybind11;
@@ -36,10 +37,18 @@ void python_optimizer(py::module m) {
   py::class_<JerkCost, BaseCost, JerkCostPtr>(m, "JerkCost")
     .def(py::init<const ParameterPtr&>());
 
-  py::class_<ReferenceLineCost, BaseCost, ReferenceLineCostPtr>(m, "ReferenceLineCost")
+  py::class_<ReferenceLineCost,
+             BaseCost,
+             ReferenceLineCostPtr>(m, "ReferenceLineCost")
     .def(py::init<const ParameterPtr&>())
     .def("SetReferenceLine", &optimizer::ReferenceLineCost::SetReferenceLine);
-  
+
+  py::class_<StaticObjectCost,
+             BaseCost,
+             StaticObjectCostPtr>(m, "StaticObjectCost")
+    .def(py::init<const ParameterPtr&>())
+    .def("AddObject", &optimizer::StaticObjectCost::AddObject);
+
   py::class_<ReferenceCost, BaseCost, ReferenceCostPtr>(m, "ReferenceCost")
     .def(py::init<const ParameterPtr&>())
     .def("SetReference", &optimizer::ReferenceCost::SetReference);

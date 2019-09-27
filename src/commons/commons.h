@@ -12,6 +12,7 @@ namespace commons {
 using geometry::Matrix_t;
 using geometry::Line;
 using geometry::Point;
+using geometry::Polygon;
 using geometry::Distance;
 
 template<typename T>
@@ -48,6 +49,25 @@ inline T CalculateDistance(const Line<T, 2>& line,
     boost::geometry::set<0>(pt.obj_, trajectory(i, 0));
     boost::geometry::set<1>(pt.obj_, trajectory(i, 1));
     tmp_dist = Distance<T, Line<T, 2>, Point<T, 2>>(line, pt);
+    dist += tmp_dist*tmp_dist;
+  }
+  return dist;
+}
+
+template<typename T>
+inline T CalculateDistance(const Polygon<T, 2>& poly,
+                           const Matrix_t<T>& trajectory,
+                           T eps = T(0.)) {
+  T tmp_dist = T(0.);
+  T dist = T(0.);
+  Point<T, 2> pt;
+  for ( int i = 0; i < trajectory.rows(); i++ ) {
+    boost::geometry::set<0>(pt.obj_, trajectory(i, 0));
+    boost::geometry::set<1>(pt.obj_, trajectory(i, 1));
+    tmp_dist = Distance<T, 2>(poly, pt);
+    if (tmp_dist < T(eps)) {
+      dist += (T(eps) - tmp_dist)*(T(eps) - tmp_dist);
+    }
     dist += tmp_dist*tmp_dist;
   }
   return dist;

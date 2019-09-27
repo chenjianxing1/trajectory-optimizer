@@ -14,32 +14,37 @@
 namespace optimizer {
 
 using geometry::Matrix_t;
+using geometry::Polygon;
 using geometry::BaseGeometry;
 using geometry::Line;
+using geometry::Distance;
 using commons::ParameterPtr;
 using commons::Parameter;
 using commons::CalculateDistance;
 
-class ReferenceLineCost : public BaseCost {
+class StaticObjectCost : public BaseCost {
  public:
-  ReferenceLineCost() : BaseCost(), reference_line_() {}
-  explicit ReferenceLineCost(const ParameterPtr& params) :
-    BaseCost(params) {
-      weight_ = params_->get<double>("weight_distance", 0.1);
+  StaticObjectCost() : BaseCost() {}
+  explicit StaticObjectCost(const ParameterPtr& params, double eps = 1.0) :
+    BaseCost(params),
+    epsilon_(eps) {
+      weight_ = params_->get<double>("weight_object", 0.1);
   }
-  virtual ~ReferenceLineCost() {}
+  virtual ~StaticObjectCost() {}
 
   template<typename T>
   T Evaluate(const Matrix_t<T>& trajectory,
              const Matrix_t<T>& inputs,
              T dist = T(0.)) const {
-    Line<T, 2> ref_line(reference_line_.cast<T>());
-    dist = CalculateDistance<T>(ref_line, trajectory);
+    for (auto& obj_out : object_outlines_) {
+      Polygon<T, 2> obj(obj_out.cast<T>());
+      T distance = CalculateDistance<T>(obj, trajectory, T(epsilon_));
+    }
     return Weight<T>() * dist;
   }
 
-  void SetReferenceLine(const Matrix_t<double>& ref_line) {
-    reference_line_ = ref_line;
+  void AddObject(const Matrix_t<double>& object_outline) {
+    object_outlines_.push_back(object_outline);
   }
 
   template<typename T>
@@ -47,9 +52,10 @@ class ReferenceLineCost : public BaseCost {
     return T(weight_);
   }
 
-  Matrix_t<double> reference_line_;
+  std::vector<Matrix_t<double>> object_outlines_;
+  double epsilon_;
 };
 
-typedef std::shared_ptr<ReferenceLineCost> ReferenceLineCostPtr;
+typedef std::shared_ptr<StaticObjectCost> StaticObjectCostPtr;
 
 }  // namespace optimizer

@@ -24,7 +24,7 @@ class InputCost : public BaseCost {
   explicit InputCost(const ParameterPtr& params) :
     BaseCost(params) {
       weight_ = params_->get<double>("weight_input", 100.0);
-    }
+  }
   virtual ~InputCost() {}
 
   template<typename T>

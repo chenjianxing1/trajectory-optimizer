@@ -6,7 +6,8 @@ import unittest
 import numpy as np
 import matplotlib.pyplot as plt
 from optimizer.optimizer import \
-  Optimizer, SingleTrackFunctor, JerkCost, ReferenceLineCost, InputCost, BaseFunctor, ReferenceCost
+  Optimizer, SingleTrackFunctor, JerkCost, ReferenceLineCost, \
+  InputCost, BaseFunctor, ReferenceCost, StaticObjectCost
 from optimizer.commons import Parameter
 from optimizer.dynamics import GenerateTrajectory
 
@@ -26,6 +27,7 @@ class OptimizerTests(unittest.TestCase):
     params.set("dt", 0.2)
     params.set("weight_jerk", 1.)
     params.set("weight_distance", 10.)
+    params.set("weight_object", 100000.)
     params.set("function_tolerance", 1e-10)
     params.set("max_num_iterations", 1000)
 
@@ -36,6 +38,12 @@ class OptimizerTests(unittest.TestCase):
     opt_vec = np.zeros(shape=(20, 2))
     ref_line = np.array([[0., 4.],
                          [1000., 4.]])
+
+    obstacle_outline = np.array([[19., 1.7],
+                                 [23., 1.7],
+                                 [23., 4.7],
+                                 [19., 4.7],
+                                 [19., 1.7]])
     # optimizer
     opt = Optimizer(params)
     opt.SetOptimizationVector(opt_vec)
@@ -45,6 +53,9 @@ class OptimizerTests(unittest.TestCase):
     ref_cost.SetReferenceLine(ref_line)
     jerk_cost = JerkCost(params)
 
+    object_cost = StaticObjectCost(params)
+    object_cost.AddObject(obstacle_outline)
+
     input_cost = InputCost(params)
     input_cost.SetLowerBound(np.array([[-0.2, -1.0]]))
     input_cost.SetUpperBound(np.array([[0.2, 1.0]]))
@@ -52,12 +63,13 @@ class OptimizerTests(unittest.TestCase):
     # optimization problem
     functor = opt.AddFastSingleTrackFunctor(initial_state,
                                             params,
-                                            [jerk_cost, ref_cost, input_cost])
+                                            [jerk_cost, ref_cost, input_cost, object_cost])
     opt.Solve()
     opt.Report()
     inputs = opt.Result()
     trajectory = GenerateTrajectory(initial_state, inputs, params)
     fig, ax = plt.subplots(nrows=1, ncols=2)
+    ax[0].plot(obstacle_outline[:, 0], obstacle_outline[:, 1])
     ax[0].plot(trajectory[:, 0], trajectory[:, 1], marker='o')
     ax[0].axis("equal")
     ax[1].plot(inputs[:, 0], label="Steering angle", marker='o')
