@@ -27,17 +27,21 @@ namespace dynamics {
     const Matrix_t<T>& initial_states,
     const Matrix_t<T>& input_vector,
     Parameter* params) {
-    Matrix_t<T> trajectory(input_vector.rows(),
+    int total_rows = input_vector.rows() + initial_states.rows();
+    Matrix_t<T> trajectory(total_rows,
                            initial_states.cols());
     trajectory.block(0,
                      0,
                      initial_states.rows(),
                      initial_states.cols()) = initial_states;
-    for (int i = initial_states.rows(); i < input_vector.rows(); i++) {
+    // assume its correct up to here
+    int count = 0;
+    for (int i = initial_states.rows(); i < total_rows; i++) {
       trajectory.row(i) = M::template Step<T, I>(
         trajectory.row(i-1),
-        input_vector.row(i-1),
+        input_vector.row(count),
         params);
+      count++;
     }
     return trajectory;
   }
