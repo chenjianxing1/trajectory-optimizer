@@ -9,6 +9,7 @@ cc_binary(
     "@pybind11//:pybind11",
     "//src/commons:parameters",
     "//src/dynamics:dynamics",
+    "//src/geometry:geometry",
     "//src:optimizer"
   ],
   linkshared = 1,
