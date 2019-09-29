@@ -5,6 +5,7 @@
 // For a copy, see <https://opensource.org/licenses/MIT>.
 
 #pragma once
+#include <memory>
 #include "src/geometry/geometry.h"
 #include "src/commons/parameters.h"
 

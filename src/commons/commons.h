@@ -25,7 +25,7 @@ inline Matrix_t<T> CalculateDiff(const Matrix_t<T>& traj, T dt) {
 }
 
 template<typename T>
-inline T CalculateJerk(const Matrix_t<T>& traj, T dt) {
+inline T CalculateSquaredJerk(const Matrix_t<T>& traj, T dt) {
   Matrix_t<T> reduced_traj = traj.block(0, 0, traj.rows(), 2);
   // TODO(@hart): make more efficient
   Matrix_t<T> traj_v = CalculateDiff(reduced_traj, dt);
@@ -40,9 +40,9 @@ inline T CalculateJerk(const Matrix_t<T>& traj, T dt) {
 }
 
 template<typename T>
-inline T CalculateDistance(const Line<T, 2>& line,
-                           const Matrix_t<T>& trajectory,
-                           T dist = T(0.)) {
+inline T CalculateSquaredDistance(const Line<T, 2>& line,
+                                  const Matrix_t<T>& trajectory,
+                                  T dist = T(0.)) {
   T tmp_dist = T(0.);
   Point<T, 2> pt;
   for ( int i = 0; i < trajectory.rows(); i++ ) {
@@ -55,9 +55,9 @@ inline T CalculateDistance(const Line<T, 2>& line,
 }
 
 template<typename T>
-inline T GetCosts(const Polygon<T, 2>& poly,
-                           const Matrix_t<T>& trajectory,
-                           T eps = T(1.)) {
+inline T GetSquaredObjectCosts(const Polygon<T, 2>& poly,
+                               const Matrix_t<T>& trajectory,
+                               T eps = T(1.)) {
   T tmp_dist = T(0.);
   T dist = T(0.);
   Point<T, 2> pt;
@@ -73,9 +73,9 @@ inline T GetCosts(const Polygon<T, 2>& poly,
 }
 
 template<typename T>
-inline T CalculateDistance(const Matrix_t<T>& traj0,
-                           const Matrix_t<T>& traj1,
-                           T dist = T(0.)) {
+inline T CalculateSquaredDistance(const Matrix_t<T>& traj0,
+                                  const Matrix_t<T>& traj1,
+                                  T dist = T(0.)) {
   T tmp_dist = T(0.);
   for (int i = 0; i < traj0.rows(); i++) {
     T loc = T(0.);

@@ -6,6 +6,7 @@
 
 #pragma once
 #include <vector>
+#include <memory>
 #include <functional>
 #include "src/geometry/geometry.h"
 #include "src/commons/parameters.h"
@@ -21,9 +22,10 @@ using commons::ParameterPtr;
 class InputCost : public BaseCost {
  public:
   InputCost() : BaseCost() {}
-  explicit InputCost(const ParameterPtr& params) :
+  explicit InputCost(const ParameterPtr& params,
+                     double cost = 200.) :
     BaseCost(params) {
-      weight_ = params_->get<double>("weight_input", 100.0);
+      weight_ = params_->set<double>("weight_input", cost);
   }
   virtual ~InputCost() {}
 

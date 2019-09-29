@@ -5,6 +5,7 @@
 
 #pragma once
 #include <vector>
+#include <memory>
 #include <functional>
 #include "src/geometry/geometry.h"
 #include "src/commons/parameters.h"
@@ -18,7 +19,7 @@ using geometry::BaseGeometry;
 using geometry::Line;
 using commons::ParameterPtr;
 using commons::Parameter;
-using commons::CalculateDistance;
+using commons::CalculateSquaredDistance;
 
 /**
  * @brief Cost for deviation to desired speed
@@ -27,9 +28,10 @@ using commons::CalculateDistance;
 class SpeedCost : public BaseCost {
  public:
   SpeedCost() : BaseCost(), v_des_() {}
-  explicit SpeedCost(const ParameterPtr& params) :
+  explicit SpeedCost(const ParameterPtr& params,
+                     double cost = 100.) :
     BaseCost(params) {
-      weight_ = params_->get<double>("weight_speed", 0.1);
+      weight_ = params_->set<double>("weight_speed", cost);
   }
   virtual ~SpeedCost() {}
 

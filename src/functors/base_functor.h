@@ -48,7 +48,7 @@ class BaseFunctor {
     costs_.push_back(cost);
   }
 
-  std::vector<BaseCostPtr>& GetCosts() { return costs_; }
+  std::vector<BaseCostPtr>& GetSquaredObjectCosts() { return costs_; }
 
   //! Optimization length is the row length of the optimization vector
   int GetOptVecLen() const { return opt_vec_len_; }

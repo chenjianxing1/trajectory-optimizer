@@ -6,6 +6,7 @@
 #pragma once
 #include <vector>
 #include <functional>
+#include <memory>
 #include "src/geometry/geometry.h"
 #include "src/commons/parameters.h"
 #include "src/commons/commons.h"
@@ -20,7 +21,7 @@ using geometry::Line;
 using geometry::Distance;
 using commons::ParameterPtr;
 using commons::Parameter;
-using commons::GetCosts;
+using commons::GetSquaredObjectCosts;
 
 class ObjectOutline {
  public:
@@ -32,10 +33,12 @@ class ObjectOutline {
 class StaticObjectCost : public BaseCost {
  public:
   StaticObjectCost() : BaseCost() {}
-  explicit StaticObjectCost(const ParameterPtr& params, double eps = 2.0) :
+  explicit StaticObjectCost(const ParameterPtr& params,
+                            double eps = 2.0,
+                            double cost = 200.) :
     BaseCost(params),
     epsilon_(eps) {
-      weight_ = params_->get<double>("weight_object", 0.1);
+      weight_ = params_->set<double>("weight_object", cost);
   }
   virtual ~StaticObjectCost() {}
 
@@ -45,7 +48,7 @@ class StaticObjectCost : public BaseCost {
              T dist = T(0.)) const {
     for (auto& obj_out : object_outlines_) {
       Polygon<T, 2> obj(obj_out.cast<T>());
-      dist = GetCosts<T>(obj, trajectory, T(epsilon_));
+      dist = GetSquaredObjectCosts<T>(obj, trajectory, T(epsilon_));
     }
     return Weight<T>() * dist;
   }

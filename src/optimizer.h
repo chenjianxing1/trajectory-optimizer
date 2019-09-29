@@ -81,6 +81,8 @@ class Optimizer {
    */
   template<class F, int N = 4>
   void AddResidualBlock(BaseFunctor* functor, int num_residuals = 1) {
+    assert(optimization_vectors_.size() == 0,
+           "You need to provide the optimization vector first.");
     DynamicAutoDiffCostFunction<F, N>* ceres_functor =
       new DynamicAutoDiffCostFunction<F, N>(dynamic_cast<F*>(functor));
     for (vector<double>& vec : optimization_vectors_) {
@@ -110,7 +112,7 @@ class Optimizer {
     }
     optimization_vector_len_ = inputs.rows();
   }
-  
+
   /**
    * @brief Fix the optimization vector within a certain range
    * 

@@ -6,6 +6,7 @@
 #pragma once
 #include <vector>
 #include <functional>
+#include <memory>
 #include "src/geometry/geometry.h"
 #include "src/commons/parameters.h"
 #include "src/commons/commons.h"
@@ -18,14 +19,15 @@ using geometry::BaseGeometry;
 using geometry::Line;
 using commons::ParameterPtr;
 using commons::Parameter;
-using commons::CalculateDistance;
+using commons::CalculateSquaredDistance;
 
 class ReferenceCost : public BaseCost {
  public:
   ReferenceCost() : BaseCost(), reference_() {}
-  explicit ReferenceCost(const ParameterPtr& params) :
+  explicit ReferenceCost(const ParameterPtr& params,
+                         double cost = 0.1) :
     BaseCost(params) {
-      weight_ = params_->get<double>("weight_reference", 0.1);
+      weight_ = params_->set<double>("weight_reference", cost);
   }
   virtual ~ReferenceCost() {}
 
@@ -33,7 +35,7 @@ class ReferenceCost : public BaseCost {
   T Evaluate(const Matrix_t<T>& trajectory,
              const Matrix_t<T>& inputs,
              T dist = T(0.)) const {
-    dist = CalculateDistance<T>(reference_.cast<T>(), trajectory);
+    dist = CalculateSquaredDistance<T>(reference_.cast<T>(), trajectory);
     return Weight<T>() * dist;
   }
 

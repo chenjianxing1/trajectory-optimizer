@@ -30,7 +30,7 @@ using geometry::Point;
 using geometry::Polygon;
 using commons::Parameter;
 using commons::ParameterPtr;
-using commons::CalculateJerk;
+using commons::CalculateSquaredJerk;
 using dynamics::GenerateDynamicTrajectory;
 using dynamics::SingleTrackModel;
 using dynamics::NullModel;
@@ -82,7 +82,7 @@ class DynamicFunctor : public BaseFunctor {
       params_.get());
 
     // costs
-    vector<BaseCostPtr> costs_ = this->GetCosts();
+    vector<BaseCostPtr> costs_ = this->GetSquaredObjectCosts();
     for ( int i = 0; i < costs_.size(); i++ ) {
       if (std::dynamic_pointer_cast<JerkCost>(costs_[i])) {
         JerkCostPtr cost = std::dynamic_pointer_cast<JerkCost>(costs_[i]);

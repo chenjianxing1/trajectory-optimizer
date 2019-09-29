@@ -7,6 +7,7 @@
 #pragma once
 #include <vector>
 #include <functional>
+#include <memory>
 #include "src/geometry/geometry.h"
 #include "src/commons/parameters.h"
 #include "src/commons/commons.h"
@@ -16,23 +17,24 @@ namespace optimizer {
 
 using geometry::Matrix_t;
 using commons::Parameter;
-using commons::CalculateJerk;
+using commons::CalculateSquaredJerk;
 using commons::ParameterPtr;
 
 
 class JerkCost : public BaseCost {
  public:
   JerkCost() : BaseCost() {}
-  explicit JerkCost(const ParameterPtr& params) :
+  explicit JerkCost(const ParameterPtr& params,
+                    double cost = 10.) :
     BaseCost(params) {
-      weight_ = params_->get<double>("weight_jerk", 100.);
+      weight_ = params_->set<double>("weight_jerk", cost);
   }
   virtual ~JerkCost() {}
 
   template<typename T>
   T Evaluate(const Matrix_t<T>& trajectory,
              const Matrix_t<T>& inputs) const {
-    T jerk = CalculateJerk<T>(
+    T jerk = CalculateSquaredJerk<T>(
       trajectory,
       T(params_->get<double>("dt", 0.1)));
     return Weight<T>() * jerk;

@@ -5,7 +5,7 @@
 import unittest
 import numpy as np
 import matplotlib.pyplot as plt
-from optimizer.commons import Parameter, CalculateJerk
+from optimizer.commons import Parameter, CalculateSquaredJerk
 
 class CommonsTests(unittest.TestCase):
   def test_jerk_calc(self):
@@ -13,7 +13,7 @@ class CommonsTests(unittest.TestCase):
                     [2.00000000e+00, 0.00000000e+00, 0.00000000e+00, 1.00000000e+01],
                     [4.00000000e+00, 0.00000000e+00, 0.00000000e+00, 1.00000000e+01],
                     [6.00009647e+00, 1.40718900e-02, 0., 0.]])
-    jerk = CalculateJerk(traj, 0.2)
+    jerk = CalculateSquaredJerk(traj, 0.2)
     print(jerk)
 
   def test_jerk_calc_real(self):
@@ -37,7 +37,7 @@ class CommonsTests(unittest.TestCase):
         [3.39998678e+01, 4.58864796e+00, 1.95103393e-01, 1.01927158e+01],
         [3.59997489e+01, 4.97556724e+00, 1.87116606e-01, 1.01769995e+01],
         [3.79996203e+01, 5.35420578e+00, 1.87116606e-01, 1.01769995e+01]])
-    jerk = CalculateJerk(traj, 0.2)
+    jerk = CalculateSquaredJerk(traj, 0.2)
     print(jerk)
 if __name__ == '__main__':
   unittest.main()

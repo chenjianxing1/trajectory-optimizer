@@ -4,6 +4,7 @@
 // For a copy, see <https://opensource.org/licenses/MIT>.
 
 #pragma once
+#include <memory>
 #include <vector>
 #include <functional>
 #include "src/geometry/geometry.h"
@@ -18,14 +19,15 @@ using geometry::BaseGeometry;
 using geometry::Line;
 using commons::ParameterPtr;
 using commons::Parameter;
-using commons::CalculateDistance;
+using commons::CalculateSquaredDistance;
 
 class ReferenceLineCost : public BaseCost {
  public:
   ReferenceLineCost() : BaseCost(), reference_line_() {}
-  explicit ReferenceLineCost(const ParameterPtr& params) :
+  explicit ReferenceLineCost(const ParameterPtr& params,
+                             double cost = 10.) :
     BaseCost(params) {
-      weight_ = params_->get<double>("weight_distance", 0.1);
+      weight_ = params_->set<double>("weight_distance", cost);
   }
   virtual ~ReferenceLineCost() {}
 
@@ -34,7 +36,7 @@ class ReferenceLineCost : public BaseCost {
              const Matrix_t<T>& inputs,
              T dist = T(0.)) const {
     Line<T, 2> ref_line(reference_line_.cast<T>());
-    dist = CalculateDistance<T>(ref_line, trajectory);
+    dist = CalculateSquaredDistance<T>(ref_line, trajectory);
     return Weight<T>() * dist;
   }
 
