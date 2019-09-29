@@ -46,12 +46,6 @@ void python_optimizer(py::module m) {
     .def(py::init<const ParameterPtr&>())
     .def("SetReferenceLine", &optimizer::ReferenceLineCost::SetReferenceLine);
 
-  py::class_<ObjectOutline>(m, "ObjectOutline")
-    .def(py::init<>())
-    .def(py::init<const Matrix_t<double>&, double>())
-    .def("Add", &optimizer::ObjectOutline::Add)
-    .def("Query", &optimizer::ObjectOutline::Query);
-
   py::class_<StaticObjectCost,
              BaseCost,
              StaticObjectCostPtr>(m, "StaticObjectCost")

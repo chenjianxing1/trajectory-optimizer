@@ -30,7 +30,8 @@ inline Matrix_t<double> InterpolateMatrices(const Matrix_t<double>& p0,
 inline Matrix_t<double> InterpolateTimedPolygon(const TimedPolygonOutline& p0,
                                                 const TimedPolygonOutline& p1,
                                                 double time) {
-  double lambda = time - p0.first / (p1.first - p0.first);
+  double lambda = (time - p0.first) / (p1.first - p0.first);
+  std::cout<<time << " - "<< lambda << std::endl;
   return InterpolateMatrices(p0.second, p1.second, lambda);
 }
 
@@ -51,7 +52,7 @@ class ObjectOutline {
 
   Matrix_t<double> Query(double timestamp_query) const {
     for (int i = 0; i < object_outlines_.size() - 1; i++) {
-      if (object_outlines_.at(i).first < timestamp_query && \
+      if (object_outlines_.at(i).first <= timestamp_query && \
           object_outlines_.at(i+1).first > timestamp_query) {
         TimedPolygonOutline timed_outline_0 = object_outlines_.at(i);
         TimedPolygonOutline timed_outline_1 = object_outlines_.at(i+1);

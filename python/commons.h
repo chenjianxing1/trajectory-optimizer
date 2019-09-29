@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include "src/commons/commons.h"
+#include "src/geometry/geometry.h"
 #include "src/commons/parameters.h"
 
 namespace py = pybind11;
@@ -15,6 +16,7 @@ void python_commons(py::module m) {
   using commons::Parameter;
   using commons::ParameterPtr;
   using commons::CalculateSquaredJerk;
+  using commons::ObjectOutline;
 
   py::class_<Parameter, ParameterPtr>(m, "Parameter")
     .def(py::init<>())
@@ -30,4 +32,10 @@ void python_commons(py::module m) {
     .def("set", &commons::Parameter::set<std::vector<double>>);
   
   m.def("CalculateSquaredJerk", &commons::CalculateSquaredJerk<double>);
+
+  py::class_<ObjectOutline>(m, "ObjectOutline")
+    .def(py::init<>())
+    .def(py::init<const geometry::Matrix_t<double>&, double>())
+    .def("Add", &commons::ObjectOutline::Add)
+    .def("Query", &commons::ObjectOutline::Query);
 }

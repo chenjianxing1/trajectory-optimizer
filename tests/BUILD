@@ -48,3 +48,10 @@ py_test(
   data = ["//python:optimizer.so"],
   imports = ["../python/"]
 )
+
+py_test(
+  name = "py_outline_tests",
+  srcs = ["py_outline_tests.py"],
+  data = ["//python:optimizer.so"],
+  imports = ["../python/"]
+)
