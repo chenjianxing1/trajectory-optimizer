@@ -60,7 +60,7 @@ class OptimizerTests(unittest.TestCase):
     outline.Add(obstacle_outline0, 0.)
     outline.Add(obstacle_outline1, 6.)
 
-    object_cost = StaticObjectCost(params, 1.5, 1000.)
+    object_cost = StaticObjectCost(params, 1.5, 100000.)
     object_cost.AddObjectOutline(outline)
 
     input_cost = InputCost(params)
