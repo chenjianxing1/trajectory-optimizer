@@ -55,15 +55,21 @@ inline T CalculateSquaredDistance(const Line<T, 2>& line,
 }
 
 template<typename T>
-inline T GetSquaredObjectCosts(const Polygon<T, 2>& poly,
+inline T GetSquaredObjectCosts(const ObjectOutline& obj_out,
                                const Matrix_t<T>& trajectory,
-                               T eps = T(1.)) {
+                               const ParameterPtr& params) {
   T tmp_dist = T(0.);
   T dist = T(0.);
   Point<T, 2> pt;
+  Polygon<T, 2> poly;
+  // TODO(@hart): query function for polygon
   for ( int i = 0; i < trajectory.rows(); i++ ) {
+    Matrix_t<double> object_outline =
+      obj_out.Query(i*params.get<double>("dt", 0.1));
     boost::geometry::set<0>(pt.obj_, trajectory(i, 0));
     boost::geometry::set<1>(pt.obj_, trajectory(i, 1));
+
+    poly = Polygon<T, 2>(object_outline.cast<T>());
     tmp_dist = Distance<T, 2>(poly, pt);
     if (tmp_dist < T(eps)) {
       dist += (T(eps) - tmp_dist)*(T(eps) - tmp_dist);

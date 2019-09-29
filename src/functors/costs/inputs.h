@@ -31,8 +31,8 @@ class InputCost : public BaseCost {
 
   template<typename T>
   T Evaluate(const Matrix_t<T>& trajectory,
-             const Matrix_t<T>& inputs) const {
-    T cost = T(0.);
+             const Matrix_t<T>& inputs,
+             T cost = T(0.)) const {
     for (int i = 0; i < inputs.cols(); i++) {
       // check if within bounds
       for (int j = 0; j < inputs.rows(); j++) {
