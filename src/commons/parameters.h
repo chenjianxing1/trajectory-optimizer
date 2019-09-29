@@ -29,8 +29,9 @@ typedef variant<int,
 class Parameter {
  public:
   template<typename T>
-  void set(string name, T val) {
+  T set(string name, T val) {
     parameters_[name] = val;
+    return val;
   }
 
   template<typename T>

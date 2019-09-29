@@ -1,12 +1,11 @@
 cc_library(
-  name = "functors",
+  name = "costs",
   hdrs = glob(["*.h"]),
   deps = [
     "//src/commons:parameters",
     "//src/commons:commons",
     "//src/dynamics:dynamics",
-    "//src/geometry:geometry",
-    "//src/functors/costs:costs"
+    "//src/geometry:geometry"
   ],
 	visibility = ["//visibility:public"]
 )

@@ -7,13 +7,66 @@
 #include <ceres/ceres.h>
 #include <utility>
 #include "src/geometry/geometry.h"
+#include "src/commons/parameters.h"
 
 namespace commons {
+
 using geometry::Matrix_t;
 using geometry::Line;
 using geometry::Point;
 using geometry::Polygon;
 using geometry::Distance;
+using commons::Parameter;
+using commons::ParameterPtr;
+
+typedef std::pair<double, Matrix_t<double>> TimedPolygonOutline;
+
+inline Matrix_t<double> InterpolateMatrices(const Matrix_t<double>& p0,
+                                            const Matrix_t<double>& p1,
+                                            double lambda) {
+  return (1. - lambda)*p0 + lambda*p1;
+}
+
+inline Matrix_t<double> InterpolateTimedPolygon(const TimedPolygonOutline& p0,
+                                                const TimedPolygonOutline& p1,
+                                                double time) {
+  double lambda = time - p0.first / (p1.first - p0.first);
+  return InterpolateMatrices(p0.second, p1.second, lambda);
+}
+
+// TODO(@hart): write test
+class ObjectOutline {
+ public:
+  ObjectOutline() {}
+
+  ObjectOutline(const Matrix_t<double>& outline,
+                double timestamp = 0) {
+    this->Add(outline, timestamp);
+  }
+
+  void Add(Matrix_t<double> outline, double timestamp = 0) {
+    TimedPolygonOutline timed_outline = std::make_pair(timestamp, outline);
+    object_outlines_.push_back(timed_outline);
+  }
+
+  Matrix_t<double> Query(double timestamp_query) const {
+    for (int i = 0; i < object_outlines_.size() - 1; i++) {
+      if (object_outlines_.at(i).first < timestamp_query && \
+          object_outlines_.at(i+1).first > timestamp_query) {
+        TimedPolygonOutline timed_outline_0 = object_outlines_.at(i);
+        TimedPolygonOutline timed_outline_1 = object_outlines_.at(i+1);
+        return InterpolateTimedPolygon(timed_outline_0,
+                                       timed_outline_1,
+                                       timestamp_query);
+      }
+    }
+    return object_outlines_.at(0).second;
+  }
+
+ private:
+  std::vector<TimedPolygonOutline> object_outlines_;
+};
+
 
 template<typename T>
 inline Matrix_t<T> CalculateDiff(const Matrix_t<T>& traj, T dt) {
@@ -65,12 +118,13 @@ inline T GetSquaredObjectCosts(const ObjectOutline& obj_out,
   // TODO(@hart): query function for polygon
   for ( int i = 0; i < trajectory.rows(); i++ ) {
     Matrix_t<double> object_outline =
-      obj_out.Query(i*params.get<double>("dt", 0.1));
+      obj_out.Query(i*params->get<double>("dt", 0.1));
     boost::geometry::set<0>(pt.obj_, trajectory(i, 0));
     boost::geometry::set<1>(pt.obj_, trajectory(i, 1));
 
     poly = Polygon<T, 2>(object_outline.cast<T>());
     tmp_dist = Distance<T, 2>(poly, pt);
+    T eps = T(params->get<double>("eps"));
     if (tmp_dist < T(eps)) {
       dist += (T(eps) - tmp_dist)*(T(eps) - tmp_dist);
     }

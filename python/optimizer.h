@@ -33,33 +33,45 @@ void python_optimizer(py::module m) {
     .def("AddCost", &SingleTrackFunctor::AddCost);
 
   py::class_<BaseCost, BaseCostPtr>(m, "BaseCost")
-    .def(py::init<const ParameterPtr& >());
+    .def(py::init<const ParameterPtr&>());
 
   py::class_<JerkCost, BaseCost, JerkCostPtr>(m, "JerkCost")
+    .def(py::init<const ParameterPtr&>())
     .def(py::init<const ParameterPtr&>());
 
   py::class_<ReferenceLineCost,
              BaseCost,
              ReferenceLineCostPtr>(m, "ReferenceLineCost")
+    .def(py::init<const ParameterPtr&, double>())
     .def(py::init<const ParameterPtr&>())
     .def("SetReferenceLine", &optimizer::ReferenceLineCost::SetReferenceLine);
+
+  py::class_<ObjectOutline>(m, "ObjectOutline")
+    .def(py::init<>())
+    .def(py::init<const Matrix_t<double>&, double>())
+    .def("Add", &optimizer::ObjectOutline::Add)
+    .def("Query", &optimizer::ObjectOutline::Query);
 
   py::class_<StaticObjectCost,
              BaseCost,
              StaticObjectCostPtr>(m, "StaticObjectCost")
     .def(py::init<const ParameterPtr&>())
-    .def("AddObject", &optimizer::StaticObjectCost::AddObject);
+    .def(py::init<const ParameterPtr&, double, double>())
+    .def("AddObjectOutline", &optimizer::StaticObjectCost::AddObjectOutline);
 
   py::class_<ReferenceCost, BaseCost, ReferenceCostPtr>(m, "ReferenceCost")
     .def(py::init<const ParameterPtr&>())
+    .def(py::init<const ParameterPtr&, double>())
     .def("SetReference", &optimizer::ReferenceCost::SetReference);
 
   py::class_<SpeedCost, BaseCost, SpeedCostPtr>(m, "SpeedCost")
     .def(py::init<const ParameterPtr&>())
+    .def(py::init<const ParameterPtr&, double>())
     .def("SetDesiredSpeed", &optimizer::SpeedCost::SetDesiredSpeed);
 
   py::class_<InputCost, BaseCost, InputCostPtr>(m, "InputCost")
     .def(py::init<const ParameterPtr&>())
+    .def(py::init<const ParameterPtr&, double>())
     .def("SetLowerBound", &optimizer::InputCost::SetLowerBound)
     .def("SetUpperBound", &optimizer::InputCost::SetUpperBound);
 

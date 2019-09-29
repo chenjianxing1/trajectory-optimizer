@@ -55,8 +55,8 @@ class OptimizerTests(unittest.TestCase):
     ref_cost.SetReferenceLine(ref_line)
     jerk_cost = JerkCost(params)
 
-    object_cost = StaticObjectCost(params)
-    object_cost.AddObject(obstacle_outline)
+    # object_cost = StaticObjectCost(params)
+    # object_cost.AddObject(obstacle_outline)
 
     input_cost = InputCost(params)
     input_cost.SetLowerBound(np.array([[-0.2, -1.0]]))
@@ -71,7 +71,6 @@ class OptimizerTests(unittest.TestCase):
                                             [jerk_cost,
                                              ref_cost,
                                              input_cost,
-                                             object_cost,
                                              speed_cost])
     opt.FixOptimizationVector(0, 1)    
     opt.Solve()

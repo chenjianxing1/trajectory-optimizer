@@ -7,6 +7,7 @@ cc_library(
 cc_library(
   name = "commons",
   hdrs = ["commons.h"],
-  deps = ["//src/geometry:geometry"],
+  deps = ["//src/geometry:geometry",
+          ":parameters"],
 	visibility = ["//visibility:public"]
 )
