@@ -45,7 +45,6 @@ class StaticObjectCost : public BaseCost {
              const Matrix_t<T>& inputs,
              T cost = T(0.)) const {
     for (const auto& obj_out : object_outlines_) {
-      // Polygon<T, 2> obj(obj_out.cast<T>());
       cost = GetSquaredObjectCosts<T>(obj_out, trajectory, params_);
     }
     return Weight<T>() * cost;
@@ -53,11 +52,6 @@ class StaticObjectCost : public BaseCost {
 
   void AddObjectOutline(const ObjectOutline& object_outline) {
     object_outlines_.push_back(object_outline);
-  }
-
-  template<typename T>
-  T Weight() const {
-    return T(weight_);
   }
 
   std::vector<ObjectOutline> object_outlines_;

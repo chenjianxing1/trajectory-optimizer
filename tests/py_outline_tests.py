@@ -29,7 +29,6 @@ class PyOutlineTests(unittest.TestCase):
 
     _draw_poly(outline.Query(1.), "yellow")
     _draw_poly(outline.Query(5.), "magenta")
-    plt.show()
 
 
 if __name__ == '__main__':

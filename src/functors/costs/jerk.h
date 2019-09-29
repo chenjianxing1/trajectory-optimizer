@@ -40,10 +40,6 @@ class JerkCost : public BaseCost {
     return Weight<T>() * jerk;
   }
 
-  template<typename T>
-  T Weight() const {
-    return T(weight_);
-  }
 };
 
 typedef std::shared_ptr<JerkCost> JerkCostPtr;

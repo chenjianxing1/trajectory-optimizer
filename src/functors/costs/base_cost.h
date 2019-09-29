@@ -27,6 +27,11 @@ class BaseCost {
   T Evaluate(const Matrix_t<T>& trajectory,
              const Matrix_t<T>& inputs) const { return T(0.); }
 
+  template<typename T>
+  T Weight() const {
+    return T(weight_);
+  }
+
   ParameterPtr params_;
   double weight_;
 };

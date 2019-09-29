@@ -45,11 +45,6 @@ class InputCost : public BaseCost {
     return Weight<T>() * cost;
   }
 
-  template<typename T>
-  T Weight() const {
-    return T(weight_);
-  }
-
   void SetLowerBound(const Matrix_t<double>& lb) {
     lower_bounds_ = lb;
   }

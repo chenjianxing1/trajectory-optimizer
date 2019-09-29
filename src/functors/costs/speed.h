@@ -49,11 +49,6 @@ class SpeedCost : public BaseCost {
     v_des_ = speed;
   }
 
-  template<typename T>
-  T Weight() const {
-    return T(weight_);
-  }
-
   double v_des_;
 };
 

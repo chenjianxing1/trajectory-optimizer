@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from optimizer.optimizer import \
   Optimizer, SingleTrackFunctor, JerkCost, ReferenceLineCost, \
   InputCost, BaseFunctor, ReferenceCost, StaticObjectCost, SpeedCost
-from optimizer.commons import Parameter
+from optimizer.commons import Parameter, ObjectOutline
 from optimizer.dynamics import GenerateTrajectory
 
 class OptimizerTests(unittest.TestCase):
@@ -41,11 +41,11 @@ class OptimizerTests(unittest.TestCase):
     ref_line = np.array([[0., 4.],
                          [1000., 4.]])
 
-    obstacle_outline = np.array([[21., 1.7],
-                                 [29., 1.7],
-                                 [29., 4.7],
-                                 [21., 4.7],
-                                 [21., 1.7]])
+    obstacle_outline0 = np.array([[14., 1.7],
+                                  [22., 1.7],
+                                  [22., 4.7],
+                                  [14., 4.7],
+                                  [14., 1.7]])
     # optimizer
     opt = Optimizer(params)
     opt.SetOptimizationVector(opt_vec)
@@ -55,8 +55,13 @@ class OptimizerTests(unittest.TestCase):
     ref_cost.SetReferenceLine(ref_line)
     jerk_cost = JerkCost(params)
 
-    # object_cost = StaticObjectCost(params)
-    # object_cost.AddObject(obstacle_outline)
+    outline = ObjectOutline()
+    obstacle_outline1 = obstacle_outline0 + np.array([[30.0, 0.0]])
+    outline.Add(obstacle_outline0, 0.)
+    outline.Add(obstacle_outline1, 6.)
+
+    object_cost = StaticObjectCost(params, 1.5, 1000.)
+    object_cost.AddObjectOutline(outline)
 
     input_cost = InputCost(params)
     input_cost.SetLowerBound(np.array([[-0.2, -1.0]]))
@@ -71,6 +76,7 @@ class OptimizerTests(unittest.TestCase):
                                             [jerk_cost,
                                              ref_cost,
                                              input_cost,
+                                             object_cost,
                                              speed_cost])
     opt.FixOptimizationVector(0, 1)    
     opt.Solve()
@@ -78,7 +84,11 @@ class OptimizerTests(unittest.TestCase):
     inputs = opt.Result()
     trajectory = GenerateTrajectory(initial_state, inputs, params)
     fig, ax = plt.subplots(nrows=1, ncols=2)
-    ax[0].plot(obstacle_outline[:, 0], obstacle_outline[:, 1])
+    for t in np.arange(0, 6, 0.1):
+        poly = outline.Query(t)
+        ax[0].plot(poly[:, 0], poly[:, 1])
+
+    #ax[0].plot(obstacle_outline[:, 0], obstacle_outline[:, 1])
     ax[0].plot(trajectory[:, 0], trajectory[:, 1], marker='o')
     ax[0].axis("equal")
     ax[1].plot(inputs[:-1, 0], label="Steering angle", marker='o')

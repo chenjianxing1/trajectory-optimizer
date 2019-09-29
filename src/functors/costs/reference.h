@@ -43,11 +43,6 @@ class ReferenceCost : public BaseCost {
     reference_ = ref;
   }
 
-  template<typename T>
-  T Weight() const {
-    return T(weight_);
-  }
-
   Matrix_t<double> reference_;
 };
 

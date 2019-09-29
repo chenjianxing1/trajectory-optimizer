@@ -31,7 +31,6 @@ inline Matrix_t<double> InterpolateTimedPolygon(const TimedPolygonOutline& p0,
                                                 const TimedPolygonOutline& p1,
                                                 double time) {
   double lambda = (time - p0.first) / (p1.first - p0.first);
-  std::cout<<time << " - "<< lambda << std::endl;
   return InterpolateMatrices(p0.second, p1.second, lambda);
 }
 
