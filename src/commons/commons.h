@@ -4,8 +4,9 @@
 // For a copy, see <https://opensource.org/licenses/MIT>.
 #pragma once
 #include <limits>
-#include <ceres/ceres.h>
 #include <utility>
+#include <vector>
+#include <ceres/ceres.h>
 #include "src/geometry/geometry.h"
 #include "src/commons/parameters.h"
 
@@ -60,7 +61,9 @@ class ObjectOutline {
                                        timestamp_query);
       }
     }
-    return object_outlines_.at(0).second;
+    if (timestamp_query >= object_outlines_.back().first)
+      return object_outlines_.back().second;
+    return object_outlines_.front().second;
   }
 
  private:
@@ -118,13 +121,12 @@ inline T GetSquaredObjectCosts(const ObjectOutline& obj_out,
   // TODO(@hart): query function for polygon
   for ( int i = 0; i < trajectory.rows(); i++ ) {
     Matrix_t<double> object_outline =
-      obj_out.Query(i*params->get<double>("dt", 0.1));
+      obj_out.Query(i*params->get<double>("dt", 0.2));
     boost::geometry::set<0>(pt.obj_, trajectory(i, 0));
     boost::geometry::set<1>(pt.obj_, trajectory(i, 1));
-
     poly = Polygon<T, 2>(object_outline.cast<T>());
     tmp_dist = Distance<T, 2>(poly, pt);
-    T eps = T(params->get<double>("eps"));
+    T eps = T(params->get<double>("epsilon"));
     if (tmp_dist < T(eps)) {
       dist += (T(eps) - tmp_dist)*(T(eps) - tmp_dist);
     }

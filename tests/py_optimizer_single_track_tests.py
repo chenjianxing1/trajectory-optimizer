@@ -25,11 +25,6 @@ class OptimizerTests(unittest.TestCase):
     params = Parameter()
     params.set("wheel_base", 2.7)
     params.set("dt", 0.2)
-    params.set("weight_jerk", 10.)
-    params.set("weight_distance", 10.)
-    params.set("weight_object", 200.)
-    params.set("weight_speed", 100.)
-    params.set("weight_input", 200.)
     params.set("function_tolerance", 1e-10)
     params.set("max_num_iterations", 1000)
 
@@ -51,23 +46,23 @@ class OptimizerTests(unittest.TestCase):
     opt.SetOptimizationVector(opt_vec)
 
     # costs
-    ref_cost = ReferenceLineCost(params)
+    ref_cost = ReferenceLineCost(params, 100.)
     ref_cost.SetReferenceLine(ref_line)
-    jerk_cost = JerkCost(params)
+    jerk_cost = JerkCost(params, 10000.)
 
     outline = ObjectOutline()
     obstacle_outline1 = obstacle_outline0 + np.array([[30.0, 0.0]])
     outline.Add(obstacle_outline0, 0.)
-    outline.Add(obstacle_outline1, 6.)
+    outline.Add(obstacle_outline1, 10.)
 
-    object_cost = StaticObjectCost(params, 1.5, 100000.)
+    object_cost = StaticObjectCost(params, 2.5, 2000.)
     object_cost.AddObjectOutline(outline)
 
-    input_cost = InputCost(params)
+    input_cost = InputCost(params, 10.)
     input_cost.SetLowerBound(np.array([[-0.2, -1.0]]))
     input_cost.SetUpperBound(np.array([[0.2, 1.0]]))
 
-    speed_cost = SpeedCost(params)
+    speed_cost = SpeedCost(params, 10.)
     speed_cost.SetDesiredSpeed(10.)
     
     # optimization problem

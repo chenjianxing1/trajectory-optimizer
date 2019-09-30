@@ -37,7 +37,7 @@ void python_optimizer(py::module m) {
 
   py::class_<JerkCost, BaseCost, JerkCostPtr>(m, "JerkCost")
     .def(py::init<const ParameterPtr&>())
-    .def(py::init<const ParameterPtr&>());
+    .def(py::init<const ParameterPtr&, double>());
 
   py::class_<ReferenceLineCost,
              BaseCost,
