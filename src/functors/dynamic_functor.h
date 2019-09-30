@@ -76,23 +76,24 @@ class DynamicFunctor : public BaseFunctor {
     Matrix_t<T> opt_vec = this->ParamsToEigen<T>(parameters);
     Matrix_t<T> initial_states_t = initial_states_.cast<T>();
     // generation
-    // TODO(@hart): we need the state information here as well;
-    //              otherwise cannot be used in cost terms
     Matrix_t<T> trajectory = GenerateDynamicTrajectory<T, M, I>(
       initial_states_t,
       opt_vec,
       params_.get());
-
+    // TODO(@hart): we need the state information here as well;
+    //              otherwise cannot be used in cost terms
     // costs
     vector<BaseCostPtr> costs_ = this->GetSquaredObjectCosts();
     for ( int i = 0; i < costs_.size(); i++ ) {
       if (std::dynamic_pointer_cast<JerkCost>(costs_[i])) {
+        // would need state def
         JerkCostPtr cost = std::dynamic_pointer_cast<JerkCost>(costs_[i]);
         costs += cost->Evaluate<T>(trajectory, opt_vec);
         weights += cost->Weight<T>();
         continue;
       }
       if (std::dynamic_pointer_cast<ReferenceLineCost>(costs_[i])) {
+        // would need state def
         ReferenceLineCostPtr cost =
           std::dynamic_pointer_cast<ReferenceLineCost>(costs_[i]);
         costs += cost->Evaluate<T>(trajectory, opt_vec);
@@ -113,6 +114,7 @@ class DynamicFunctor : public BaseFunctor {
         continue;
       }
       if (std::dynamic_pointer_cast<SpeedCost>(costs_[i])) {
+        // would need state def
         SpeedCostPtr cost =
           std::dynamic_pointer_cast<SpeedCost>(costs_[i]);
         costs += cost->Evaluate<T>(trajectory, opt_vec);

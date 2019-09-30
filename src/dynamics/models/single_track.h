@@ -9,6 +9,7 @@
 #include "src/dynamics/dynamics.h"
 #include "src/dynamics/integration/rk4.h"
 #include "src/dynamics/integration/euler.h"
+#include "src/dynamics/state.h"
 
 namespace dynamics {
 
@@ -16,28 +17,38 @@ using geometry::Matrix_t;
 using commons::ParameterPtr;
 using commons::Parameter;
 
+class SingleTrackStateDefinition : public StateDefinition {
+ public:
+  SingleTrackStateDefinition() {}
+  ~SingleTrackStateDefinition() {}
+  virtual int x() const { return 0; }
+  virtual int y() const { return 1; }
+  virtual int z() const { return -1; }
+  virtual int v() const { return 3; }
+  virtual int theta() const { return 2; }
+};
 
 
 /**
  * @brief Simplified single-track model
  * 
  */
-class SingleTrackModel{
+class SingleTrackModel {
  public:
   SingleTrackModel() {}
 
-  enum StateSingleTrackModel {
+  enum StateDefinition {
     X = 0,
     Y = 1,
     THETA = 2,
-    VELOCITY = 3,
+    VELOCITY = 3
   };
 
-  enum InputSingleTrackModel {
+  enum InputDefinition {
     STEERING_ANGLE = 0,
-    ACCELERATION = 1,
+    ACCELERATION = 1
   };
-  
+
   template<typename T>
   static Matrix_t<T> fDot(const Matrix_t<T>& state,
                           const Matrix_t<T>& u,
@@ -63,6 +74,8 @@ class SingleTrackModel{
                                     fDot_,
                                     T(params->get<double>("dt", 0.1)));
   }
+
+  std::unique_ptr<StateDefinition> state_def_;
 };
 
 }  // namespace dynamics

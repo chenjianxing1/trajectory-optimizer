@@ -20,8 +20,10 @@ namespace dynamics {
 
   enum DynamicModels {
     SINGLE_TRACK = 0,
-    COPY_MODEL = 1
+    COPY_MODEL = 1,
+    TRIPLE_INT = 1,
   };
+  
   /**
    * @brief Function that generates a dynamic trajectory
    * 
