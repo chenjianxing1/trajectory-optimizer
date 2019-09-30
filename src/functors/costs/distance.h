@@ -31,7 +31,7 @@ class ReferenceLineCost : public BaseCost {
   }
   virtual ~ReferenceLineCost() {}
 
-  template<typename T>
+  template<typename T, class M>
   T Evaluate(const Matrix_t<T>& trajectory,
              const Matrix_t<T>& inputs,
              T dist = T(0.)) const {

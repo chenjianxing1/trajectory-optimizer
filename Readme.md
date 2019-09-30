@@ -10,7 +10,6 @@ Implemented models:
 
 * Simplified single track model
 * Triple integrator model
-* Null model
 
 Implemented integration methods:
 

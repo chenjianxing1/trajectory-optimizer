@@ -9,26 +9,12 @@
 #include "src/dynamics/dynamics.h"
 #include "src/dynamics/integration/rk4.h"
 #include "src/dynamics/integration/euler.h"
-#include "src/dynamics/state.h"
 
 namespace dynamics {
 
 using geometry::Matrix_t;
 using commons::ParameterPtr;
 using commons::Parameter;
-using dynamics::StateDefinition;
-
-class SingleTrackStateDefinition : public StateDefinition {
- public:
-  SingleTrackStateDefinition() {}
-  ~SingleTrackStateDefinition() {}
-  virtual int x() const { return 0; }
-  virtual int y() const { return 1; }
-  virtual int z() const { return -1; }
-  virtual int v() const { return 3; }
-  virtual int theta() const { return 2; }
-};
-
 
 /**
  * @brief Simplified single-track model
@@ -36,18 +22,18 @@ class SingleTrackStateDefinition : public StateDefinition {
  */
 class SingleTrackModel {
  public:
-  SingleTrackModel() :
-    state_def_(std::make_unique<SingleTrackStateDefinition>()) {}
+  SingleTrackModel() {}
   ~SingleTrackModel() {}
 
-  enum StateDefinitionS {
+  enum class StateDefinition {
     X = 0,
     Y = 1,
     THETA = 2,
-    VELOCITY = 3
+    VELOCITY = 3,
+    Z = -1
   };
 
-  enum InputDefinitionS {
+  enum class InputDefinition {
     STEERING_ANGLE = 0,
     ACCELERATION = 1
   };
@@ -57,10 +43,13 @@ class SingleTrackModel {
                           const Matrix_t<T>& u,
                           const T& wheel_base) {
     Matrix_t<T> A(1, state.cols());
-    A << state(VELOCITY) * cos(state(THETA)),
-         state(VELOCITY) * sin(state(THETA)),
-         state(VELOCITY) * tan(u(STEERING_ANGLE)) / wheel_base,
-         u(ACCELERATION);
+    A << state(static_cast<int>(StateDefinition::VELOCITY)) * \
+         cos(state(static_cast<int>(StateDefinition::THETA))),
+         state(static_cast<int>(StateDefinition::VELOCITY)) * \
+         sin(state(static_cast<int>(StateDefinition::THETA))),
+         state(static_cast<int>(StateDefinition::VELOCITY)) * \
+         tan(u(static_cast<int>(InputDefinition::STEERING_ANGLE))) / wheel_base,
+         u(static_cast<int>(InputDefinition::ACCELERATION));
     return A;
   }
 
@@ -78,7 +67,6 @@ class SingleTrackModel {
                                     T(params->get<double>("dt", 0.1)));
   }
 
-  std::unique_ptr<StateDefinition> state_def_;
 };
 
 }  // namespace dynamics

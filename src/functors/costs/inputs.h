@@ -29,7 +29,7 @@ class InputCost : public BaseCost {
   }
   virtual ~InputCost() {}
 
-  template<typename T>
+  template<typename T, class M>
   T Evaluate(const Matrix_t<T>& trajectory,
              const Matrix_t<T>& inputs,
              T cost = T(0.)) const {

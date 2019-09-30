@@ -31,7 +31,6 @@ TEST(optimizer, single_track_model) {
   using optimizer::SingleTrackFunctor;
   using optimizer::FastSingleTrackFunctor;
   using optimizer::FastSingleTrackFunctorPtr;
-  using optimizer::NullModelFunctor;
   using geometry::Matrix_t;
   using dynamics::SingleTrackModel;
   using dynamics::IntegrationRK4;

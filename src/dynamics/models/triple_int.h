@@ -9,7 +9,6 @@
 #include "src/dynamics/dynamics.h"
 #include "src/dynamics/integration/rk4.h"
 #include "src/dynamics/integration/euler.h"
-#include "src/dynamics/state.h"
 
 namespace dynamics {
 
@@ -18,28 +17,15 @@ using commons::ParameterPtr;
 using commons::Parameter;
 
 
-class TripleIntStateDefinition : public StateDefinition {
- public:
-  TripleIntStateDefinition() {}
-  ~TripleIntStateDefinition() {}
-  virtual int x() const { return 0; }
-  virtual int y() const { return 3; }
-  virtual int z() const { return 6; }
-  virtual int vx() const { return 1; }
-  virtual int vy() const { return 4; }
-  virtual int vz() const { return 7; }
-};
-
-
 /**
  * @brief Tripple integrator model
  * 
  */
 class TripleIntModel {
  public:
-  TripleIntModel() :
-    state_def_(std::make_unique<TripleIntStateDefinition>()) {}
-  enum class StateTripleIntModel {
+  TripleIntModel() {}
+
+  enum class StateDefiniton {
     X = 0,
     VX = 1,
     AX = 2,
@@ -51,7 +37,7 @@ class TripleIntModel {
     AZ = 8
   };
 
-  enum class InputTripleIntModel {
+  enum class InputDefinition {
     AX = 0,
     AY = 1,
     AZ = 2
@@ -98,7 +84,6 @@ class TripleIntModel {
                                     T(params->get<double>("dt", 0.1)));
   }
 
-  std::unique_ptr<StateDefinition> state_def_;
 };
 
 }  // namespace dynamics

@@ -62,33 +62,6 @@ TEST(dynamics, triple_int_model) {
   std::cout << state << std::endl;
 }
 
-TEST(dynamics, copy_model) {
-  using dynamics::NullModel;
-  using geometry::Matrix_t;
-  using dynamics::IntegrationRK4;
-  using dynamics::IntegrationEuler;
-  using commons::ParameterPtr;
-  using commons::Parameter;
-
-  ParameterPtr params = std::make_shared<Parameter>();
-  params->set<double>("wheel_base", 2.7);
-  params->set<double>("dt", 0.1);
-
-  //! add objects to world
-  Matrix_t<double> state(1, 2);
-  state << 0.0, 0.0;  // x, y, theta, v
-
-  Matrix_t<double> inp(1, 2);
-  inp << 1.0, 1.0;  // acceleration and steering angle
-
-  NullModel model;
-  state = model.Step<double, IntegrationRK4>(state, inp, params.get());
-
-  Matrix_t<double> state_after(1, 2);
-  state_after << 1.0, 1.0;  // x, y, theta, v
-  ASSERT_EQ(state, state_after);
-}
-
 TEST(dynamics, traj_gen) {
   using dynamics::SingleTrackModel;
   using dynamics::IntegrationRK4;
