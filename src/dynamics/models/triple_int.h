@@ -17,37 +17,56 @@ using commons::ParameterPtr;
 using commons::Parameter;
 
 
-
 /**
- * @brief Simplified single-track model
+ * @brief Tripple integrator model
  * 
  */
-class SingleTrackModel{
+class TripleIntModel {
  public:
-  SingleTrackModel() {}
-
-  enum StateSingleTrackModel {
+  TripleIntModel() {}
+  enum class StateTripleIntModel {
     X = 0,
-    Y = 1,
-    THETA = 2,
-    VELOCITY = 3,
+    VX = 1,
+    AX = 2,
+    Y = 3,
+    VY = 4,
+    AY = 5,
+    Z = 6,
+    VZ = 7,
+    AZ = 8
   };
 
-  enum InputSingleTrackModel {
-    STEERING_ANGLE = 0,
-    ACCELERATION = 1,
+  enum class InputTripleIntModel {
+    AX = 0,
+    AY = 1,
+    AZ = 2
   };
-  
+
   template<typename T>
   static Matrix_t<T> fDot(const Matrix_t<T>& state,
                           const Matrix_t<T>& u,
                           const T& wheel_base) {
-    Matrix_t<T> A(1, state.cols());
-    A << state(VELOCITY) * cos(state(THETA)),
-         state(VELOCITY) * sin(state(THETA)),
-         state(VELOCITY) * tan(u(STEERING_ANGLE)) / wheel_base,
-         u(ACCELERATION);
-    return A;
+    Matrix_t<T> A(9, 9);
+    Matrix_t<T> B(9, 3);
+    A << 0., 1., 0., 0., 0., 0., 0., 0., 0.,
+         0., 0., 1., 0., 0., 0., 0., 0., 0.,
+         0., 0., 0., 0., 0., 0., 0., 0., 0.,
+         0., 0., 0., 0., 1., 0., 0., 0., 0.,
+         0., 0., 0., 0., 0., 1., 0., 0., 0.,
+         0., 0., 0., 0., 0., 0., 0., 0., 0.,
+         0., 0., 0., 0., 0., 0., 0., 1., 0.,
+         0., 0., 0., 0., 0., 0., 0., 0., 1.,
+         0., 0., 0., 0., 0., 0., 0., 0., 0.;
+    B << 0., 0., 0.,
+         0., 0., 0.,
+         1., 0., 0.,
+         0., 0., 0.,
+         0., 0., 0.,
+         0., 1., 0.,
+         0., 0., 0.,
+         0., 0., 0.,
+         0., 0., 1.;
+    return (A*state.transpose() + B*u.transpose()).transpose();
   }
 
   template<typename T, class I>

@@ -38,6 +38,29 @@ TEST(dynamics, single_track_model) {
   ASSERT_EQ(state, state_after_again);
 }
 
+TEST(dynamics, triple_int_model) {
+  using dynamics::TripleIntModel;
+  using dynamics::IntegrationRK4;
+  using geometry::Matrix_t;
+  using commons::Parameter;
+  using commons::ParameterPtr;
+
+  ParameterPtr params = std::make_shared<Parameter>();
+  params->set<double>("dt", 0.1);
+
+  //! add objects to world
+  Matrix_t<double> state(1, 9);
+  // x, vx, vy, y, vy, ay, z, vz, az
+  state << 0.0, 1.0, 0.0,
+           0.0, 1.0, 0.0,
+           0.0, 1.0, 0.0;
+  Matrix_t<double> inp(1, 3);
+  inp << 1.0, 1.0, 1.0;  // ax, ay, az
+
+  TripleIntModel model;
+  state = model.Step<double, IntegrationRK4>(state, inp, params.get());
+  std::cout << state << std::endl;
+}
 
 TEST(dynamics, copy_model) {
   using dynamics::NullModel;
@@ -95,13 +118,6 @@ TEST(dynamics, traj_gen) {
       inp,
       params.get());
   std::cout << trajectory << std::endl;
-
-  // trajectory =
-  //   GenerateDynamicTrajectory<double, SingleTrackModel, IntegrationEuler>(
-  //     initial_states,
-  //     inp,
-  //     params.get());
-  // std::cout << trajectory << std::endl;
 }
 
 

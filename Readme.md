@@ -9,6 +9,7 @@ The underlying solver is the [ceres-solver](http://ceres-solver.org/) capable of
 Implemented models:
 
 * Simplified single track model
+* Triple integrator model
 * Null model
 
 Implemented integration methods:

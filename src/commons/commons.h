@@ -100,6 +100,7 @@ inline T CalculateSquaredDistance(const Line<T, 2>& line,
   T tmp_dist = T(0.);
   Point<T, 2> pt;
   for ( int i = 0; i < trajectory.rows(); i++ ) {
+    // TODO(@hart): use state definitions
     boost::geometry::set<0>(pt.obj_, trajectory(i, 0));
     boost::geometry::set<1>(pt.obj_, trajectory(i, 1));
     tmp_dist = Distance<T, Line<T, 2>, Point<T, 2>>(line, pt);
@@ -120,6 +121,7 @@ inline T GetSquaredObjectCosts(const ObjectOutline& obj_out,
   for ( int i = 0; i < trajectory.rows(); i++ ) {
     Matrix_t<double> object_outline =
       obj_out.Query(i*dt);
+    // TODO(@hart): use state definitions
     boost::geometry::set<0>(pt.obj_, trajectory(i, 0));
     boost::geometry::set<1>(pt.obj_, trajectory(i, 1));
     poly = Polygon<T, 2>(object_outline.cast<T>());
