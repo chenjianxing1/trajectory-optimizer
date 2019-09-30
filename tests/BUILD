@@ -44,6 +44,15 @@ py_test(
 )
 
 py_test(
+  name = "py_optimizer_reference_tests",
+  srcs = ["py_optimizer_reference_tests.py"],
+  data = ["//python:optimizer.so"],
+  imports = ["../python/"],
+  deps = ["//src/commons:py_commons"]
+)
+
+
+py_test(
   name = "py_commons_tests",
   srcs = ["py_commons_tests.py"],
   data = ["//python:optimizer.so"],
