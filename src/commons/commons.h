@@ -99,7 +99,6 @@ inline T CalculateSquaredJerk(const Matrix_t<T>& traj, const T& dt) {
       jerk += traj_j(i, j)*traj_j(i, j);
     }
   }
-  std::cout << jerk << std::endl;
   return jerk;
 }
 

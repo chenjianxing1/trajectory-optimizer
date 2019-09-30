@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from optimizer.optimizer import \
   Optimizer, SingleTrackFunctor, JerkCost, ReferenceLineCost, \
   InputCost, BaseFunctor, ReferenceCost, StaticObjectCost, SpeedCost
-from optimizer.commons import Parameter, ObjectOutline
+from optimizer.commons import Parameter, ObjectOutline, CalculateSquaredJerkTI
 from optimizer.dynamics import GenerateTrajectoryTripleInt
 from src.commons.py_commons import DrawPolygon, GetColorMap
 
@@ -18,19 +18,19 @@ class OptimizerTests(unittest.TestCase):
   def test_single_track_optimizer(self):
     params = Parameter()
     params.set("wheel_base", 2.7)
-    params.set("dt", 0.2)
+    params.set("dt", 0.1)
     params.set("function_tolerance", 1e-8)
     params.set("max_num_iterations", 1000)
 
-    initial_state = np.array([[0.,  1., 0., 0., 0., 0., 0., 0., 0.],
-                              [0.2, 1., 0., 0., 0., 0., 0., 0., 0.],
-                              [0.4, 1., 0., 0., 0., 0., 0., 0., 0.],
-                              [0.6, 1., 0., 0., 0., 0., 0., 0., 0.],
-                              ])
-    opt_vec = np.zeros(shape=(30, 3))
-    ref_line = np.array([[0., 4.],
+    initial_state = np.array([[ 0., 10., 0., 0., 10., 0., 0., 0., 0.],
+                              [1, 10., 0., 1., 10., 0., 0., 0., 0.],
+                              [2, 10., 0., 2., 10., 0., 0., 0., 0.],
+                              [3, 10., 0., 3., 10., 0., 0., 0., 0.]])
+    opt_vec = np.zeros(shape=(20, 3))
+    ref_line = np.array([[-10., 4.],
                          [1000., 4.]])
 
+    
     # optimizer
     opt = Optimizer(params)
     opt.SetOptimizationVector(opt_vec)
@@ -40,12 +40,10 @@ class OptimizerTests(unittest.TestCase):
     ref_cost.SetReferenceLine(ref_line)
     jerk_cost = JerkCost(params, 1000.)
 
-
     # optimization problem
     functor = opt.AddTripleIntFunctor(initial_state,
                                       params,
-                                      [jerk_cost,
-                                       ref_cost])
+                                      [jerk_cost])
     opt.FixOptimizationVector(0, 1)    
     opt.Solve()
     opt.Report()
@@ -54,9 +52,7 @@ class OptimizerTests(unittest.TestCase):
 
 
     fig, ax = plt.subplots(nrows=1, ncols=2)
-
     colorbar_axis = ax[0].plot(trajectory[:, 0], trajectory[:, 3])
-    
     ax[0].axis("equal")
     ax[1].plot(inputs[:-1, 0], label="ax", marker='o')
     ax[1].plot(inputs[:-1, 1], label="ay", marker='o', color="green")

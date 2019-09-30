@@ -8,11 +8,14 @@
 #include <vector>
 #include "src/commons/commons.h"
 #include "src/geometry/geometry.h"
+#include "src/dynamics/dynamics.h"
 #include "src/commons/parameters.h"
 
 namespace py = pybind11;
 
 void python_commons(py::module m) {
+  using dynamics::SingleTrackModel;
+  using dynamics::TripleIntModel;
   using commons::Parameter;
   using commons::ParameterPtr;
   using commons::CalculateSquaredJerk;
@@ -31,7 +34,8 @@ void python_commons(py::module m) {
     .def("set", &commons::Parameter::set<bool>)
     .def("set", &commons::Parameter::set<std::vector<double>>);
 
-  // m.def("CalculateSquaredJerk", &commons::CalculateSquaredJerk<double>);
+  m.def("CalculateSquaredJerkSM", &commons::CalculateSquaredJerk<double, SingleTrackModel>);
+  m.def("CalculateSquaredJerkTI", &commons::CalculateSquaredJerk<double, TripleIntModel>);
 
   py::class_<ObjectOutline>(m, "ObjectOutline")
     .def(py::init<>())
