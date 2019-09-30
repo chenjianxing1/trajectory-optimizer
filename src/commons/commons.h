@@ -80,8 +80,10 @@ inline Matrix_t<T> CalculateDiff(const Matrix_t<T>& traj, const T& dt) {
 
 template<typename T>
 inline T CalculateSquaredJerk(const Matrix_t<T>& traj, const T& dt) {
-  Matrix_t<T> reduced_traj = traj.block(0, 0, traj.rows(), 2);
   // TODO(@hart): make more efficient
+  // TODO(@hart): for 3d would need three idx
+  // TODO(@hart): use state definitions
+  Matrix_t<T> reduced_traj = traj.block(0, 0, traj.rows(), 2);
   Matrix_t<T> traj_v = CalculateDiff(reduced_traj, dt);
   Matrix_t<T> traj_a = CalculateDiff(traj_v, dt);
   Matrix_t<T> traj_j = CalculateDiff(traj_a, dt);
