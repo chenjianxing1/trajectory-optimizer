@@ -1,7 +1,10 @@
 # Dynamic Trajectory Optimization
 
-This is a library for dynamic trajectory optimization for autonomous agents. This library is capable of producing dynamically feasible trajectories using several dynamic models and integration methods.
-We use the [ceres-solver](http://ceres-solver.org/) to solve the non-linear optimization problem in an unconstrained optimization setting.
+This library provides a highly modular and easy to use trajectory optimization library for autonomous agents.
+There are several dynamic models and integration methods that can be used in the optimization.
+The underlying solver is the [ceres-solver](http://ceres-solver.org/) capable of solving unconstrained optimization problems.
+
+![](docs/optimization_result.png)
 
 Implemented models:
 
@@ -15,8 +18,9 @@ Implemented integration methods:
 
 ## Getting Started
 
-To get started you will need to have [bazel](http://bazel.build/) and [Python 3.6](https://www.python.org/downloads/release/python-360/) installed. Next, set up the virtual python environment in order to build and use the Python bindings for the optimization library.
-This can be done using `bash install.sh` and then entering the environment using the command `bash dev_into.sh`. Once you are in the environment make sure all tests run without any error by running the bazel command
-`bazel test //...`. In order to see an exemplary output of the optimization library you then can run the command `bazel run //tests:py_optimizer_single_track_tests`.
+As prerequistite you need [bazel](http://bazel.build/) and [Python 3.6](https://www.python.org/downloads/release/python-360/).
+Set-up a virtual python environment and enter is by using these commands: `bash install.sh` and  `bash dev_into.sh`.
+Once you are in the virtual environment run `bazel test //...` to verify the functionality is as intended. 
+In order to obtain an exemplary output run the command `bazel run //tests:py_optimizer_single_track_tests`.
 
 (C) Copyright by Patrick Hart (patrick.hart@tum.de)

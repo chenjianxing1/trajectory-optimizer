@@ -39,9 +39,8 @@ class SingleTrackModel{
   template<typename T>
   static Matrix_t<T> fDot(const Matrix_t<T>& state,
                           const Matrix_t<T>& u,
-                          Parameter* params) {
+                          const T& wheel_base) {
     Matrix_t<T> A(1, state.cols());
-    T wheel_base = T(params->get<double>("wheel_base", 2.7));
     A << state(VELOCITY) * cos(state(THETA)),
          state(VELOCITY) * sin(state(THETA)),
          state(VELOCITY) * tan(u(STEERING_ANGLE)) / wheel_base,
@@ -57,7 +56,7 @@ class SingleTrackModel{
       std::bind(fDot<T>,
                 std::placeholders::_1,
                 u,
-                params);
+                T(params->get<double>("wheel_base", 2.7)));
     return I::template Integrate<T>(state,
                                     fDot_,
                                     T(params->get<double>("dt", 0.1)));

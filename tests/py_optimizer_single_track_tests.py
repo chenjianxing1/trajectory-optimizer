@@ -94,7 +94,7 @@ class OptimizerTests(unittest.TestCase):
     
     ax[0].axis("equal")
     ax[1].plot(inputs[:-1, 0], label="Steering angle", marker='o')
-    ax[1].plot(inputs[:-1, 1], label="Acceleration", marker='o')
+    ax[1].plot(inputs[:-1, 1], label="Acceleration", marker='o', color="green")
     ax[1].legend()
 
     plt.show()
