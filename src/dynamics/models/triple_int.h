@@ -25,7 +25,7 @@ class TripleIntModel {
  public:
   TripleIntModel() {}
 
-  enum class StateDefiniton {
+  enum class StateDefinition {
     X = 0,
     VX = 1,
     AX = 2,
@@ -45,28 +45,27 @@ class TripleIntModel {
 
   template<typename T>
   static Matrix_t<T> fDot(const Matrix_t<T>& state,
-                          const Matrix_t<T>& u,
-                          const T& wheel_base) {
+                          const Matrix_t<T>& u) {
     Matrix_t<T> A(9, 9);
     Matrix_t<T> B(9, 3);
-    A << 0., 1., 0., 0., 0., 0., 0., 0., 0.,
-         0., 0., 1., 0., 0., 0., 0., 0., 0.,
-         0., 0., 0., 0., 0., 0., 0., 0., 0.,
-         0., 0., 0., 0., 1., 0., 0., 0., 0.,
-         0., 0., 0., 0., 0., 1., 0., 0., 0.,
-         0., 0., 0., 0., 0., 0., 0., 0., 0.,
-         0., 0., 0., 0., 0., 0., 0., 1., 0.,
-         0., 0., 0., 0., 0., 0., 0., 0., 1.,
-         0., 0., 0., 0., 0., 0., 0., 0., 0.;
-    B << 0., 0., 0.,
-         0., 0., 0.,
-         1., 0., 0.,
-         0., 0., 0.,
-         0., 0., 0.,
-         0., 1., 0.,
-         0., 0., 0.,
-         0., 0., 0.,
-         0., 0., 1.;
+    A << T(0.), T(1.), T(0.), T(0.), T(0.), T(0.), T(0.), T(0.), T(0.),
+         T(0.), T(0.), T(1.), T(0.), T(0.), T(0.), T(0.), T(0.), T(0.),
+         T(0.), T(0.), T(0.), T(0.), T(0.), T(0.), T(0.), T(0.), T(0.),
+         T(0.), T(0.), T(0.), T(0.), T(1.), T(0.), T(0.), T(0.), T(0.),
+         T(0.), T(0.), T(0.), T(0.), T(0.), T(1.), T(0.), T(0.), T(0.),
+         T(0.), T(0.), T(0.), T(0.), T(0.), T(0.), T(0.), T(0.), T(0.),
+         T(0.), T(0.), T(0.), T(0.), T(0.), T(0.), T(0.), T(1.), T(0.),
+         T(0.), T(0.), T(0.), T(0.), T(0.), T(0.), T(0.), T(0.), T(1.),
+         T(0.), T(0.), T(0.), T(0.), T(0.), T(0.), T(0.), T(0.), T(0.);
+    B << T(0.), T(0.), T(0.),
+         T(0.), T(0.), T(0.),
+         T(1.), T(0.), T(0.),
+         T(0.), T(0.), T(0.),
+         T(0.), T(0.), T(0.),
+         T(0.), T(1.), T(0.),
+         T(0.), T(0.), T(0.),
+         T(0.), T(0.), T(0.),
+         T(0.), T(0.), T(1.);
     return (A*state.transpose() + B*u.transpose()).transpose();
   }
 
@@ -77,11 +76,10 @@ class TripleIntModel {
     std::function<Matrix_t<T> (const Matrix_t<T>&)> fDot_ =
       std::bind(fDot<T>,
                 std::placeholders::_1,
-                u,
-                T(params->get<double>("wheel_base", 2.7)));
+                u);
     return I::template Integrate<T>(state,
                                     fDot_,
-                                    T(params->get<double>("dt", 0.1)));
+                                    T(params->get<double>("dt", 0.2)));
   }
 
 };

@@ -79,6 +79,8 @@ void python_optimizer(py::module m) {
     .def("SetOptimizationVector", &optimizer::Optimizer::SetOptimizationVector)
     .def("AddSingleTrackFunctor",
       &optimizer::Optimizer::PythonAddSingleTrackFunctor<SingleTrackFunctor>)
+    .def("AddTripleIntFunctor",
+      &optimizer::Optimizer::PythonAddSingleTrackFunctor<TripleIntFunctor>)
     .def("AddFastSingleTrackFunctor",
       &optimizer::Optimizer::PythonAddSingleTrackFunctor<FastSingleTrackFunctor>)
     .def("Report", &optimizer::Optimizer::Report);

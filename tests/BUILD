@@ -44,6 +44,14 @@ py_test(
 )
 
 py_test(
+  name = "py_optimizer_triple_int_tests",
+  srcs = ["py_optimizer_triple_int_tests.py"],
+  data = ["//python:optimizer.so"],
+  imports = ["../python/"],
+  deps = ["//src/commons:py_commons"]
+)
+
+py_test(
   name = "py_optimizer_reference_tests",
   srcs = ["py_optimizer_reference_tests.py"],
   data = ["//python:optimizer.so"],

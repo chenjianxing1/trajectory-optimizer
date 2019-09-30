@@ -9,7 +9,7 @@ from optimizer.optimizer import \
   Optimizer, SingleTrackFunctor, JerkCost, ReferenceLineCost, \
   InputCost, BaseFunctor, ReferenceCost, StaticObjectCost, SpeedCost
 from optimizer.commons import Parameter, ObjectOutline
-from optimizer.dynamics import GenerateTrajectory
+from optimizer.dynamics import GenerateTrajectorySingleTrack
 from src.commons.py_commons import DrawPolygon, GetColorMap
 
 
@@ -163,7 +163,7 @@ class OptimizerTests(unittest.TestCase):
     opt.Solve()
     opt.Report()
     inputs = opt.Result()
-    trajectory = GenerateTrajectory(initial_state, inputs, params)
+    trajectory = GenerateTrajectorySingleTrack(initial_state, inputs, params)
 
 
     cmap, norm = GetColorMap(0., 6.)

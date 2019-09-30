@@ -10,10 +10,15 @@ namespace py = pybind11;
 void python_dynamics(py::module m) {
   using dynamics::GenerateDynamicTrajectory;
   using dynamics::SingleTrackModel;
+  using dynamics::TripleIntModel;
   using dynamics::IntegrationRK4;
 
-  m.def("GenerateTrajectory",
+  m.def("GenerateTrajectorySingleTrack",
     &dynamics::GenerateDynamicTrajectory<double,
                                         SingleTrackModel,
+                                        IntegrationRK4>);
+  m.def("GenerateTrajectoryTripleInt",
+    &dynamics::GenerateDynamicTrajectory<double,
+                                        TripleIntModel,
                                         IntegrationRK4>);
 }

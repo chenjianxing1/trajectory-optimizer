@@ -33,6 +33,7 @@ using commons::ParameterPtr;
 using commons::CalculateSquaredJerk;
 using dynamics::GenerateDynamicTrajectory;
 using dynamics::SingleTrackModel;
+using dynamics::TripleIntModel;
 using dynamics::IntegrationRK4;
 using dynamics::IntegrationEuler;
 using std::vector;
@@ -136,9 +137,11 @@ class DynamicFunctor : public BaseFunctor {
 };
 
 typedef DynamicFunctor<SingleTrackModel, IntegrationRK4> SingleTrackFunctor;
+typedef DynamicFunctor<TripleIntModel, IntegrationRK4> TripleIntFunctor;
 typedef DynamicFunctor<SingleTrackModel,
                        IntegrationEuler> FastSingleTrackFunctor;
 
 typedef std::shared_ptr<SingleTrackFunctor> SingleTrackFunctorPtr;
+typedef std::shared_ptr<TripleIntFunctor> TripleIntFunctorPtr;
 typedef std::shared_ptr<FastSingleTrackFunctor> FastSingleTrackFunctorPtr;
 }  // namespace optimizer

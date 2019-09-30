@@ -81,17 +81,25 @@ inline Matrix_t<T> CalculateDiff(const Matrix_t<T>& traj, const T& dt) {
 template<typename T, class M>
 inline T CalculateSquaredJerk(const Matrix_t<T>& traj, const T& dt) {
   // TODO(@hart): make more efficient
-  // TODO(@hart): for 3d would need three idx
-  // TODO(@hart): use state definitions
-  Matrix_t<T> reduced_traj = traj.block(0, 0, traj.rows(), 2);
+  Matrix_t<T> reduced_traj(traj.rows(), 2);
+  if (static_cast<int>(M::StateDefinition::Z) != -1) {
+    reduced_traj.resize(traj.rows(), 3);
+  }
+  reduced_traj.col(0) = traj.col(static_cast<int>(M::StateDefinition::X));
+  reduced_traj.col(1) = traj.col(static_cast<int>(M::StateDefinition::Y));
+  if (static_cast<int>(M::StateDefinition::Z) != -1) {
+    reduced_traj.col(2) = traj.col(static_cast<int>(M::StateDefinition::Z));
+  }
   Matrix_t<T> traj_v = CalculateDiff(reduced_traj, dt);
   Matrix_t<T> traj_a = CalculateDiff(traj_v, dt);
   Matrix_t<T> traj_j = CalculateDiff(traj_a, dt);
   T jerk = T(0.);
   for (int i = 0; i < traj_j.rows(); i++) {
-    jerk += traj_j(i, 0)*traj_j(i, 0);
-    jerk += traj_j(i, 1)*traj_j(i, 1);
+    for (int j = 0; j < traj_j.cols(); j++) {
+      jerk += traj_j(i, j)*traj_j(i, j);
+    }
   }
+  std::cout << jerk << std::endl;
   return jerk;
 }
 
@@ -103,8 +111,10 @@ inline T CalculateSquaredDistance(const Line<T, 2>& line,
   Point<T, 2> pt;
   for ( int i = 0; i < trajectory.rows(); i++ ) {
     // TODO(@hart): use state definitions
-    boost::geometry::set<0>(pt.obj_, trajectory(i, 0));
-    boost::geometry::set<1>(pt.obj_, trajectory(i, 1));
+    boost::geometry::set<0>(pt.obj_,
+      trajectory(i, static_cast<int>(M::StateDefinition::X)));
+    boost::geometry::set<1>(pt.obj_,
+      trajectory(i, static_cast<int>(M::StateDefinition::Y)));
     tmp_dist = Distance<T, Line<T, 2>, Point<T, 2>>(line, pt);
     dist += tmp_dist*tmp_dist;
   }
@@ -124,8 +134,10 @@ inline T GetSquaredObjectCosts(const ObjectOutline& obj_out,
     Matrix_t<double> object_outline =
       obj_out.Query(i*dt);
     // TODO(@hart): use state definitions
-    boost::geometry::set<0>(pt.obj_, trajectory(i, 0));
-    boost::geometry::set<1>(pt.obj_, trajectory(i, 1));
+    boost::geometry::set<0>(pt.obj_,
+      trajectory(i, static_cast<int>(M::StateDefinition::X)));
+    boost::geometry::set<1>(pt.obj_,
+      trajectory(i, static_cast<int>(M::StateDefinition::Y)));
     poly = Polygon<T, 2>(object_outline.cast<T>());
     tmp_dist = Distance<T, 2>(poly, pt);
     if (tmp_dist < epsilon) {
