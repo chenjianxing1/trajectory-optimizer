@@ -45,7 +45,7 @@ class ObjectOutline {
     this->Add(outline, timestamp);
   }
 
-  void Add(Matrix_t<double> outline, double timestamp = 0) {
+  void Add(const Matrix_t<double>& outline, double timestamp = 0) {
     TimedPolygonOutline timed_outline = std::make_pair(timestamp, outline);
     object_outlines_.push_back(timed_outline);
   }
@@ -54,10 +54,8 @@ class ObjectOutline {
     for (int i = 0; i < object_outlines_.size() - 1; i++) {
       if (object_outlines_.at(i).first <= timestamp_query && \
           object_outlines_.at(i+1).first > timestamp_query) {
-        TimedPolygonOutline timed_outline_0 = object_outlines_.at(i);
-        TimedPolygonOutline timed_outline_1 = object_outlines_.at(i+1);
-        return InterpolateTimedPolygon(timed_outline_0,
-                                       timed_outline_1,
+        return InterpolateTimedPolygon(object_outlines_.at(i),
+                                       object_outlines_.at(i+1),
                                        timestamp_query);
       }
     }
@@ -72,7 +70,7 @@ class ObjectOutline {
 
 
 template<typename T>
-inline Matrix_t<T> CalculateDiff(const Matrix_t<T>& traj, T dt) {
+inline Matrix_t<T> CalculateDiff(const Matrix_t<T>& traj, const T& dt) {
   Matrix_t<T> ret_traj(traj.rows() - 1, traj.cols());
   for (int i = 1; i < traj.rows(); i++) {
     ret_traj.row(i-1) = (traj.row(i) - traj.row(i-1)) / dt;
@@ -81,7 +79,7 @@ inline Matrix_t<T> CalculateDiff(const Matrix_t<T>& traj, T dt) {
 }
 
 template<typename T>
-inline T CalculateSquaredJerk(const Matrix_t<T>& traj, T dt) {
+inline T CalculateSquaredJerk(const Matrix_t<T>& traj, const T& dt) {
   Matrix_t<T> reduced_traj = traj.block(0, 0, traj.rows(), 2);
   // TODO(@hart): make more efficient
   Matrix_t<T> traj_v = CalculateDiff(reduced_traj, dt);
@@ -113,22 +111,21 @@ inline T CalculateSquaredDistance(const Line<T, 2>& line,
 template<typename T>
 inline T GetSquaredObjectCosts(const ObjectOutline& obj_out,
                                const Matrix_t<T>& trajectory,
-                               const ParameterPtr& params) {
+                               const T& epsilon,
+                               double dt) {
   T tmp_dist = T(0.);
   T dist = T(0.);
   Point<T, 2> pt;
   Polygon<T, 2> poly;
-  // TODO(@hart): query function for polygon
   for ( int i = 0; i < trajectory.rows(); i++ ) {
     Matrix_t<double> object_outline =
-      obj_out.Query(i*params->get<double>("dt", 0.2));
+      obj_out.Query(i*dt);
     boost::geometry::set<0>(pt.obj_, trajectory(i, 0));
     boost::geometry::set<1>(pt.obj_, trajectory(i, 1));
     poly = Polygon<T, 2>(object_outline.cast<T>());
     tmp_dist = Distance<T, 2>(poly, pt);
-    T eps = T(params->get<double>("epsilon"));
-    if (tmp_dist < T(eps)) {
-      dist += (T(eps) - tmp_dist)*(T(eps) - tmp_dist);
+    if (tmp_dist < epsilon) {
+      dist += (epsilon - tmp_dist)*(epsilon - tmp_dist);
     }
   }
   return dist;
@@ -139,8 +136,9 @@ inline T CalculateSquaredDistance(const Matrix_t<T>& traj0,
                                   const Matrix_t<T>& traj1,
                                   T dist = T(0.)) {
   T tmp_dist = T(0.);
+  T loc = T(0.);
   for (int i = 0; i < traj0.rows(); i++) {
-    T loc = T(0.);
+    loc = T(0.);
     for (int j = 0; j < traj0.cols(); j++) {
       loc += (traj0(i, j) - traj1(i, j))*(traj0(i, j) - traj1(i, j));
     }

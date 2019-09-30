@@ -18,7 +18,7 @@ class IntegrationRK4 {
   static Matrix_t<T> Integrate(
     const Matrix_t<T>& state,
     std::function<Matrix_t<T>(const Matrix_t<T>&)> fDot,
-    T dt) {
+    const T& dt) {
     Matrix_t<T> k0 = dt*fDot(state);
     Matrix_t<T> k1 = dt*fDot(state + k0/T(2.0));
     Matrix_t<T> k2 = dt*fDot(state + k1/T(2.0));

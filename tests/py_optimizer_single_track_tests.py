@@ -10,6 +10,8 @@ from optimizer.optimizer import \
   InputCost, BaseFunctor, ReferenceCost, StaticObjectCost, SpeedCost
 from optimizer.commons import Parameter, ObjectOutline
 from optimizer.dynamics import GenerateTrajectory
+from src.commons.py_commons import DrawPolygon, GetColorMap
+
 
 class OptimizerTests(unittest.TestCase):
   def test_parameters(self):
@@ -25,7 +27,7 @@ class OptimizerTests(unittest.TestCase):
     params = Parameter()
     params.set("wheel_base", 2.7)
     params.set("dt", 0.2)
-    params.set("function_tolerance", 1e-10)
+    params.set("function_tolerance", 1e-8)
     params.set("max_num_iterations", 1000)
 
     initial_state = np.array([[0., 0., 0., 10.],
@@ -51,11 +53,11 @@ class OptimizerTests(unittest.TestCase):
     jerk_cost = JerkCost(params, 10000.)
 
     outline = ObjectOutline()
-    obstacle_outline1 = obstacle_outline0 + np.array([[30.0, 0.0]])
+    obstacle_outline1 = obstacle_outline0 + np.array([[30.0, -2.]])
     outline.Add(obstacle_outline0, 0.)
-    outline.Add(obstacle_outline1, 10.)
+    outline.Add(obstacle_outline1, 6.)
 
-    object_cost = StaticObjectCost(params, 2.5, 2000.)
+    object_cost = StaticObjectCost(params, 2.5, 10000.)
     object_cost.AddObjectOutline(outline)
 
     input_cost = InputCost(params, 10.)
@@ -78,17 +80,23 @@ class OptimizerTests(unittest.TestCase):
     opt.Report()
     inputs = opt.Result()
     trajectory = GenerateTrajectory(initial_state, inputs, params)
-    fig, ax = plt.subplots(nrows=1, ncols=2)
-    for t in np.arange(0, 6, 0.1):
-        poly = outline.Query(t)
-        ax[0].plot(poly[:, 0], poly[:, 1])
 
-    #ax[0].plot(obstacle_outline[:, 0], obstacle_outline[:, 1])
-    ax[0].plot(trajectory[:, 0], trajectory[:, 1], marker='o')
+
+    cmap, norm = GetColorMap(0., 6.)
+    fig, ax = plt.subplots(nrows=1, ncols=2)
+    for t in np.arange(0, 6, 0.5):
+        poly = outline.Query(t)
+        ax[0].plot(poly[:, 0], poly[:, 1], color=cmap(norm(t)))
+
+    colorbar_axis = ax[0].plot(trajectory[:, 0], trajectory[:, 1])
+    for i, pt in enumerate(trajectory[:]):
+        ax[0].plot(pt[0], pt[1], color=cmap(norm(params.set("dt", 0.2)*i)), marker='o')
+    
     ax[0].axis("equal")
     ax[1].plot(inputs[:-1, 0], label="Steering angle", marker='o')
     ax[1].plot(inputs[:-1, 1], label="Acceleration", marker='o')
     ax[1].legend()
+
     plt.show()
     print(len(trajectory))
 

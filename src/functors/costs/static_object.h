@@ -36,7 +36,7 @@ class StaticObjectCost : public BaseCost {
                             double cost = 200.) :
     BaseCost(params) {
       weight_ = params_->set<double>("weight_object", cost);
-      params_->set<double>("epsilon", eps);
+      epsilon_ = params_->set<double>("epsilon", eps);
   }
   virtual ~StaticObjectCost() {}
 
@@ -45,9 +45,11 @@ class StaticObjectCost : public BaseCost {
              const Matrix_t<T>& inputs,
              T cost = T(0.)) const {
     for (const auto& obj_out : object_outlines_) {
-      cost += GetSquaredObjectCosts<T>(obj_out, trajectory, params_);
+      cost += GetSquaredObjectCosts<T>(obj_out,
+                                       trajectory,
+                                       T(epsilon_),
+                                       params_->get<double>("dt", 0.1));
     }
-    std::cout << cost << std::endl;
     return Weight<T>() * cost;
   }
 
@@ -56,6 +58,7 @@ class StaticObjectCost : public BaseCost {
   }
 
   std::vector<ObjectOutline> object_outlines_;
+  double epsilon_;
 };
 
 typedef std::shared_ptr<StaticObjectCost> StaticObjectCostPtr;

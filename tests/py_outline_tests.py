@@ -6,9 +6,7 @@ import unittest
 import numpy as np
 import matplotlib.pyplot as plt
 from optimizer.commons import Parameter, ObjectOutline
-
-def _draw_poly(pts, color="red"):
-  plt.plot(pts[:, 0], pts[:, 1], color=color)
+from src.commons.py_commons import DrawPolygon, GetColorMap
 
 class PyOutlineTests(unittest.TestCase):
   def test_outline(self):
@@ -20,26 +18,34 @@ class PyOutlineTests(unittest.TestCase):
                          [0.0, 0.0]])
     polygon1 = polygon0 + np.array([[4.0, 2.0]])
     polygon2 = polygon1 + np.array([[8.0, -4.0]])
-    _draw_poly(polygon0, "red")
-    _draw_poly(polygon1, "blue")
-    _draw_poly(polygon2, "green")
+    DrawPolygon(polygon0, "red")
+    DrawPolygon(polygon1, "blue")
+    DrawPolygon(polygon2, "green")
 
     outline.Add(polygon0, 0.)
     outline.Add(polygon1, 2.)
     outline.Add(polygon2, 8.)
 
-    _draw_poly(outline.Query(0.), "magenta")
-    _draw_poly(outline.Query(0.5), "magenta")
-    _draw_poly(outline.Query(1.), "magenta")
-    _draw_poly(outline.Query(1.5), "magenta")
-    _draw_poly(outline.Query(2.), "yellow")
-    _draw_poly(outline.Query(3.), "yellow")
-    _draw_poly(outline.Query(4.), "yellow")
-    _draw_poly(outline.Query(5.), "yellow")
-    _draw_poly(outline.Query(6.), "yellow")
-    _draw_poly(outline.Query(7.), "yellow")
-    _draw_poly(outline.Query(8.), "yellow")
+    DrawPolygon(outline.Query(0.), "magenta")
+    DrawPolygon(outline.Query(0.5), "magenta")
+    DrawPolygon(outline.Query(1.), "magenta")
+    DrawPolygon(outline.Query(1.5), "magenta")
+    DrawPolygon(outline.Query(2.), "yellow")
+    DrawPolygon(outline.Query(3.), "yellow")
+    DrawPolygon(outline.Query(4.), "yellow")
+    DrawPolygon(outline.Query(5.), "yellow")
+    DrawPolygon(outline.Query(6.), "yellow")
+    DrawPolygon(outline.Query(7.), "yellow")
+    DrawPolygon(outline.Query(8.), "yellow")
     plt.show()
+
+  def test_colormap(self):
+    cmap, norm = GetColorMap(0., 10.)
+    plt.plot(0., 0., marker='o', color=cmap(norm(0.)))
+    plt.plot(1., 1., marker='o', color=cmap(norm(5.)))
+    plt.plot(2., 2., marker='o', color=cmap(norm(10.)))
+    plt.show()
+
 
 if __name__ == '__main__':
   unittest.main()

@@ -39,7 +39,8 @@ py_test(
   name = "py_optimizer_single_track_tests",
   srcs = ["py_optimizer_single_track_tests.py"],
   data = ["//python:optimizer.so"],
-  imports = ["../python/"]
+  imports = ["../python/"],
+  deps = ["//src/commons:py_commons"]
 )
 
 py_test(
@@ -53,5 +54,6 @@ py_test(
   name = "py_outline_tests",
   srcs = ["py_outline_tests.py"],
   data = ["//python:optimizer.so"],
-  imports = ["../python/"]
+  imports = ["../python/"],
+  deps = ["//src/commons:py_commons"]
 )
