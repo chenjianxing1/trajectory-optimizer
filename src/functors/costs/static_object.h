@@ -45,10 +45,10 @@ class StaticObjectCost : public BaseCost {
              const Matrix_t<T>& inputs,
              T cost = T(0.)) const {
     for (const auto& obj_out : object_outlines_) {
-      cost += GetSquaredObjectCosts<T>(obj_out,
-                                       trajectory,
-                                       T(epsilon_),
-                                       params_->get<double>("dt", 0.1));
+      cost += GetSquaredObjectCosts<T, M>(obj_out,
+                                          trajectory,
+                                          T(epsilon_),
+                                          params_->get<double>("dt", 0.1));
     }
     return Weight<T>() * cost;
   }

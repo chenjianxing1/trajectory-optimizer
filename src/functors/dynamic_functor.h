@@ -81,9 +81,6 @@ class DynamicFunctor : public BaseFunctor {
       params_.get());
 
 
-    // 
-    // costs
-    vector<BaseCostPtr> costs_ = this->GetSquaredObjectCosts();
     for ( int i = 0; i < costs_.size(); i++ ) {
       if (std::dynamic_pointer_cast<JerkCost>(costs_[i])) {
         // would need state def

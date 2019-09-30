@@ -36,7 +36,7 @@ class ReferenceLineCost : public BaseCost {
              const Matrix_t<T>& inputs,
              T dist = T(0.)) const {
     Line<T, 2> ref_line(reference_line_.cast<T>());
-    dist = CalculateSquaredDistance<T>(ref_line, trajectory);
+    dist = CalculateSquaredDistance<T, M>(ref_line, trajectory);
     return Weight<T>() * dist;
   }
 

@@ -35,7 +35,7 @@ class ReferenceCost : public BaseCost {
   T Evaluate(const Matrix_t<T>& trajectory,
              const Matrix_t<T>& inputs,
              T dist = T(0.)) const {
-    dist = CalculateSquaredDistance<T>(reference_.cast<T>(), trajectory);
+    dist = CalculateSquaredDistance<T, M>(reference_.cast<T>(), trajectory);
     return Weight<T>() * dist;
   }
 

@@ -78,7 +78,7 @@ inline Matrix_t<T> CalculateDiff(const Matrix_t<T>& traj, const T& dt) {
   return ret_traj;
 }
 
-template<typename T>
+template<typename T, class M>
 inline T CalculateSquaredJerk(const Matrix_t<T>& traj, const T& dt) {
   // TODO(@hart): make more efficient
   // TODO(@hart): for 3d would need three idx
@@ -95,7 +95,7 @@ inline T CalculateSquaredJerk(const Matrix_t<T>& traj, const T& dt) {
   return jerk;
 }
 
-template<typename T>
+template<typename T, class M>
 inline T CalculateSquaredDistance(const Line<T, 2>& line,
                                   const Matrix_t<T>& trajectory,
                                   T dist = T(0.)) {
@@ -111,7 +111,7 @@ inline T CalculateSquaredDistance(const Line<T, 2>& line,
   return dist;
 }
 
-template<typename T>
+template<typename T, class M>
 inline T GetSquaredObjectCosts(const ObjectOutline& obj_out,
                                const Matrix_t<T>& trajectory,
                                const T& epsilon,
@@ -135,7 +135,7 @@ inline T GetSquaredObjectCosts(const ObjectOutline& obj_out,
   return dist;
 }
 
-template<typename T>
+template<typename T, class M>
 inline T CalculateSquaredDistance(const Matrix_t<T>& traj0,
                                   const Matrix_t<T>& traj1,
                                   T dist = T(0.)) {

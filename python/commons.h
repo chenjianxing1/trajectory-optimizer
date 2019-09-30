@@ -30,8 +30,8 @@ void python_commons(py::module m) {
     .def("set", &commons::Parameter::set<std::string>)
     .def("set", &commons::Parameter::set<bool>)
     .def("set", &commons::Parameter::set<std::vector<double>>);
-  
-  m.def("CalculateSquaredJerk", &commons::CalculateSquaredJerk<double>);
+
+  // m.def("CalculateSquaredJerk", &commons::CalculateSquaredJerk<double>);
 
   py::class_<ObjectOutline>(m, "ObjectOutline")
     .def(py::init<>())

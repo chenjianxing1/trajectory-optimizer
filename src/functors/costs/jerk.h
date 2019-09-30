@@ -35,7 +35,7 @@ class JerkCost : public BaseCost {
   T Evaluate(const Matrix_t<T>& trajectory,
              const Matrix_t<T>& inputs) const {
     std::cout << int(M::StateDefinition::Z) << std::endl;
-    T jerk = CalculateSquaredJerk<T>(
+    T jerk = CalculateSquaredJerk<T, M>(
       trajectory,
       T(params_->get<double>("dt", 0.1)));
     return Weight<T>() * jerk;
