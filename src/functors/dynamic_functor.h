@@ -82,6 +82,9 @@ class DynamicFunctor : public BaseFunctor {
       params_.get());
     // TODO(@hart): we need the state information here as well;
     //              otherwise cannot be used in cost terms
+    // M m;
+    // std::cout << m.state_def_->x() << std::endl;
+
     // costs
     vector<BaseCostPtr> costs_ = this->GetSquaredObjectCosts();
     for ( int i = 0; i < costs_.size(); i++ ) {

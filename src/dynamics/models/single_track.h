@@ -16,6 +16,7 @@ namespace dynamics {
 using geometry::Matrix_t;
 using commons::ParameterPtr;
 using commons::Parameter;
+using dynamics::StateDefinition;
 
 class SingleTrackStateDefinition : public StateDefinition {
  public:
@@ -35,16 +36,18 @@ class SingleTrackStateDefinition : public StateDefinition {
  */
 class SingleTrackModel {
  public:
-  SingleTrackModel() {}
+  SingleTrackModel() :
+    state_def_(std::make_unique<SingleTrackStateDefinition>()) {}
+  ~SingleTrackModel() {}
 
-  enum StateDefinition {
+  enum StateDefinitionS {
     X = 0,
     Y = 1,
     THETA = 2,
     VELOCITY = 3
   };
 
-  enum InputDefinition {
+  enum InputDefinitionS {
     STEERING_ANGLE = 0,
     ACCELERATION = 1
   };

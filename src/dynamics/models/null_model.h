@@ -14,13 +14,28 @@ using geometry::Matrix_t;
 using commons::ParameterPtr;
 using commons::Parameter;
 
+
+class NullModelStateDefinition : public StateDefinition {
+ public:
+  NullModelStateDefinition() {}
+  ~NullModelStateDefinition() {}
+  virtual int x() const { return -1; }
+  virtual int y() const { return -1; }
+  virtual int z() const { return -1; }
+  virtual int vx() const { return -1; }
+  virtual int vy() const { return -1; }
+  virtual int vz() const { return -1; }
+};
+
+
 /**
  * @brief A model that does nothing
  * 
  */
 class NullModel {
  public:
-  NullModel() {}
+  NullModel() :
+    state_def_(std::make_unique<NullModelStateDefinition>()) {}
 
   template<typename T, class I>
   static Matrix_t<T> Step(const Matrix_t<T>& state,
@@ -28,6 +43,8 @@ class NullModel {
                           Parameter* params) {
     return u;
   }
+
+  std::unique_ptr<StateDefinition> state_def_;
 };
 
 }  // namespace dynamics
