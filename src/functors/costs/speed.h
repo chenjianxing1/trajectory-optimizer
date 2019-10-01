@@ -40,7 +40,20 @@ class SpeedCost : public BaseCost {
              const Matrix_t<T>& inputs,
              T cost = T(0.)) const {
     for (int i = 0; i < trajectory.rows(); i++) {
-      cost += (trajectory(i, 3) - v_des_)*(trajectory(i, 3) - v_des_);
+      T v_total = T(0.);
+      if (static_cast<int>(M::StateDefinition::VELOCITY) != -1) {
+        int vel_idx = static_cast<int>(M::StateDefinition::VELOCITY);
+        v_total = trajectory(i, vel_idx);
+      } else {
+        int vel_idx_x = static_cast<int>(M::StateDefinition::VX);
+        int vel_idx_y = static_cast<int>(M::StateDefinition::VY);
+        int vel_idx_z = static_cast<int>(M::StateDefinition::VZ);
+        v_total = ceres::sqrt(
+          trajectory(i, vel_idx_x)*trajectory(i, vel_idx_x) + \
+          trajectory(i, vel_idx_y)*trajectory(i, vel_idx_y) + \
+          trajectory(i, vel_idx_z)*trajectory(i, vel_idx_z));
+      }
+      cost += (v_total - v_des_)*(v_total - v_des_);
     }
     return cost;
   }

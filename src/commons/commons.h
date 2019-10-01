@@ -81,15 +81,14 @@ inline Matrix_t<T> CalculateDiff(const Matrix_t<T>& traj, const T& dt) {
 template<typename T, class M>
 inline T CalculateSquaredJerk(const Matrix_t<T>& traj, const T& dt) {
   // TODO(@hart): make more efficient
-  Matrix_t<T> reduced_traj(traj.rows(), 2);
-  if (static_cast<int>(M::StateDefinition::Z) != -1) {
-    reduced_traj.resize(traj.rows(), 3);
-  }
+  Matrix_t<T> reduced_traj(traj.rows(), 3);
+  reduced_traj.setZero();
   reduced_traj.col(0) = traj.col(static_cast<int>(M::StateDefinition::X));
   reduced_traj.col(1) = traj.col(static_cast<int>(M::StateDefinition::Y));
-  if (static_cast<int>(M::StateDefinition::Z) != -1) {
-    reduced_traj.col(2) = traj.col(static_cast<int>(M::StateDefinition::Z));
-  }
+  reduced_traj.col(2) = traj.col(static_cast<int>(M::StateDefinition::Z));
+  // std::cout << static_cast<int>(M::StateDefinition::X) << ", " \
+  //           << static_cast<int>(M::StateDefinition::Y) << ", " \
+  //           << static_cast<int>(M::StateDefinition::Z) << std::endl;
   Matrix_t<T> traj_v = CalculateDiff(reduced_traj, dt);
   Matrix_t<T> traj_a = CalculateDiff(traj_v, dt);
   Matrix_t<T> traj_j = CalculateDiff(traj_a, dt);
