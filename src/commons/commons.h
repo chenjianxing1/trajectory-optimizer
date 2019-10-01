@@ -85,7 +85,8 @@ inline T CalculateSquaredJerk(const Matrix_t<T>& traj, const T& dt) {
   reduced_traj.setZero();
   reduced_traj.col(0) = traj.col(static_cast<int>(M::StateDefinition::X));
   reduced_traj.col(1) = traj.col(static_cast<int>(M::StateDefinition::Y));
-  reduced_traj.col(2) = traj.col(static_cast<int>(M::StateDefinition::Z));
+  if (static_cast<int>(M::StateDefinition::Z) != -1)
+    reduced_traj.col(2) = traj.col(static_cast<int>(M::StateDefinition::Z));
   // std::cout << static_cast<int>(M::StateDefinition::X) << ", " \
   //           << static_cast<int>(M::StateDefinition::Y) << ", " \
   //           << static_cast<int>(M::StateDefinition::Z) << std::endl;
