@@ -20,7 +20,7 @@ class OptimizerTests(unittest.TestCase):
     params.set("dt", 0.2)
     params.set("function_tolerance", 1e-6)
     params.set("max_num_iterations", 1000)
-    params.set("num_threads", 4)
+    params.set("num_threads", 1)
 
     initial_state = np.array([[0., 0., 0., 10.],
                               [2., 0., 0., 10.],

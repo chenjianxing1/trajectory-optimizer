@@ -81,7 +81,7 @@ class Optimizer {
    * @param functor Pointer to the used functor
    * @param num_residuals amount of residuals within the functor
    */
-  template<class F, int N = 30>
+  template<class F, int N = 60>
   void AddResidualBlock(BaseFunctor* functor, int num_residuals = 1) {
     // assert(optimization_vectors_.size() == 0,
     //        "You need to provide the optimization vector first.");
