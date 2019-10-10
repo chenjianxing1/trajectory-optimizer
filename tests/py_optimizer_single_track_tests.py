@@ -18,8 +18,9 @@ class OptimizerTests(unittest.TestCase):
     params = Parameter()
     params.set("wheel_base", 2.7)
     params.set("dt", 0.2)
-    params.set("function_tolerance", 1e-8)
+    params.set("function_tolerance", 1e-6)
     params.set("max_num_iterations", 1000)
+    params.set("num_threads", 4)
 
     initial_state = np.array([[0., 0., 0., 10.],
                               [2., 0., 0., 10.],
@@ -72,7 +73,6 @@ class OptimizerTests(unittest.TestCase):
     inputs = opt.Result()
     trajectory = GenerateTrajectorySingleTrack(initial_state, inputs, params)
 
-
     cmap, norm = GetColorMap(0., 6.)
     fig, ax = plt.subplots(nrows=1, ncols=2)
     for t in np.arange(0, 6, 0.5):
@@ -96,7 +96,7 @@ class OptimizerTests(unittest.TestCase):
     params = Parameter()
     params.set("wheel_base", 2.7)
     params.set("dt", 0.2)
-    params.set("function_tolerance", 1e-8)
+    params.set("function_tolerance", 1e-6)
     params.set("max_num_iterations", 1000)
 
     initial_state = np.array([[0., 0., 0., 10.],

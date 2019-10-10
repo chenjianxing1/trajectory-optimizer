@@ -38,9 +38,9 @@ class Optimizer {
     params_(params),
     optimization_vector_len_(0) {
       options_.max_num_consecutive_invalid_steps =
-        params->get<int>("max_num_consecutive_invalid_steps", 100);
+        params->get<int>("max_num_consecutive_invalid_steps", 50);
       options_.max_num_iterations =
-        params->get<int>("max_num_iterations", 4000);
+        params->get<int>("max_num_iterations", 1000);
       options_.minimizer_type = ceres::MinimizerType::LINE_SEARCH;
       options_.function_tolerance =
         params->get<double>("function_tolerance", 1e-8);
@@ -48,6 +48,8 @@ class Optimizer {
         ceres::LineSearchDirectionType::BFGS;
       options_.minimizer_progress_to_stdout =
         params->get<bool>("minimizer_progress_to_stdout", false);
+      options_.num_threads =
+        params->get<int>("num_threads", 4);
   }
 
   /**
@@ -79,7 +81,7 @@ class Optimizer {
    * @param functor Pointer to the used functor
    * @param num_residuals amount of residuals within the functor
    */
-  template<class F, int N = 4>
+  template<class F, int N = 30>
   void AddResidualBlock(BaseFunctor* functor, int num_residuals = 1) {
     // assert(optimization_vectors_.size() == 0,
     //        "You need to provide the optimization vector first.");

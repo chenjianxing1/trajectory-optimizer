@@ -11,6 +11,7 @@ void python_dynamics(py::module m) {
   using dynamics::GenerateDynamicTrajectory;
   using dynamics::SingleTrackModel;
   using dynamics::TripleIntModel;
+  using dynamics::RobotArm;
   using dynamics::IntegrationRK4;
 
   m.def("GenerateTrajectorySingleTrack",
@@ -20,5 +21,9 @@ void python_dynamics(py::module m) {
   m.def("GenerateTrajectoryTripleInt",
     &dynamics::GenerateDynamicTrajectory<double,
                                         TripleIntModel,
+                                        IntegrationRK4>);
+  m.def("GenerateTrajectoryRobotArm",
+    &dynamics::GenerateDynamicTrajectory<double,
+                                        RobotArm,
                                         IntegrationRK4>);
 }

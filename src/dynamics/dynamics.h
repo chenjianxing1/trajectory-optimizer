@@ -10,6 +10,7 @@
 #include "src/dynamics/integration/rk4.h"
 #include "src/dynamics/models/single_track.h"
 #include "src/dynamics/models/triple_int.h"
+#include "src/dynamics/models/robot_arm.h"
 #include "src/commons/parameters.h"
 
 namespace dynamics {
@@ -39,6 +40,19 @@ namespace dynamics {
     const Matrix_t<T>& initial_states,
     const Matrix_t<T>& input_vector,
     Parameter* params) {
+    // in case not a state space model
+    if (params->get<bool>("static", false)) {
+      Matrix_t<T> trajectory(input_vector.rows(),
+                             initial_states.cols());
+      for (int i = 0; i < input_vector.rows(); i++) {
+        trajectory.row(i) = M::template Step<T, I>(
+          initial_states,
+          input_vector.row(i),
+          params);
+      }
+      return trajectory;
+    }
+    // normal model
     int total_rows = input_vector.rows() + initial_states.rows();
     Matrix_t<T> trajectory(total_rows,
                            initial_states.cols());

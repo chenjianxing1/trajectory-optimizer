@@ -62,6 +62,48 @@ TEST(dynamics, triple_int_model) {
   std::cout << state << std::endl;
 }
 
+TEST(dynamics, robot_arm) {
+  using dynamics::RobotArm;
+  using dynamics::IntegrationRK4;
+  using geometry::Matrix_t;
+  using commons::Parameter;
+  using commons::ParameterPtr;
+  using dynamics::GenerateDynamicTrajectory;
+
+  ParameterPtr params = std::make_shared<Parameter>();
+  params->set<double>("dt", 0.1);
+  params->set<bool>("static", true);
+  //! add objects to world
+  Matrix_t<double> state(1, 2);
+  state << 0.0, 0.0;
+
+  Matrix_t<double> inp(1, 2);
+  inp << .0, .0;  // theta0, theta1
+
+  RobotArm model;
+  state = model.Step<double, IntegrationRK4>(state, inp, params.get());
+  std::cout << state << std::endl;
+
+  inp << 1.54, 1.54;  // theta0, theta1
+  state = model.Step<double, IntegrationRK4>(state, inp, params.get());
+  std::cout << state << std::endl;
+
+
+  inp.resize(3, 2);
+  inp << 0.0, 0.0,
+         1.54, 1.54,
+         0.0, 0.0;  // theta0, theta1
+  state << 1.0, 1.0;
+
+  Matrix_t<double> trajectory =
+    GenerateDynamicTrajectory<double, RobotArm, IntegrationRK4>(
+      state,
+      inp,
+      params.get());
+  std::cout << "Trajectory: \n" << trajectory << std::endl;
+
+}
+
 TEST(dynamics, traj_gen) {
   using dynamics::SingleTrackModel;
   using dynamics::IntegrationRK4;
