@@ -28,7 +28,7 @@ class OptimizerTests(unittest.TestCase):
                               [6., 10., 0., 6., 10., 0., 0.6, 1., 0.]])
     opt_vec = np.zeros(shape=(30, 3))
     ref_line = np.array([[10., -100.],
-                         [30.1, 100.1]])
+                         [50.1, 100.1]])
 
     
     # optimizer
@@ -56,7 +56,7 @@ class OptimizerTests(unittest.TestCase):
     plt.subplot(144)
     ax = fig.add_subplot(144, projection='3d')
     plt.plot(trajectory[:, 0], trajectory[:, 3], trajectory[:, 6], marker='o')
-    plt.plot([10, 30.1], [-100, 100], [0., 0.], marker='o')
+    plt.plot([10, 50.1], [-100, 100], [0., 0.], marker='o')
     plt.axis("equal")
     plt.subplot(141)
     plt.plot(trajectory[:-3, 1], label="vx", marker='o')
@@ -66,10 +66,13 @@ class OptimizerTests(unittest.TestCase):
     plt.legend()
     plt.subplot(142)
     plt.plot(trajectory[:, 0], trajectory[:, 3], marker='o')
+    plt.plot([10, 50.1], [-100, 100], marker='o')
+    plt.axis("equal")
     plt.xlabel("x [m]")
     plt.ylabel("y [m]")
     plt.subplot(143)
     plt.plot(trajectory[:, 3], trajectory[:, 6], marker='o')
+    plt.axis("equal")
     plt.xlabel("y [m]")
     plt.ylabel("z [m]")
     # fig, ax = plt.subplots(nrows=1, ncols=2)
