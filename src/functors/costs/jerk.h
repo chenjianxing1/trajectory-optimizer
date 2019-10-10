@@ -36,7 +36,7 @@ class JerkCost : public BaseCost {
              const Matrix_t<T>& inputs) const {
     T jerk = CalculateSquaredJerk<T, M>(
       trajectory,
-      T(params_->get<double>("dt", 0.1)));
+      T(params_->get<double>("dt", 0.2)));
     return Weight<T>() * jerk;
   }
 

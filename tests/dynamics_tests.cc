@@ -59,6 +59,9 @@ TEST(dynamics, triple_int_model) {
 
   TripleIntModel model;
   state = model.Step<double, IntegrationRK4>(state, inp, params.get());
+  state = model.Step<double, IntegrationRK4>(state, inp, params.get());
+  state = model.Step<double, IntegrationRK4>(state, inp, params.get());
+
   std::cout << state << std::endl;
 }
 

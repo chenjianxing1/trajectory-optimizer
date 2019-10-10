@@ -34,7 +34,8 @@ class TripleIntModel {
     AY = 5,
     Z = 6,
     VZ = 7,
-    AZ = 8
+    AZ = 8,
+    VELOCITY = -1
   };
 
   enum class InputDefinition {

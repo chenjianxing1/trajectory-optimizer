@@ -87,7 +87,7 @@ TEST(optimizer, single_track_model) {
   inp_costs->SetUpperBound(ub);
   functor->AddCost(inp_costs);
 
-  opt.AddResidualBlock<SingleTrackFunctor>(functor);
+  opt.AddResidualBlock<SingleTrackFunctor, 40>(functor);
 
 
   // solve

@@ -30,7 +30,10 @@ class SingleTrackModel {
     Y = 1,
     THETA = 2,
     VELOCITY = 3,
-    Z = -1
+    Z = -1,
+    VX = -1,
+    VY = -1,
+    VZ = -1
   };
 
   enum class InputDefinition {
