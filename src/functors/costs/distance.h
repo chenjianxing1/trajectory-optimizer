@@ -32,12 +32,14 @@ class ReferenceLineCost : public BaseCost {
   virtual ~ReferenceLineCost() {}
 
   template<typename T, class M>
-  T Evaluate(const Matrix_t<T>& trajectory,
-             const Matrix_t<T>& inputs,
-             T dist = T(0.)) const {
+  void Evaluate(const Matrix_t<T>& trajectory,
+                const Matrix_t<T>& inputs,
+                Matrix_t<T>& costs) {
+    Matrix_t<T> local_costs(costs.rows(), 1);
+    local_costs.setZero();
     Line<T, 2> ref_line(reference_line_.cast<T>());
-    dist = CalculateSquaredDistance<T, M>(ref_line, trajectory);
-    return Weight<T>() * dist;
+    CalculateSquaredDistance<T, M>(ref_line, trajectory, local_costs);
+    costs +=  Weight<T>() * local_costs;
   }
 
   void SetReferenceLine(const Matrix_t<double>& ref_line) {

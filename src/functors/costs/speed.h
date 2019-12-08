@@ -36,9 +36,11 @@ class SpeedCost : public BaseCost {
   virtual ~SpeedCost() {}
 
   template<typename T, class M>
-  T Evaluate(const Matrix_t<T>& trajectory,
-             const Matrix_t<T>& inputs,
-             T cost = T(0.)) const {
+  void Evaluate(const Matrix_t<T>& trajectory,
+                const Matrix_t<T>& inputs,
+                Matrix_t<T>& costs) const {
+    Matrix_t<T> local_costs(costs.rows(), 1);
+    local_costs.setZero();
     for (int i = 0; i < trajectory.rows(); i++) {
       T v_total = T(0.);
       if (static_cast<int>(M::StateDefinition::VELOCITY) != -1) {
@@ -53,9 +55,9 @@ class SpeedCost : public BaseCost {
           trajectory(i, vel_idx_y)*trajectory(i, vel_idx_y) + \
           trajectory(i, vel_idx_z)*trajectory(i, vel_idx_z));
       }
-      cost += (v_total - v_des_)*(v_total - v_des_);
+      local_costs(i, 0) += (v_total - v_des_)*(v_total - v_des_);
     }
-    return cost;
+    costs += Weight<T>() * local_costs;
   }
 
   void SetDesiredSpeed(double speed) {

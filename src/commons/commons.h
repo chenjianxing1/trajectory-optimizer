@@ -79,7 +79,9 @@ inline Matrix_t<T> CalculateDiff(const Matrix_t<T>& traj, const T& dt) {
 }
 
 template<typename T, class M>
-inline T CalculateSquaredJerk(const Matrix_t<T>& traj, const T& dt) {
+inline void CalculateSquaredJerk(const Matrix_t<T>& traj,
+                                 Matrix_t<T>& costs,
+                                 const T& dt) {
   // TODO(@hart): make more efficient
   Matrix_t<T> reduced_traj(traj.rows(), 3);
   reduced_traj.setZero();
@@ -93,18 +95,17 @@ inline T CalculateSquaredJerk(const Matrix_t<T>& traj, const T& dt) {
   Matrix_t<T> traj_v = CalculateDiff(reduced_traj, dt);
   Matrix_t<T> traj_a = CalculateDiff(traj_v, dt);
   Matrix_t<T> traj_j = CalculateDiff(traj_a, dt);
-  T jerk = T(0.);
   for (int i = 0; i < traj_j.rows(); i++) {
     for (int j = 0; j < traj_j.cols(); j++) {
-      jerk += traj_j(i, j)*traj_j(i, j);
+      costs(i, 0) += traj_j(i, j)*traj_j(i, j);
     }
   }
-  return jerk;
 }
 
 template<typename T, class M>
-inline T CalculateSquaredDistance(const Line<T, 2>& line,
+inline void CalculateSquaredDistance(const Line<T, 2>& line,
                                   const Matrix_t<T>& trajectory,
+                                  Matrix_t<T>& costs,
                                   T dist = T(0.)) {
   T tmp_dist = T(0.);
   Point<T, 2> pt;
@@ -115,16 +116,16 @@ inline T CalculateSquaredDistance(const Line<T, 2>& line,
     boost::geometry::set<1>(pt.obj_,
       trajectory(i, static_cast<int>(M::StateDefinition::Y)));
     tmp_dist = Distance<T, Line<T, 2>, Point<T, 2>>(line, pt);
-    dist += tmp_dist*tmp_dist;
+    costs(i,0) += tmp_dist*tmp_dist;
   }
-  return dist;
 }
 
 template<typename T, class M>
-inline T GetSquaredObjectCosts(const ObjectOutline& obj_out,
-                               const Matrix_t<T>& trajectory,
-                               const T& epsilon,
-                               double dt) {
+inline void GetSquaredObjectCosts(const ObjectOutline& obj_out,
+                                  const Matrix_t<T>& trajectory,
+                                  Matrix_t<T>& costs,
+                                  const T& epsilon,
+                                  double dt) {
   T tmp_dist = T(0.);
   T dist = T(0.);
   Point<T, 2> pt;
@@ -140,16 +141,16 @@ inline T GetSquaredObjectCosts(const ObjectOutline& obj_out,
     poly = Polygon<T, 2>(object_outline.cast<T>());
     tmp_dist = Distance<T, 2>(poly, pt);
     if (tmp_dist < epsilon) {
-      dist += (epsilon - tmp_dist)*(epsilon - tmp_dist);
+      costs(i, 0) += (epsilon - tmp_dist)*(epsilon - tmp_dist);
     }
   }
-  return dist;
 }
 
 template<typename T, class M>
-inline T CalculateSquaredDistance(const Matrix_t<T>& traj0,
-                                  const Matrix_t<T>& traj1,
-                                  T dist = T(0.)) {
+inline void CalculateSquaredDistance(const Matrix_t<T>& traj0,
+                                     const Matrix_t<T>& traj1,
+                                     Matrix_t<T>& costs,
+                                     T dist = T(0.)) {
   T tmp_dist = T(0.);
   T loc = T(0.);
   for (int i = 0; i < traj0.rows(); i++) {
@@ -158,9 +159,21 @@ inline T CalculateSquaredDistance(const Matrix_t<T>& traj0,
       loc += (traj0(i, j) - traj1(i, j))*(traj0(i, j) - traj1(i, j));
     }
     tmp_dist = loc;
-    dist += tmp_dist*tmp_dist;
+    costs(i, 0) += tmp_dist*tmp_dist;
   }
-  return dist;
+}
+
+
+template<typename T>
+Matrix_t<T> MCE(const Matrix_t<T>& costs, T gamma = T(0.99)) {
+  Matrix_t<T> discounted_costs(costs.rows(), costs.cols());
+  int cost_len = costs.rows()-1;
+  discounted_costs(cost_len, 0) = costs(cost_len, 0);
+  for (int i = 1; i < costs.rows(); i++) {
+    discounted_costs(cost_len-i, 0) = costs(cost_len-i, 0) + \
+      gamma*discounted_costs(cost_len-i+1, 0);
+  }
+  return discounted_costs;
 }
 
 }  // namespace commons

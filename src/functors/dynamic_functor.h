@@ -31,6 +31,7 @@ using geometry::Polygon;
 using commons::Parameter;
 using commons::ParameterPtr;
 using commons::CalculateSquaredJerk;
+using commons::MCE;
 using dynamics::GenerateDynamicTrajectory;
 using dynamics::SingleTrackModel;
 using dynamics::TripleIntModel;
@@ -70,7 +71,6 @@ class DynamicFunctor : public BaseFunctor {
   template<typename T>
   bool operator()(T const* const* parameters,
                   T* residuals,
-                  T costs = T(0.),
                   T weights = T(0.)) {
     // conversion
     Matrix_t<T> opt_vec = this->ParamsToEigen<T>(parameters);
@@ -82,53 +82,56 @@ class DynamicFunctor : public BaseFunctor {
       params_.get());
 
 
+    Matrix_t<T> costs(trajectory.rows(), 1);
     for ( int i = 0; i < costs_.size(); i++ ) {
       if (std::dynamic_pointer_cast<JerkCost>(costs_[i])) {
-        // would need state def
         JerkCostPtr cost = std::dynamic_pointer_cast<JerkCost>(costs_[i]);
-        costs += cost->Evaluate<T, M>(trajectory, opt_vec);
+        cost->Evaluate<T, M>(trajectory, opt_vec, costs);
         weights += cost->Weight<T>();
         continue;
       }
       if (std::dynamic_pointer_cast<ReferenceLineCost>(costs_[i])) {
-        // would need state def
         ReferenceLineCostPtr cost =
           std::dynamic_pointer_cast<ReferenceLineCost>(costs_[i]);
-        costs += cost->Evaluate<T, M>(trajectory, opt_vec);
+        cost->Evaluate<T, M>(trajectory, opt_vec, costs);
         weights += cost->Weight<T>();
         continue;
       }
       if (std::dynamic_pointer_cast<InputCost>(costs_[i])) {
         InputCostPtr cost = std::dynamic_pointer_cast<InputCost>(costs_[i]);
-        costs += cost->Evaluate<T, M>(trajectory, opt_vec);
+        cost->Evaluate<T, M>(trajectory, opt_vec, costs);
         weights += cost->Weight<T>();
         continue;
       }
       if (std::dynamic_pointer_cast<ReferenceCost>(costs_[i])) {
         ReferenceCostPtr cost =
           std::dynamic_pointer_cast<ReferenceCost>(costs_[i]);
-        costs += cost->Evaluate<T, M>(trajectory, opt_vec);
+        cost->Evaluate<T, M>(trajectory, opt_vec, costs);
         weights += cost->Weight<T>();
         continue;
       }
       if (std::dynamic_pointer_cast<SpeedCost>(costs_[i])) {
-        // would need state def
         SpeedCostPtr cost =
           std::dynamic_pointer_cast<SpeedCost>(costs_[i]);
-        costs += cost->Evaluate<T, M>(trajectory, opt_vec);
+        cost->Evaluate<T, M>(trajectory, opt_vec, costs);
         weights += cost->Weight<T>();
         continue;
       }
       if (std::dynamic_pointer_cast<StaticObjectCost>(costs_[i])) {
         StaticObjectCostPtr cost =
           std::dynamic_pointer_cast<StaticObjectCost>(costs_[i]);
-        costs += cost->Evaluate<T, M>(trajectory, opt_vec);
+        cost->Evaluate<T, M>(trajectory, opt_vec, costs);
         weights += cost->Weight<T>();
         continue;
       }
     }
 
-    residuals[0] = costs / weights;
+    // normalize costs
+    costs /= weights;
+    // TODO(@hart): normal costs or MC estimate
+    // costs = MCE(costs);
+
+    residuals[0] = costs.sum();
     return true;
   }
 

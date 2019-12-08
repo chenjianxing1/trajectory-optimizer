@@ -33,13 +33,16 @@ class JerkCost : public BaseCost {
 
   template<typename T, class M>
   T Evaluate(const Matrix_t<T>& trajectory,
-             const Matrix_t<T>& inputs) const {
-    T jerk = CalculateSquaredJerk<T, M>(
+             const Matrix_t<T>& inputs,
+             Matrix_t<T>& costs) {
+    Matrix_t<T> local_costs(costs.rows(), 1);
+    local_costs.setZero();
+    CalculateSquaredJerk<T, M>(
       trajectory,
+      local_costs,
       T(params_->get<double>("dt", 0.2)));
-    return Weight<T>() * jerk;
+    costs +=  Weight<T>() * local_costs;
   }
-
 };
 
 typedef std::shared_ptr<JerkCost> JerkCostPtr;

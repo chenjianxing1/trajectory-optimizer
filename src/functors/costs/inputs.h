@@ -30,19 +30,22 @@ class InputCost : public BaseCost {
   virtual ~InputCost() {}
 
   template<typename T, class M>
-  T Evaluate(const Matrix_t<T>& trajectory,
-             const Matrix_t<T>& inputs,
-             T cost = T(0.)) const {
+  void Evaluate(const Matrix_t<T>& trajectory,
+                const Matrix_t<T>& inputs,
+                Matrix_t<T>& costs,
+                T cost = T(0.)) {
+    Matrix_t<T> local_costs(costs.rows(), 1);
+    local_costs.setZero();
     for (int i = 0; i < inputs.cols(); i++) {
       // check if within bounds
       for (int j = 0; j < inputs.rows(); j++) {
         if (inputs(j, i) < lower_bounds_(0, i))
-          cost += ceres::pow(inputs(j, i) - lower_bounds_(0, i), 2);
+          local_costs(i, 0) += ceres::pow(inputs(j, i) - lower_bounds_(0, i), 2);
         if (inputs(j, i) > upper_bounds_(0, i))
-          cost += ceres::pow(inputs(j, i) - upper_bounds_(0, i), 2);
+          local_costs(i, 0) += ceres::pow(inputs(j, i) - upper_bounds_(0, i), 2);
       }
     }
-    return Weight<T>() * cost;
+    costs +=  Weight<T>() * local_costs;
   }
 
   void SetLowerBound(const Matrix_t<double>& lb) {

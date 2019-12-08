@@ -41,16 +41,20 @@ class StaticObjectCost : public BaseCost {
   virtual ~StaticObjectCost() {}
 
   template<typename T, class M>
-  T Evaluate(const Matrix_t<T>& trajectory,
-             const Matrix_t<T>& inputs,
-             T cost = T(0.)) const {
+  void Evaluate(const Matrix_t<T>& trajectory,
+                const Matrix_t<T>& inputs,
+                Matrix_t<T>& costs,
+                T cost = T(0.)) const {
+    Matrix_t<T> local_costs(costs.rows(), 1);
+    local_costs.setZero();
     for (const auto& obj_out : object_outlines_) {
-      cost += GetSquaredObjectCosts<T, M>(obj_out,
-                                          trajectory,
-                                          T(epsilon_),
-                                          params_->get<double>("dt", 0.1));
+      GetSquaredObjectCosts<T, M>(obj_out,
+                                  trajectory,
+                                  local_costs,
+                                  T(epsilon_),
+                                  params_->get<double>("dt", 0.1));
     }
-    return Weight<T>() * cost;
+    costs += Weight<T>() * local_costs;
   }
 
   void AddObjectOutline(const ObjectOutline& object_outline) {
