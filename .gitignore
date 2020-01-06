@@ -3,3 +3,4 @@ bazel-*
 bazel-**
 /python/venv
 .DS_Store
+/bazel-**
