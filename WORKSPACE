@@ -110,7 +110,7 @@ http_archive(
 
 new_git_repository(
   name = "com_google_ceres_solver",
-  branch = "master",
+  commit = "46ca461b7ee465c122c5122c8044ef11ec2298bc",
   remote = "https://github.com/ceres-solver/ceres-solver",
   build_file_content =
 """

@@ -3,8 +3,3 @@ bazel-*
 bazel-**
 /python/venv
 .DS_Store
-bazel-bin
-bazel-genfiles
-bazel-out
-bazel-testlogs
-bazel-trajectory-optimizer
